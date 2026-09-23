@@ -20,6 +20,12 @@ APPS = [
      "tag": {"en": "Backgammon and long nardy with fair, verifiable dice",
              "ru": "Короткие и длинные нарды с честными проверяемыми костями"},
      "store": None},
+    # Приложение со своим сайтом: карточка ведёт наружу, страниц здесь нет.
+    {"slug": "cycleally", "icon": "/assets/cycleally-icon.jpg", "external": "https://cycleally.com",
+     "name": {"en": "Cycle Ally", "ru": "Cycle Ally"},
+     "tag": {"en": "A PCOS and PMOS log you can hand to your doctor",
+             "ru": "Дневник СПКЯ, который можно показать врачу"},
+     "store": None},
 ]
 
 T = {
@@ -77,7 +83,7 @@ def page(lang, path, title, body, desc=""):
 def home(lang):
     t = T[lang]
     cards = "\n".join(
-        f'<a class="app" href="{url(lang, "/" + a["slug"] + "/")}"><img src="{a["icon"]}" alt="">'
+        f'<a class="app" href="{a.get("external") or url(lang, "/" + a["slug"] + "/")}"><img src="{a["icon"]}" alt="">'
         f'<div><b>{a["name"][lang]}</b><span>{a["tag"][lang]}</span></div></a>' for a in APPS)
     page(lang, "/", DEV, f"<h1>{DEV}</h1><p class=\"lead\">{t['home_lead']}</p>"
                           f"<h2>{t['my_apps']}</h2><div class=\"apps\">{cards}</div>")
