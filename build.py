@@ -98,6 +98,13 @@ def contact(lang):
 # ── Нарды ─────────────────────────────────────────────────────────────
 
 
+def app_store_badge(link):
+    """Официальный значок Apple (скачан с toolbox.marketingtools.apple.com): чёрный на светлом, белый на тёмном."""
+    return (f'<a class="store" href="{link}"><picture>'
+            '<source srcset="/assets/app-store-badge-white.svg" media="(prefers-color-scheme: dark)">'
+            '<img src="/assets/app-store-badge-black.svg" alt="Download on the App Store" height="44"></picture></a>')
+
+
 def app_nav(lang, base, current):
     """Меню разделов приложения — над содержимым каждой его страницы."""
     t = T[lang]
@@ -111,7 +118,7 @@ def app_nav(lang, base, current):
 def nardy_pages(lang):
     a, t = APPS[0], T[lang]
     base = "/fair-dice/"
-    store = f'<a href="{a["store"]}">App Store</a>' if a["store"] else f'<span class="badge">{t["soon"]}</span>'
+    store = app_store_badge(a["store"]) if a["store"] else f'<span class="badge">{t["soon"]}</span>'
     links = (f'<ul class="links"><li><a href="{url(lang, base + "verify")}">{t["verify"]}</a></li>'
              f'<li><a href="{url(lang, base + "dice-report")}">{t["report"]}</a></li>'
              f'<li><a href="{url(lang, base + "privacy")}">{t["privacy"]}</a></li>'

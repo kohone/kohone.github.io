@@ -60,3 +60,5 @@ nav.sub a.on { background: var(--fg); color: var(--bg); border-color: var(--fg);
 .app span { font-size: 15px; }
 h1, h2 { letter-spacing: -0.01em; }
 header.top { border-bottom-color: transparent; }
+.store { display: inline-block; margin-top: 6px; }
+.store img { height: 44px; width: auto; border-radius: 0; box-shadow: none; }
