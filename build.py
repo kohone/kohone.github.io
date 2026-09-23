@@ -10,7 +10,7 @@ import html
 import os
 
 SITE = "https://kohone.github.io"
-DEV = "kohone"
+DEV = "Maks Beskrovnyi"
 EMAIL = None  # почта поддержки — будет позже
 UPDATED = "2026-09-23"
 
@@ -29,7 +29,7 @@ APPS = [
 ]
 
 T = {
-    "en": {"apps": "Apps", "home_lead": "I'm an independent developer making small, honest apps and games for iPhone. No ads, no accounts, no tracking.",
+    "en": {"apps": "Apps", "home_lead": "Web developer and mobile app developer. I build small, honest apps and games for iPhone — no ads, no accounts, no tracking.",
            "overview": "Overview", "my_apps": "My apps",
            "soon": "Coming to the App Store", "privacy": "Privacy", "support": "Support", "verify": "Verify the dice",
            "report": "Dice report", "lang": "Русский", "contact_soon": "A support e-mail will appear here soon.",
@@ -85,7 +85,7 @@ def home(lang):
     cards = "\n".join(
         f'<a class="app" href="{a.get("external") or url(lang, "/" + a["slug"] + "/")}"><img src="{a["icon"]}" alt="">'
         f'<div><b>{a["name"][lang]}</b><span>{a["tag"][lang]}</span></div></a>' for a in APPS)
-    page(lang, "/", DEV, f"<section class=\"intro\"><h1>{DEV}</h1><p class=\"lead\">{t['home_lead']}</p></section>"
+    page(lang, "/", DEV + " — web and mobile developer", f"<section class=\"intro\"><h1>{DEV}</h1><p class=\"lead\">{t['home_lead']}</p></section>"
                           f"<h2>{t['my_apps']}</h2><div class=\"apps\">{cards}</div>")
 
 
