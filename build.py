@@ -85,7 +85,7 @@ def home(lang):
     cards = "\n".join(
         f'<a class="app" href="{a.get("external") or url(lang, "/" + a["slug"] + "/")}"><img src="{a["icon"]}" alt="">'
         f'<div><b>{a["name"][lang]}</b><span>{a["tag"][lang]}</span></div></a>' for a in APPS)
-    page(lang, "/", DEV, f"<h1>{DEV}</h1><p class=\"lead\">{t['home_lead']}</p>"
+    page(lang, "/", DEV, f"<section class=\"intro\"><h1>{DEV}</h1><p class=\"lead\">{t['home_lead']}</p></section>"
                           f"<h2>{t['my_apps']}</h2><div class=\"apps\">{cards}</div>")
 
 

@@ -1,10 +1,10 @@
 :root {
   color-scheme: light dark;
-  --bg: #f6f2eb; --card: #fffdf9; --fg: #1e1813; --muted: #6d625a; --line: #e4dbcf;
-  --accent: #1f8f4e; --accent-fg: #fff; --code: #efe8dd;
+  --bg: #ffffff; --card: #f5f5f7; --fg: #1d1d1f; --muted: #6e6e73; --line: #e5e5ea;
+  --accent: #0071e3; --accent-fg: #fff; --code: #f0f0f3;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #16120f; --card: #211b16; --fg: #f1ebe3; --muted: #a99d92; --line: #342b24; --code: #2a231d; }
+  :root { --bg: #000000; --card: #1c1c1e; --fg: #f5f5f7; --muted: #98989d; --line: #2c2c2e; --accent: #2997ff; --code: #1c1c1e; }
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
@@ -48,3 +48,15 @@ footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 14px
 nav.sub { display: flex; flex-wrap: wrap; gap: 6px; margin: -8px 0 22px; }
 nav.sub a { padding: 5px 12px; border-radius: 99px; border: 1px solid var(--line); color: var(--fg); text-decoration: none; font-size: 14px; }
 nav.sub a.on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+
+/* Главная: крупнее заголовок и карточки приложений */
+.intro h1 { font-size: 44px; letter-spacing: -0.02em; margin-bottom: 12px; }
+.intro p.lead { font-size: 20px; max-width: 560px; }
+.apps { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.app { padding: 18px; border: 0; border-radius: 20px; transition: transform .15s ease; }
+.app:hover { transform: translateY(-2px); }
+.app img { width: 76px; height: 76px; border-radius: 18px; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+.app b { font-size: 18px; margin-bottom: 2px; }
+.app span { font-size: 15px; }
+h1, h2 { letter-spacing: -0.01em; }
+header.top { border-bottom-color: transparent; }
