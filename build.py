@@ -119,7 +119,7 @@ def nardy_pages(lang):
     hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"][lang]}</h1>{store}</div></div>'
 
     if lang == "en":
-        about = """<p class="lead">Backgammon and long nardy (Russian Nardy Federation rules) against a strong computer or a friend on the same phone. Works offline.</p>
+        about = """<p class="lead">Backgammon and long nardy (tournament rules) against a strong computer or a friend on the same phone. Works offline.</p>
 <ul>
 <li><b>Fair dice you can verify.</b> Before each game the app seals the rolls and shows their fingerprint; after the game you get the key and can recompute every roll — here, in Python, or with any HMAC tool.</li>
 <li><b>A computer that explains.</b> A neural network plays at five levels, shows the best move and explains mistakes in plain words.</li>
@@ -127,7 +127,7 @@ def nardy_pages(lang):
 <li><b>No accounts.</b> Your games and statistics stay on your phone.</li>
 </ul>"""
     else:
-        about = """<p class="lead">Короткие и длинные нарды (правила Федерации нард России) против сильного компьютера или вдвоём на одном телефоне. Работает без интернета.</p>
+        about = """<p class="lead">Короткие и длинные нарды (турнирные правила) против сильного компьютера или вдвоём на одном телефоне. Работает без интернета.</p>
 <ul>
 <li><b>Честные кости, которые можно проверить.</b> Перед партией приложение запечатывает броски и показывает их отпечаток; после партии вы получаете ключ и пересчитываете каждый бросок — здесь, на Python или любым инструментом HMAC.</li>
 <li><b>Компьютер, который объясняет.</b> Нейросеть играет на пяти уровнях, показывает лучший ход и объясняет ошибки простыми словами.</li>
@@ -171,7 +171,7 @@ def nardy_pages(lang):
 <p><b>Are the dice really random?</b> Yes, and you can check it. See <a href="{url('en', base + 'verify')}">how to verify the dice</a> and the <a href="{url('en', base + 'dice-report')}">100-million-roll report</a>.</p>
 <p><b>Does the level change the dice?</b> No. The level only changes the computer's moves; the rolls are sealed before the game.</p>
 <p><b>I bought a board on another device.</b> Settings → Board → Restore purchases.</p>
-<p><b>Which rules are used in long nardy?</b> The Russian Nardy Federation sport rules: one checker from the head per turn (except 6-6, 4-4, 3-3 on the first roll), no six-point wall in front of all opposing checkers, mars counts 2 points.</p>"""
+<p><b>Which rules are used in long nardy?</b> Standard tournament rules: one checker from the head per turn (except 6-6, 4-4, 3-3 on the first roll), no six-point wall in front of all opposing checkers, mars counts 2 points.</p>"""
     else:
         support = f"""<h1>Поддержка — {a['name']['ru']}</h1>
 <p>Напишите нам: {contact('ru')}</p>
@@ -179,7 +179,7 @@ def nardy_pages(lang):
 <p><b>Кости правда случайные?</b> Да, и это можно проверить. Смотрите <a href="{url('ru', base + 'verify')}">как проверить кости</a> и <a href="{url('ru', base + 'dice-report')}">отчёт о 100 млн бросков</a>.</p>
 <p><b>Уровень влияет на кости?</b> Нет. Уровень меняет только ходы компьютера, броски запечатаны до партии.</p>
 <p><b>Купил доску на другом устройстве.</b> Настройки → Доска → Восстановить покупки.</p>
-<p><b>По каким правилам длинные нарды?</b> По спортивным правилам Федерации нард России: с головы одна шашка за ход (кроме 6-6, 4-4, 3-3 первым броском), нельзя ставить шесть пунктов подряд перед всеми шашками соперника, марс — 2 очка.</p>"""
+<p><b>По каким правилам длинные нарды?</b> По турнирным правилам: с головы одна шашка за ход (кроме 6-6, 4-4, 3-3 первым броском), нельзя ставить шесть пунктов подряд перед всеми шашками соперника, марс — 2 очка.</p>"""
     page(lang, base + "support", t["support"] + " — " + a["name"][lang], app_nav(lang, base, "support") + support)
 
     verify_page(lang, base)
