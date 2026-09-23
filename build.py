@@ -29,12 +29,12 @@ APPS = [
 ]
 
 T = {
-    "en": {"apps": "Apps", "home_lead": "Web developer and mobile app developer. I build small, honest apps and games for iPhone — no ads, no accounts, no tracking.",
+    "en": {"apps": "Apps", "home_lead": "Web developer and mobile app developer. I build apps and games for iPhone.",
            "overview": "Overview", "my_apps": "My apps",
            "soon": "Coming to the App Store", "privacy": "Privacy", "support": "Support", "verify": "Verify the dice",
            "report": "Dice report", "lang": "Русский", "contact_soon": "A support e-mail will appear here soon.",
            "updated": "Last updated"},
-    "ru": {"apps": "Приложения", "home_lead": "Небольшие честные приложения и игры для iPhone. Без рекламы, аккаунтов и слежки.",
+    "ru": {"apps": "Приложения", "home_lead": "Делаю приложения и игры для iPhone.",
            "soon": "Скоро в App Store", "privacy": "Конфиденциальность", "support": "Поддержка", "verify": "Проверка костей",
            "report": "Отчёт о костях", "lang": "English", "contact_soon": "Почта поддержки скоро появится здесь.",
            "updated": "Обновлено"},
@@ -124,7 +124,7 @@ def nardy_pages(lang):
 <li><b>Fair dice you can verify.</b> Before each game the app seals the rolls and shows their fingerprint; after the game you get the key and can recompute every roll — here, in Python, or with any HMAC tool.</li>
 <li><b>A computer that explains.</b> A neural network plays at five levels, shows the best move and explains mistakes in plain words.</li>
 <li><b>Review, statistics, lessons.</b> Game review with error rate, dice statistics against fair odds, interactive rules lessons.</li>
-<li><b>No ads, no accounts, no tracking.</b> Your games stay on your phone.</li>
+<li><b>No accounts.</b> Your games and statistics stay on your phone.</li>
 </ul>"""
     else:
         about = """<p class="lead">Короткие и длинные нарды (правила Федерации нард России) против сильного компьютера или вдвоём на одном телефоне. Работает без интернета.</p>
@@ -132,7 +132,7 @@ def nardy_pages(lang):
 <li><b>Честные кости, которые можно проверить.</b> Перед партией приложение запечатывает броски и показывает их отпечаток; после партии вы получаете ключ и пересчитываете каждый бросок — здесь, на Python или любым инструментом HMAC.</li>
 <li><b>Компьютер, который объясняет.</b> Нейросеть играет на пяти уровнях, показывает лучший ход и объясняет ошибки простыми словами.</li>
 <li><b>Разбор, статистика, уроки.</b> Разбор партии с оценкой ошибок, статистика костей против честных шансов, уроки правил на живой доске.</li>
-<li><b>Без рекламы, аккаунтов и слежки.</b> Партии остаются на вашем телефоне.</li>
+<li><b>Без аккаунтов.</b> Партии и статистика остаются на вашем телефоне.</li>
 </ul>"""
     page(lang, base, a["name"][lang], app_nav(lang, base, "") + hero + about, a["tag"][lang])
 
@@ -140,7 +140,7 @@ def nardy_pages(lang):
     if lang == "en":
         privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
 <p class="muted">{t['updated']}: {UPDATED}</p>
-<p><b>The app does not collect any data.</b> It has no accounts, no ads, no analytics and no third-party SDKs, and it does not connect to our servers — we do not have any.</p>
+<p><b>The app does not collect any data.</b> It has no accounts and no analytics, and it does not send your games or statistics anywhere.</p>
 <h2>What stays on your device</h2>
 <p>Your games, history, statistics and settings are stored only on your iPhone (the current game in the Keychain, the rest in the app's own storage). They are deleted when you delete the app. We never receive them.</p>
 <h2>Purchases</h2>
