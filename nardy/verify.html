@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verify the dice — Nardy</title>
+<meta name="description" content="Verify the dice — Nardy">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="alternate" hreflang="ru" href="https://kohone.github.io/ru/nardy/verify">
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="/">kohone</a>
+<nav><a href="/">Apps</a><a href="/ru/nardy/verify">Русский</a></nav>
+</div></header>
+<main><div class="wrap">
+<h1>Verify the dice</h1>
+<p class="muted">Everything runs in your browser. Nothing is sent anywhere. You can save this page and use it offline.</p>
+<label>Fingerprint shown before the game <input id="c" placeholder="64 hex"></label>
+<label>Key shown after the game <input id="k" placeholder="64 hex"></label>
+<label>Phrase <input id="p"></label>
+<label>Number of rolls <input id="n" type="number" value="60"></label>
+<button id="go">Verify</button>
+<p id="verdict"></p>
+<pre id="out" hidden></pre>
+
+<h2>How the dice work</h2>
+<ol>
+<li><b>Key.</b> Before the game the app takes 32 random bytes from the phone's cryptographic generator. This is the secret key of the game.</li>
+<li><b>Fingerprint.</b> Before the first roll the app shows SHA-256 of the key — a sealed envelope. Finding another key with the same fingerprint is practically impossible, so the rolls cannot be changed afterwards.</li>
+<li><b>Roll number <i>i</i></b> (from 0, the opening roll included) = HMAC-SHA256(key, <code>narde-v1|phrase|i</code>). Bytes 252–255 are skipped; every other byte <i>b</i> gives a die <code>b mod 6 + 1</code>, so all six faces are exactly equally likely. The first two dice are the roll. If a block has fewer than two usable bytes (chance ≈ 10<sup>−55</sup>), the next one is <code>…|i|1</code>.</li>
+<li><b>After the game</b> the key is revealed. Its SHA-256 must equal the fingerprint, and the rolls computed from it must equal the roll log in the app. The computer's level never touches the dice.</li>
+</ol>
+
+<h2>Check without our site</h2>
+<p>You do not have to trust this page. The algorithm uses only standard SHA-256 and HMAC, available in every programming language.</p>
+<p><b>Python</b> (any computer, nothing to install):</p>
+<pre>import hashlib, hmac
+key = bytes.fromhex("PASTE THE KEY")
+phrase = "PASTE THE PHRASE"
+print(hashlib.sha256(key).hexdigest())   # must equal the fingerprint
+for i in range(60):
+    mac = hmac.new(key, f"narde-v1|{phrase}|{i}".encode(), hashlib.sha256).digest()
+    print(i, [b % 6 + 1 for b in mac if b &lt; 252][:2])</pre>
+<p><b>CyberChef</b> — an open tool by GCHQ that runs in the browser: <a href="https://gchq.github.io/CyberChef/">gchq.github.io/CyberChef</a>.
+Add the operation <i>HMAC</i>, key type <i>Hex</i>, paste the key, function <i>SHA256</i>; type <code>narde-v1|phrase|0</code> as input. Read the result two hex digits at a time: skip fc, fd, fe, ff; convert the rest to a number, take the remainder after dividing by 6 and add 1.</p>
+
+<h2>Test example</h2>
+<p>Key <code>000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f</code>, phrase <code>test</code>:</p>
+<pre>fingerprint 630dcd2966c4336691125448bbb25b4ff412a49c732db2c8abc1b8581bd710dd
+roll 0: HMAC c0a03654… → c0 = 192 → 192 mod 6 + 1 = 1; a0 = 160 → 5   → 1-5
+roll 1: HMAC 1b6b74e5… → 1b = 27 → 4;  6b = 107 → 6                  → 4-6
+roll 2: HMAC 32c986d4… → 32 = 50 → 3;  c9 = 201 → 4                  → 3-4</pre>
+<p class="muted">The same example is checked by the app's automated tests, so the app, this page and the Python script always agree.</p>
+
+<script>
+const hex = s => new Uint8Array((s.trim().match(/../g) || []).map(h => parseInt(h, 16)));
+const toHex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
+async function roll(key, phrase, i) {
+  for (const suffix of ["", "|1", "|2"]) {
+    const mac = new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`narde-v1|${phrase}|${i}${suffix}`)));
+    const dice = [...mac].filter(b => b < 252).map(b => b % 6 + 1).slice(0, 2);
+    if (dice.length === 2) return dice;
+  }
+}
+document.getElementById("go").onclick = async () => {
+  const raw = hex(document.getElementById("k").value);
+  const v = document.getElementById("verdict"), out = document.getElementById("out");
+  if (raw.length !== 32) { v.className = "bad"; v.textContent = "The key must be 64 hex characters."; return; }
+  const fp = toHex(await crypto.subtle.digest("SHA-256", raw));
+  const expected = document.getElementById("c").value.trim().toLowerCase();
+  const ok = fp === expected;
+  v.className = ok ? "ok" : "bad";
+  v.textContent = ok ? "The key matches the fingerprint: the rolls were fixed before the game."
+                     : "The key does NOT match the fingerprint.";
+  const key = await crypto.subtle.importKey("raw", raw, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const phrase = document.getElementById("p").value, n = Math.min(1000, +document.getElementById("n").value || 0);
+  const lines = [];
+  for (let i = 0; i < n; i++) lines.push(`${i}  ${(await roll(key, phrase, i)).join("-")}`);
+  out.hidden = false;
+  out.textContent = "Compare with the roll log in the app:\n" + lines.join("\n");
+};
+</script>
+</div></main>
+<footer><div class="wrap">© 2026 kohone</div></footer>
+</body>
+</html>
