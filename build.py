@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Сборка сайта kohone.github.io: одна витрина для всех приложений, английский и русский.
+"""Сборка сайта kohone.github.io: одна витрина для всех приложений, на английском.
 
     python3.14 build.py   # нужен Python 3.12+ (f-строки с обратной косой)
 
@@ -49,12 +49,11 @@ def page(lang, path, title, body, desc=""):
 <title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(desc or title)}">
 <link rel="stylesheet" href="/assets/site.css">
-<link rel="alternate" hreflang="{other}" href="{SITE}{url(other, path)}">
 </head>
 <body>
 <header class="top"><div class="wrap">
 <a class="brand" href="{url(lang, '/')}">{DEV}</a>
-<nav><a href="{url(lang, '/')}">{t['apps']}</a><a href="{url(other, path)}">{t['lang']}</a></nav>
+<nav><a href="{url(lang, '/')}">{t['apps']}</a></nav>
 </div></header>
 <main><div class="wrap">
 {body}
@@ -280,7 +279,8 @@ def report_page(lang, base):
     page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Nardy", body)
 
 
-for lang in ("en", "ru"):
+# Сайт только на английском; русские тексты в функциях оставлены на случай перевода.
+for lang in ("en",):
     home(lang)
     nardy_pages(lang)
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".nojekyll"), "w"):
