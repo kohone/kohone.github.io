@@ -45,3 +45,6 @@ input { width: 100%; font: 15px ui-monospace, monospace; padding: 9px; border: 1
 button { margin-top: 16px; font-size: 16px; padding: 10px 20px; border: 0; border-radius: 10px; background: var(--accent); color: var(--accent-fg); }
 .ok { color: var(--accent); font-weight: 700; } .bad { color: #c0392b; font-weight: 700; }
 footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; padding: 18px 0 32px; }
+nav.sub { display: flex; flex-wrap: wrap; gap: 6px; margin: -8px 0 22px; }
+nav.sub a { padding: 5px 12px; border-radius: 99px; border: 1px solid var(--line); color: var(--fg); text-decoration: none; font-size: 14px; }
+nav.sub a.on { background: var(--fg); color: var(--bg); border-color: var(--fg); }

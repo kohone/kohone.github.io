@@ -23,7 +23,8 @@ APPS = [
 ]
 
 T = {
-    "en": {"apps": "Apps", "home_lead": "Small, honest apps and games for iPhone. No ads, no accounts, no tracking.",
+    "en": {"apps": "Apps", "home_lead": "I'm an independent developer making small, honest apps and games for iPhone. No ads, no accounts, no tracking.",
+           "overview": "Overview", "my_apps": "My apps",
            "soon": "Coming to the App Store", "privacy": "Privacy", "support": "Support", "verify": "Verify the dice",
            "report": "Dice report", "lang": "Русский", "contact_soon": "A support e-mail will appear here soon.",
            "updated": "Last updated"},
@@ -78,7 +79,8 @@ def home(lang):
     cards = "\n".join(
         f'<a class="app" href="{url(lang, "/" + a["slug"] + "/")}"><img src="{a["icon"]}" alt="">'
         f'<div><b>{a["name"][lang]}</b><span>{a["tag"][lang]}</span></div></a>' for a in APPS)
-    page(lang, "/", DEV, f"<h1>{DEV}</h1><p class=\"lead\">{t['home_lead']}</p><div class=\"apps\">{cards}</div>")
+    page(lang, "/", DEV, f"<h1>{DEV}</h1><p class=\"lead\">{t['home_lead']}</p>"
+                          f"<h2>{t['my_apps']}</h2><div class=\"apps\">{cards}</div>")
 
 
 def contact(lang):
@@ -88,6 +90,16 @@ def contact(lang):
 
 
 # ── Нарды ─────────────────────────────────────────────────────────────
+
+
+def app_nav(lang, base, current):
+    """Меню разделов приложения — над содержимым каждой его страницы."""
+    t = T[lang]
+    items = [("", t["overview"]), ("verify", t["verify"]), ("dice-report", t["report"]),
+             ("privacy", t["privacy"]), ("support", t["support"])]
+    links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
+                    for slug, name in items)
+    return f'<nav class="sub">{links}</nav>'
 
 
 def nardy_pages(lang):
@@ -116,7 +128,7 @@ def nardy_pages(lang):
 <li><b>Разбор, статистика, уроки.</b> Разбор партии с оценкой ошибок, статистика костей против честных шансов, уроки правил на живой доске.</li>
 <li><b>Без рекламы, аккаунтов и слежки.</b> Партии остаются на вашем телефоне.</li>
 </ul>"""
-    page(lang, base, a["name"][lang], hero + about + links, a["tag"][lang])
+    page(lang, base, a["name"][lang], app_nav(lang, base, "") + hero + about, a["tag"][lang])
 
     # Политика конфиденциальности
     if lang == "en":
@@ -143,7 +155,7 @@ def nardy_pages(lang):
 <p>Приложение не собирает данные ни у кого, в том числе у детей.</p>
 <h2>Изменения и связь</h2>
 <p>Если политика изменится, новая версия появится на этой странице с новой датой. Вопросы: {contact('ru')}</p>"""
-    page(lang, base + "privacy", t["privacy"] + " — " + a["name"][lang], privacy)
+    page(lang, base + "privacy", t["privacy"] + " — " + a["name"][lang], app_nav(lang, base, "privacy") + privacy)
 
     # Поддержка
     if lang == "en":
@@ -162,7 +174,7 @@ def nardy_pages(lang):
 <p><b>Уровень влияет на кости?</b> Нет. Уровень меняет только ходы компьютера, броски запечатаны до партии.</p>
 <p><b>Купил доску на другом устройстве.</b> Настройки → Доска → Восстановить покупки.</p>
 <p><b>По каким правилам длинные нарды?</b> По спортивным правилам Федерации нард России: с головы одна шашка за ход (кроме 6-6, 4-4, 3-3 первым броском), нельзя ставить шесть пунктов подряд перед всеми шашками соперника, марс — 2 очка.</p>"""
-    page(lang, base + "support", t["support"] + " — " + a["name"][lang], support)
+    page(lang, base + "support", t["support"] + " — " + a["name"][lang], app_nav(lang, base, "support") + support)
 
     verify_page(lang, base)
     report_page(lang, base)
@@ -246,7 +258,7 @@ document.getElementById("go").onclick = async () => {{
   out.textContent = "{L('Compare with the roll log in the app:', 'Сравните с журналом бросков в приложении:')}\\n" + lines.join("\\n");
 }};
 </script>"""
-    page(lang, base + "verify", L("Verify the dice", "Проверка костей") + " — Nardy", body)
+    page(lang, base + "verify", L("Verify the dice", "Проверка костей") + " — Nardy", app_nav(lang, base, "verify") + body)
 
 
 def report_page(lang, base):
@@ -276,7 +288,7 @@ def report_page(lang, base):
 <p>{L('Conclusion: faces, pairs and roll types are uniform, consecutive rolls are independent, and the opening roll is no different from the others. The generator behaves like perfect dice.',
       'Вывод: грани, пары и типы броска распределены равномерно, соседние броски независимы, первый бросок партии не отличается от остальных. Генератор ведёт себя как идеальные кости.')}</p>
 <p><a href="{url(lang, base + 'verify')}">{L('Verify the dice of your own game →', 'Проверить кости своей партии →')}</a></p>"""
-    page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Nardy", body)
+    page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Nardy", app_nav(lang, base, "dice-report") + body)
 
 
 # Сайт только на английском; русские тексты в функциях оставлены на случай перевода.
