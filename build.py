@@ -15,8 +15,8 @@ EMAIL = None  # почта поддержки — будет позже
 UPDATED = "2026-09-23"
 
 APPS = [
-    {"slug": "nardy", "icon": "/assets/nardy-icon.jpg",
-     "name": {"en": "Nardy — Backgammon", "ru": "Нарды"},
+    {"slug": "fair-dice", "icon": "/assets/fair-dice-icon.jpg",
+     "name": {"en": "Backgammon: Fair Dice", "ru": "Нарды: длинные и короткие"},
      "tag": {"en": "Backgammon and long nardy with fair, verifiable dice",
              "ru": "Короткие и длинные нарды с честными проверяемыми костями"},
      "store": None},
@@ -110,7 +110,7 @@ def app_nav(lang, base, current):
 
 def nardy_pages(lang):
     a, t = APPS[0], T[lang]
-    base = "/nardy/"
+    base = "/fair-dice/"
     store = f'<a href="{a["store"]}">App Store</a>' if a["store"] else f'<span class="badge">{t["soon"]}</span>'
     links = (f'<ul class="links"><li><a href="{url(lang, base + "verify")}">{t["verify"]}</a></li>'
              f'<li><a href="{url(lang, base + "dice-report")}">{t["report"]}</a></li>'
@@ -264,7 +264,7 @@ document.getElementById("go").onclick = async () => {{
   out.textContent = "{L('Compare with the roll log in the app:', 'Сравните с журналом бросков в приложении:')}\\n" + lines.join("\\n");
 }};
 </script>"""
-    page(lang, base + "verify", L("Verify the dice", "Проверка костей") + " — Nardy", app_nav(lang, base, "verify") + body)
+    page(lang, base + "verify", L("Verify the dice", "Проверка костей") + " — Backgammon: Fair Dice", app_nav(lang, base, "verify") + body)
 
 
 def report_page(lang, base):
@@ -294,7 +294,7 @@ def report_page(lang, base):
 <p>{L('Conclusion: faces, pairs and roll types are uniform, consecutive rolls are independent, and the opening roll is no different from the others. The generator behaves like perfect dice.',
       'Вывод: грани, пары и типы броска распределены равномерно, соседние броски независимы, первый бросок партии не отличается от остальных. Генератор ведёт себя как идеальные кости.')}</p>
 <p><a href="{url(lang, base + 'verify')}">{L('Verify the dice of your own game →', 'Проверить кости своей партии →')}</a></p>"""
-    page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Nardy", app_nav(lang, base, "dice-report") + body)
+    page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Backgammon: Fair Dice", app_nav(lang, base, "dice-report") + body)
 
 
 # Сайт только на английском; русские тексты в функциях оставлены на случай перевода.
