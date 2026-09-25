@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Сборка сайта kohone.github.io: одна витрина для всех приложений, на английском.
+"""Сборка сайта kohone.net (GitHub Pages): одна витрина для всех приложений, на английском.
 
     python3.14 build.py   # нужен Python 3.12+ (f-строки с обратной косой)
 
@@ -9,7 +9,7 @@ GitHub Pages отдаёт его как есть. Без сервера, без 
 import html
 import os
 
-SITE = "https://kohone.github.io"
+SITE = "https://kohone.net"
 DEV = "Maks Beskrovnyi"
 EMAIL = "support@kohone.net"
 UPDATED = "2026-09-25"
