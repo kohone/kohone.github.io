@@ -134,6 +134,7 @@ def nardy_pages(lang):
         store_cta = app_store_badge(a["store"], on_dark=True) if a["store"] else '<span class="soon">Coming soon to the App Store</span>'
         img = lambda n, alt, cls="": f'<img class="{cls}" src="/assets/fair-dice/{n}.jpg" alt="{html.escape(alt)}" width="540" height="1174" loading="lazy">'
         body = f"""
+<div class="wrap subnav">{app_nav(lang, base, "")}</div>
 <div class="lhero"><div class="wrap">
 <div class="hero-text">
 <div class="app-id"><img src="{a["icon"]}" alt=""><div><b>{a["name"]["en"]}</b><span>Backgammon &amp; long nardy for iPhone</span></div></div>
@@ -216,7 +217,7 @@ def nardy_pages(lang):
 </div>
 </div></section>
 
-<section><div class="wrap"><div class="measure">
+<section><div class="wrap"><div class="measure center">
 <h2>Questions people ask first</h2>
 <details><summary>Are the dice really random?</summary><p>Yes, and you do not have to take our word for it. Every game's rolls come from a sealed sequence you can recompute after the game, and the same generator passed standard tests on 100 million rolls.</p></details>
 <details><summary>Does the computer see my next roll?</summary><p>No. It chooses its move with the dice already on the board, like you. A replay with your own dice proves it: given the same rolls, it plays exactly the same moves.</p></details>
