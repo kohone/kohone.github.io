@@ -79,9 +79,9 @@ header.top { border-bottom-color: transparent; }
 .plans .note { font-size: 14px; color: var(--muted); margin: 8px 0 0; }
 
 /* ── Лендинг приложения (как у Cycle Ally): полосы на всю ширину, у каждой секции своя обёртка ── */
-:root { --band: #1d5a3b; --band-ink: #f1f6f2; --band-quiet: rgba(241, 246, 242, 0.74); --band-soft: #f1ebdf; }
+:root { --band: #3a2618; --band-ink: #f7efe3; --band-quiet: rgba(247, 239, 227, 0.76); --band-soft: #f1ebdf; }
 @media (prefers-color-scheme: dark) {
-  :root { --band: #123524; --band-ink: #eaf4ee; --band-quiet: rgba(234, 244, 238, 0.7); --band-soft: #1a1712; }
+  :root { --band: #24170e; --band-ink: #f3eadc; --band-quiet: rgba(243, 234, 220, 0.72); --band-soft: #1a1712; }
 }
 main.landing { padding: 0; }
 .landing .wrap { max-width: 1040px; }
@@ -149,3 +149,10 @@ footer p { margin: 6px 0; }
   .strip { grid-template-columns: 1fr; gap: 24px; }
   .strip figcaption { text-align: center; }
 }
+
+.lhero .app-id { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+.lhero .app-id img { width: 64px; height: 64px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,.3); }
+.lhero .app-id b { display: block; font-size: 1.25rem; letter-spacing: -0.01em; }
+.lhero .app-id span { color: var(--band-quiet); font-size: 0.95rem; }
+.lhero .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.lhero .soon { display: inline-block; padding: 10px 16px; border: 1px solid var(--band-quiet); border-radius: 12px; color: var(--band-ink); font-weight: 600; }

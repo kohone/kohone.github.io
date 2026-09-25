@@ -100,8 +100,10 @@ def contact(lang):
 # ── Нарды ─────────────────────────────────────────────────────────────
 
 
-def app_store_badge(link):
+def app_store_badge(link, on_dark=False):
     """Официальный значок Apple (скачан с toolbox.marketingtools.apple.com): чёрный на светлом, белый на тёмном."""
+    if on_dark:
+        return f'<a class="store" href="{link}"><img src="/assets/app-store-badge-white.svg" alt="Download on the App Store" height="44"></a>'
     return (f'<a class="store" href="{link}"><picture>'
             '<source srcset="/assets/app-store-badge-white.svg" media="(prefers-color-scheme: dark)">'
             '<img src="/assets/app-store-badge-black.svg" alt="Download on the App Store" height="44"></picture></a>')
@@ -128,16 +130,18 @@ def nardy_pages(lang):
     hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"][lang]}</h1>{store}</div></div>'
 
     if lang == "en":
-        store_line = (app_store_badge(a["store"]) if a["store"] else "Coming to the App Store.")
+        # Значок App Store — только с настоящей ссылкой (правила Apple); до выхода — надпись «скоро».
+        store_cta = app_store_badge(a["store"], on_dark=True) if a["store"] else '<span class="soon">Coming soon to the App Store</span>'
         img = lambda n, alt, cls="": f'<img class="{cls}" src="/assets/fair-dice/{n}.jpg" alt="{html.escape(alt)}" width="540" height="1174" loading="lazy">'
         body = f"""
 <div class="lhero"><div class="wrap">
 <div class="hero-text">
+<div class="app-id"><img src="{a["icon"]}" alt=""><div><b>{a["name"]["en"]}</b><span>Backgammon &amp; long nardy for iPhone</span></div></div>
 <h1>Dice you can check.</h1>
 <p class="lede">Backgammon and long nardy against a strong computer or a friend on the same phone. The dice of every game are sealed before the first roll — after the game you get the key and check every roll yourself.</p>
 <p class="for-whom">For anyone who has ever suspected an app of rigging the dice — and for anyone who simply wants a good game.</p>
-<p><a class="button" href="#how">See what it does</a></p>
-<p class="small">{store_line} Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
+<div class="cta">{store_cta}<a class="button" href="#how">See what it does</a></div>
+<p class="small">Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
 </div>
 {img("hint", "A game with the best move shown by arrows", "hero-shot")}
 </div></div>
