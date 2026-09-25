@@ -65,7 +65,7 @@ def page(lang, path, title, body, desc=""):
 <main><div class="wrap">
 {body}
 </div></main>
-<footer><div class="wrap">© 2026 {DEV}</div></footer>
+<footer><div class="wrap">© 2026 {DEV} · <a href="mailto:{EMAIL}">{EMAIL}</a></div></footer>
 </body>
 </html>
 """
