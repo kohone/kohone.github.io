@@ -77,3 +77,75 @@ header.top { border-bottom-color: transparent; }
 .plans h3 { margin: 0 0 6px; font-size: 18px; }
 .plans ul { margin: 0; padding-left: 18px; font-size: 15px; }
 .plans .note { font-size: 14px; color: var(--muted); margin: 8px 0 0; }
+
+/* ── Лендинг приложения (как у Cycle Ally): полосы на всю ширину, у каждой секции своя обёртка ── */
+:root { --band: #1d5a3b; --band-ink: #f1f6f2; --band-quiet: rgba(241, 246, 242, 0.74); --band-soft: #f1ebdf; }
+@media (prefers-color-scheme: dark) {
+  :root { --band: #123524; --band-ink: #eaf4ee; --band-quiet: rgba(234, 244, 238, 0.7); --band-soft: #1a1712; }
+}
+main.landing { padding: 0; }
+.landing .wrap { max-width: 1040px; }
+.landing .measure { max-width: 42rem; }
+.landing section { padding: 72px 0; }
+.landing .band-soft { background: var(--band-soft); }
+.landing h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); line-height: 1.15; margin: 0 0 12px; }
+.landing h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.landing .lede { font-size: 1.15rem; line-height: 1.5; margin: 0 0 12px; }
+.landing .quiet { color: var(--muted); margin: 0; }
+.landing .small { font-size: 0.95rem; color: var(--muted); margin: 0; }
+.landing .after-block { margin-top: 24px; }
+
+.lhero { background: var(--band); color: var(--band-ink); padding-top: 72px; }
+.lhero .wrap { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 40px; align-items: end; }
+.hero-text { padding-bottom: 72px; }
+.lhero h1 { font-size: clamp(2.6rem, 6vw, 4.2rem); line-height: 1.02; letter-spacing: -0.032em; margin: 0 0 16px; text-wrap: balance; }
+.lhero .lede { color: var(--band-quiet); margin-bottom: 16px; }
+.lhero .for-whom { font-size: 1.05rem; opacity: 0.85; margin: 0 0 24px; }
+.lhero .small { color: var(--band-quiet); margin-top: 16px; }
+.lhero a { color: var(--band-ink); }
+.hero-shot { display: block; width: 100%; max-width: 300px; height: auto; margin: 0 auto; border-radius: 26px 26px 0 0;
+  box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.14), 0 20px 60px rgba(0, 0, 0, 0.32); }
+.button { display: inline-block; font-weight: 650; border-radius: 12px; padding: 13px 22px; text-decoration: none;
+  background: var(--accent); color: var(--accent-fg); }
+.lhero .button { background: var(--band-ink); color: var(--band); }
+.lhero .store img { height: 40px; }
+
+.statement { font-size: clamp(1.7rem, 3.4vw, 2.5rem); line-height: 1.12; letter-spacing: -0.026em; font-weight: 650; margin: 0 0 16px; text-wrap: balance; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 72px; align-items: center; }
+.split figure { margin: 0; }
+.split img, .strip img { display: block; width: 100%; max-width: 300px; height: auto; margin: 0 auto; border-radius: 22px; border: 1px solid var(--line); }
+.strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; margin-top: 40px; }
+.strip figure { margin: 0; }
+.strip figcaption { font-weight: 600; margin-bottom: 12px; }
+
+.landing .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 16px; margin-top: 24px; }
+.tile { background: var(--bg); border-radius: 16px; padding: 24px; border: 1px solid var(--line); }
+.band-soft .tile { background: var(--bg); }
+.price { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 8px; }
+
+.nots { list-style: none; margin: 24px 0; padding: 0; display: grid; gap: 12px; font-size: 1.14rem; }
+.nots li { padding-left: 1.5em; position: relative; }
+.nots li::before { content: "—"; position: absolute; left: 0; opacity: 0.5; }
+.nots--yes { font-size: 1rem; }
+.nots--yes li::before { content: "·"; }
+
+details { border-top: 1px solid var(--line); padding: 16px 0; }
+details:last-of-type { border-bottom: 1px solid var(--line); }
+details summary { cursor: pointer; font-weight: 600; font-size: 1.08rem; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+details summary::-webkit-details-marker { display: none; }
+details summary::after { content: "+"; flex: none; opacity: 0.5; font-weight: 400; }
+details[open] summary::after { content: "\2212"; }
+details > p { margin: 12px 0 0; max-width: 40rem; }
+
+footer nav { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-bottom: 12px; }
+footer p { margin: 6px 0; }
+
+@media (max-width: 880px) {
+  .lhero { padding-top: 40px; }
+  .lhero .wrap, .split { grid-template-columns: 1fr; gap: 40px; }
+  .hero-text { padding-bottom: 0; }
+  .split figure { order: -1; }
+  .landing section { padding: 40px 0; }
+  .strip { grid-template-columns: 1fr; gap: 24px; }
+  .strip figcaption { text-align: center; }
+}

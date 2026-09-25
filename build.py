@@ -45,7 +45,7 @@ def url(lang, path):
     return ("/ru" if lang == "ru" else "") + path
 
 
-def page(lang, path, title, body, desc=""):
+def page(lang, path, title, body, desc="", landing=False):
     other = "en" if lang == "ru" else "ru"
     t = T[lang]
     doc = f"""<!doctype html>
@@ -62,10 +62,12 @@ def page(lang, path, title, body, desc=""):
 <a class="brand" href="{url(lang, '/')}">{DEV}</a>
 <nav><a href="{url(lang, '/')}">{t['apps']}</a></nav>
 </div></header>
-<main><div class="wrap">
-{body}
-</div></main>
-<footer><div class="wrap">© 2026 {DEV} · <a href="mailto:{EMAIL}">{EMAIL}</a></div></footer>
+{('<main class="landing">' + body + '</main>') if landing else ('<main><div class="wrap">' + body + '</div></main>')}
+<footer><div class="wrap">
+<nav><a href="/">Home</a><a href="/fair-dice/">Backgammon: Fair Dice</a><a href="/fair-dice/verify">Verify the dice</a><a href="/fair-dice/dice-report">Dice report</a><a href="/fair-dice/privacy">Privacy Policy</a><a href="/fair-dice/support">Support</a></nav>
+<p>Made by one person, {DEV}. Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
+<p class="muted" style="font-size:13px">Apple, iPhone, iCloud and App Store are trademarks of Apple Inc. These apps are independent and not affiliated with, endorsed by, or sponsored by Apple Inc.</p>
+</div></footer>
 </body>
 </html>
 """
@@ -126,47 +128,102 @@ def nardy_pages(lang):
     hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"][lang]}</h1>{store}</div></div>'
 
     if lang == "en":
-        shots = [("hint", "A hint right on the board: which checker, where, in what order."),
-                 ("long-nardy", "Long nardy under tournament rules — its own neural network."),
-                 ("review", "Game review: error rate, luck of both sides, costliest moves."),
-                 ("verify", "Every game's dice are sealed before it starts. Check them after."),
-                 ("dice-stats", "Your dice against the range of fair dice."),
-                 ("boards", "30 boards with their own checkers and dice.")]
-        gallery = '<div class="shots">' + "".join(
-            f'<figure><img src="/assets/fair-dice/{n}.jpg" alt="{html.escape(c)}" loading="lazy" width="540" height="1174">'
-            f'<figcaption>{c}</figcaption></figure>' for n, c in shots) + '</div>'
-        about = """<p class="lead">Backgammon and long nardy against a strong computer or a friend on the same phone. Dice you can verify, a coach that explains, and it works offline.</p>
-""" + gallery + """
-<h2>Why this one</h2>
-<div class="features">
-<div><b>Dice you can verify</b><p>Before each game the rolls are sealed and you see their fingerprint. After the game you get the key and can recompute every roll — in the app, <a href="/fair-dice/verify">on this site</a>, in Python or CyberChef.</p></div>
-<div><b>Tested on 100 million rolls</b><p>The same generator as in your games, checked with standard statistical tests. <a href="/fair-dice/dice-report">Read the report</a>.</p></div>
-<div><b>A computer that explains</b><p>Five levels from beginner to master. After a mistake the coach says what went wrong in plain words.</p></div>
-<div><b>Two games, full rules</b><p>Backgammon with the doubling cube, Crawford and matches up to 11 points; long nardy under standard tournament rules.</p></div>
-<div><b>Learn as you play</b><p>Rules lessons on a live board, game review with error rate, replay any position with the same dice.</p></div>
-<div><b>Your own dice</b><p>Roll real dice and type the result — the app keeps score, the computer plays its moves.</p></div>
+        store_line = (app_store_badge(a["store"]) if a["store"] else "Coming to the App Store.")
+        img = lambda n, alt, cls="": f'<img class="{cls}" src="/assets/fair-dice/{n}.jpg" alt="{html.escape(alt)}" width="540" height="1174" loading="lazy">'
+        body = f"""
+<div class="lhero"><div class="wrap">
+<div class="hero-text">
+<h1>Dice you can check.</h1>
+<p class="lede">Backgammon and long nardy against a strong computer or a friend on the same phone. The dice of every game are sealed before the first roll — after the game you get the key and check every roll yourself.</p>
+<p class="for-whom">For anyone who has ever suspected an app of rigging the dice — and for anyone who simply wants a good game.</p>
+<p><a class="button" href="#how">See what it does</a></p>
+<p class="small">{store_line} Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
 </div>
+{img("hint", "A game with the best move shown by arrows", "hero-shot")}
+</div></div>
 
-<h2>Free and Pro</h2>
-<div class="plans">
-<div><h3>Free</h3><ul>
-<li>Both games, all five levels, matches and the cube</li>
-<li>Dice verification, statistics, review, lessons</li>
-<li>6 boards</li>
-<li>3 hints a day against the computer, +3 for an optional video</li>
-<li>A short ad after every second game (none in your first games, never during a game)</li>
-</ul></div>
-<div><h3>Pro — one-time purchase</h3><ul>
-<li>No ads</li>
-<li>Unlimited hints</li>
-</ul><p class="note">Bought once in the app through the App Store, yours forever, restored on your other devices.</p></div>
-<div><h3>Boards</h3><ul>
-<li>24 more boards, each sold separately in the app</li>
-<li>Preview any board before you buy</li>
-</ul></div>
+<section><div class="wrap"><div class="split">
+<div>
+<p class="statement">Sealed before the game. Opened after it.</p>
+<p>Before the first roll the app shows a fingerprint of the whole dice sequence. You can add your own phrase, so the app cannot pick a convenient sequence in advance. After the game it reveals the key: recompute every roll in the app, on this site, in Python or in CyberChef — without trusting us.</p>
+<p class="after-block"><a href="/fair-dice/verify">Check a game's dice →</a> &nbsp;·&nbsp; <a href="/fair-dice/dice-report">The 100-million-roll test →</a></p>
 </div>
-<p class="muted">Purchases never affect the dice or the computer. No account needed; progress can be kept in your own iCloud.</p>
+<figure>{img("verify", "Dice fingerprint, key and verification")}</figure>
+</div></div></section>
+
+<section class="band-soft"><div class="wrap">
+<div class="measure">
+<h2>A computer that explains, not just wins.</h2>
+<p class="lede">Five levels from beginner to master, each calibrated by error rate. After a mistake the coach says what went wrong in plain words; after the game the review shows where it was decided.</p>
+</div>
+<div class="strip">
+<figure><figcaption>Your error rate and the luck of both sides</figcaption>{img("review", "Game review")}</figure>
+<figure><figcaption>Long nardy with its own neural network</figcaption>{img("long-nardy", "Long nardy game")}</figure>
+<figure><figcaption>Your dice against the range of fair dice</figcaption>{img("dice-stats", "Dice statistics")}</figure>
+</div>
+</div></section>
+
+<section id="how"><div class="wrap">
+<div class="measure">
+<h2>What it does</h2>
+<p class="quiet">A quick game on the bus or a long match in the evening.</p>
+</div>
+<div class="grid">
+<div class="tile"><h3>Two games, full rules</h3><p class="small">Backgammon with the doubling cube, Crawford and matches up to 11 points. Long nardy under standard tournament rules.</p></div>
+<div class="tile"><h3>Against the computer or a friend</h3><p class="small">Five levels, or two players on one phone — the board can turn to whoever is on roll.</p></div>
+<div class="tile"><h3>Learn as you play</h3><p class="small">Rules lessons on a live board, hints shown right on the board, a coach after mistakes.</p></div>
+<div class="tile"><h3>Review and replay</h3><p class="small">Every game is saved. Review it move by move, or play any position again with the same dice.</p></div>
+<div class="tile"><h3>Your own dice</h3><p class="small">Roll real dice and type the result. Replay a finished game with your own dice — the computer must play the same.</p></div>
+<div class="tile"><h3>30 boards</h3><p class="small">Wood, stone, leather and regional styles, each with its own checkers and dice.</p></div>
+</div>
+</div></section>
+
+<section class="band-soft"><div class="wrap"><div class="measure">
+<p class="statement">What it never does</p>
+<ul class="nots">
+<li>Never changes the dice — not for the computer, not for a level, not for a purchase.</li>
+<li>No coins, no boosts, nothing that buys a better roll.</li>
+<li>No ads during a game.</li>
+<li>No account and no sign-in.</li>
+</ul>
+<p class="small">The level changes only the computer's moves. The whole sequence of rolls is fixed before the game, and the key proves it afterwards.</p>
+</div></div></section>
+
+<section><div class="wrap"><div class="measure">
+<h2>Your games stay yours</h2>
+<p class="lede">There is no account to make and no server of ours to send anything to.</p>
+<ul class="nots nots--yes">
+<li>Games, history, statistics and settings are stored on your iPhone.</li>
+<li>If you switch it on, a copy goes to your own iCloud so another iPhone can pick it up — we cannot see it.</li>
+<li>The free version shows ads from Google AdMob between games; iOS asks your permission before any tracking. Pro removes ads completely.</li>
+</ul>
+<p class="after-block"><a href="/fair-dice/privacy">Privacy Policy</a> &nbsp;·&nbsp; <a href="/fair-dice/support">Support</a></p>
+</div></div></section>
+
+<section class="band-soft"><div class="wrap">
+<div class="measure">
+<h2>What it costs</h2>
+<p class="quiet">Everything to play is free. Pro takes away the ads and the hint limit, never a feature.</p>
+</div>
+<div class="grid">
+<div class="tile"><p class="price">Free</p><p class="small">Both games, all five levels, matches and the cube, dice verification, statistics, review, lessons, 6 boards. 3 hints a day against the computer, plus 3 for an optional video. A short ad after every second game — none in your first games, never during one.</p></div>
+<div class="tile"><p class="price">Pro · one-time</p><p class="small">No ads and unlimited hints, forever. Bought once in the app through the App Store and restored on your other devices.</p></div>
+<div class="tile"><p class="price">Boards</p><p class="small">24 more boards, each sold separately in the app, with a preview before you buy.</p></div>
+</div>
+</div></section>
+
+<section><div class="wrap"><div class="measure">
+<h2>Questions people ask first</h2>
+<details><summary>Are the dice really random?</summary><p>Yes, and you do not have to take our word for it. Every game's rolls come from a sealed sequence you can recompute after the game, and the same generator passed standard tests on 100 million rolls.</p></details>
+<details><summary>Does the computer see my next roll?</summary><p>No. It chooses its move with the dice already on the board, like you. A replay with your own dice proves it: given the same rolls, it plays exactly the same moves.</p></details>
+<details><summary>Does a harder level get better dice?</summary><p>No. The level changes only which moves the computer picks. The dice are the same sealed sequence whatever the level.</p></details>
+<details><summary>Is it free?</summary><p>Yes — both games, all levels, verification, review and statistics. Pro is optional: no ads and unlimited hints.</p></details>
+<details><summary>Which rules does long nardy use?</summary><p>Standard tournament rules: one checker from the head per turn (two on a first roll of 6-6, 4-4 or 3-3 for the second player), no six-point wall in front of all the opponent's checkers, mars counts 2 points.</p></details>
+<details><summary>Does it work offline?</summary><p>Yes, everything works without the internet. Ads and the iCloud copy simply wait until you are online.</p></details>
+<details><summary>How do I move my games to a new iPhone?</summary><p>Turn on Settings → Save progress to iCloud on both phones with the same Apple ID. Pro and boards are restored with Settings → Restore purchases.</p></details>
+</div></div></section>
 """
+        page(lang, base, a["name"][lang], body, a["tag"][lang], landing=True)
     else:
         about = """<p class="lead">Короткие и длинные нарды (турнирные правила) против сильного компьютера или вдвоём на одном телефоне. Работает без интернета.</p>
 <ul>
@@ -175,7 +232,7 @@ def nardy_pages(lang):
 <li><b>Разбор, статистика, уроки.</b> Разбор партии с оценкой ошибок, статистика костей против честных шансов, уроки правил на живой доске.</li>
 <li><b>Без аккаунтов.</b> Партии и статистика остаются на вашем телефоне.</li>
 </ul>"""
-    page(lang, base, a["name"][lang], app_nav(lang, base, "") + hero + about, a["tag"][lang])
+        page(lang, base, a["name"][lang], app_nav(lang, base, "") + hero + about, a["tag"][lang])
 
     # Политика конфиденциальности
     if lang == "en":

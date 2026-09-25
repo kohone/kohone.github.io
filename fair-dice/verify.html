@@ -12,8 +12,7 @@
 <a class="brand" href="/">Maks Beskrovnyi</a>
 <nav><a href="/">Apps</a></nav>
 </div></header>
-<main><div class="wrap">
-<nav class="sub"><a href="/fair-dice/">Overview</a><a href="/fair-dice/verify" class="on">Verify the dice</a><a href="/fair-dice/dice-report">Dice report</a><a href="/fair-dice/privacy">Privacy</a><a href="/fair-dice/support">Support</a></nav><h1>Verify the dice</h1>
+<main><div class="wrap"><nav class="sub"><a href="/fair-dice/">Overview</a><a href="/fair-dice/verify" class="on">Verify the dice</a><a href="/fair-dice/dice-report">Dice report</a><a href="/fair-dice/privacy">Privacy</a><a href="/fair-dice/support">Support</a></nav><h1>Verify the dice</h1>
 <p class="muted">Everything runs in your browser. Nothing is sent anywhere. You can save this page and use it offline.</p>
 <label>Fingerprint shown before the game <input id="c" placeholder="64 hex"></label>
 <label>Key shown after the game <input id="k" placeholder="64 hex"></label>
@@ -79,8 +78,11 @@ document.getElementById("go").onclick = async () => {
   out.hidden = false;
   out.textContent = "Compare with the roll log in the app:\n" + lines.join("\n");
 };
-</script>
-</div></main>
-<footer><div class="wrap">© 2026 Maks Beskrovnyi · <a href="mailto:support@kohone.net">support@kohone.net</a></div></footer>
+</script></div></main>
+<footer><div class="wrap">
+<nav><a href="/">Home</a><a href="/fair-dice/">Backgammon: Fair Dice</a><a href="/fair-dice/verify">Verify the dice</a><a href="/fair-dice/dice-report">Dice report</a><a href="/fair-dice/privacy">Privacy Policy</a><a href="/fair-dice/support">Support</a></nav>
+<p>Made by one person, Maks Beskrovnyi. Questions: <a href="mailto:support@kohone.net">support@kohone.net</a></p>
+<p class="muted" style="font-size:13px">Apple, iPhone, iCloud and App Store are trademarks of Apple Inc. These apps are independent and not affiliated with, endorsed by, or sponsored by Apple Inc.</p>
+</div></footer>
 </body>
 </html>
