@@ -170,3 +170,6 @@ footer p { margin: 6px 0; }
 .subbar nav.sub { margin: 0; }
 .subbar + main { padding-top: 8px; }
 .subbar + main.landing { padding-top: 0; }
+
+header.top a.brand { display: inline-flex; align-items: center; gap: 10px; }
+header.top a.brand img { width: 32px; height: 32px; border-radius: 8px; display: block; }

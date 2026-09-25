@@ -56,10 +56,13 @@ def page(lang, path, title, body, desc="", landing=False, sub=""):
 <title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(desc or title)}">
 <link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
 <header class="top"><div class="wrap">
-<a class="brand" href="{url(lang, '/')}">{DEV}</a>
+<a class="brand" href="{url(lang, '/')}"><img src="/assets/logo.png" alt="" width="32" height="32">{DEV}</a>
 <nav><a href="{url(lang, '/')}">{t['apps']}</a></nav>
 </div></header>
 {('<div class="wrap subbar">' + sub + '</div>') if sub else ''}
