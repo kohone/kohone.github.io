@@ -62,3 +62,18 @@ h1, h2 { letter-spacing: -0.01em; }
 header.top { border-bottom-color: transparent; }
 .store { display: inline-block; margin-top: 6px; }
 .store img { height: 44px; width: auto; border-radius: 0; box-shadow: none; }
+
+/* Страница приложения: снимки лентой, преимущества карточками, бесплатно и Pro */
+.shots { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 12px; margin: 18px -16px 0; padding-left: 16px; }
+.shots figure { flex: none; width: 200px; margin: 0; scroll-snap-align: start; }
+.shots img { width: 200px; height: auto; border-radius: 22px; border: 1px solid var(--line); display: block; }
+.shots figcaption { font-size: 14px; color: var(--muted); margin-top: 8px; line-height: 1.35; }
+.features { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 14px; }
+.features div { background: var(--card); border-radius: 16px; padding: 14px 16px; }
+.features b { display: block; margin-bottom: 4px; }
+.features p { margin: 0; font-size: 15px; color: var(--muted); }
+.plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 14px; }
+.plans div { border: 1px solid var(--line); border-radius: 16px; padding: 14px 18px; }
+.plans h3 { margin: 0 0 6px; font-size: 18px; }
+.plans ul { margin: 0; padding-left: 18px; font-size: 15px; }
+.plans .note { font-size: 14px; color: var(--muted); margin: 8px 0 0; }

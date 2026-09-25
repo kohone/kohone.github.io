@@ -126,13 +126,47 @@ def nardy_pages(lang):
     hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"][lang]}</h1>{store}</div></div>'
 
     if lang == "en":
-        about = """<p class="lead">Backgammon and long nardy (tournament rules) against a strong computer or a friend on the same phone. Works offline.</p>
-<ul>
-<li><b>Fair dice you can verify.</b> Before each game the app seals the rolls and shows their fingerprint; after the game you get the key and can recompute every roll — here, in Python, or with any HMAC tool.</li>
-<li><b>A computer that explains.</b> A neural network plays at five levels, shows the best move and explains mistakes in plain words.</li>
-<li><b>Review, statistics, lessons.</b> Game review with error rate, dice statistics against fair odds, interactive rules lessons.</li>
-<li><b>No accounts.</b> Your games and statistics stay on your phone.</li>
-</ul>"""
+        shots = [("hint", "A hint right on the board: which checker, where, in what order."),
+                 ("long-nardy", "Long nardy under tournament rules — its own neural network."),
+                 ("review", "Game review: error rate, luck of both sides, costliest moves."),
+                 ("verify", "Every game's dice are sealed before it starts. Check them after."),
+                 ("dice-stats", "Your dice against the range of fair dice."),
+                 ("boards", "30 boards with their own checkers and dice.")]
+        gallery = '<div class="shots">' + "".join(
+            f'<figure><img src="/assets/fair-dice/{n}.jpg" alt="{html.escape(c)}" loading="lazy" width="540" height="1174">'
+            f'<figcaption>{c}</figcaption></figure>' for n, c in shots) + '</div>'
+        about = """<p class="lead">Backgammon and long nardy against a strong computer or a friend on the same phone. Dice you can verify, a coach that explains, and it works offline.</p>
+""" + gallery + """
+<h2>Why this one</h2>
+<div class="features">
+<div><b>Dice you can verify</b><p>Before each game the rolls are sealed and you see their fingerprint. After the game you get the key and can recompute every roll — in the app, <a href="/fair-dice/verify">on this site</a>, in Python or CyberChef.</p></div>
+<div><b>Tested on 100 million rolls</b><p>The same generator as in your games, checked with standard statistical tests. <a href="/fair-dice/dice-report">Read the report</a>.</p></div>
+<div><b>A computer that explains</b><p>Five levels from beginner to master. After a mistake the coach says what went wrong in plain words.</p></div>
+<div><b>Two games, full rules</b><p>Backgammon with the doubling cube, Crawford and matches up to 11 points; long nardy under standard tournament rules.</p></div>
+<div><b>Learn as you play</b><p>Rules lessons on a live board, game review with error rate, replay any position with the same dice.</p></div>
+<div><b>Your own dice</b><p>Roll real dice and type the result — the app keeps score, the computer plays its moves.</p></div>
+</div>
+
+<h2>Free and Pro</h2>
+<div class="plans">
+<div><h3>Free</h3><ul>
+<li>Both games, all five levels, matches and the cube</li>
+<li>Dice verification, statistics, review, lessons</li>
+<li>6 boards</li>
+<li>3 hints a day against the computer, +3 for an optional video</li>
+<li>A short ad after every second game (none in your first games, never during a game)</li>
+</ul></div>
+<div><h3>Pro — one-time purchase</h3><ul>
+<li>No ads</li>
+<li>Unlimited hints</li>
+</ul><p class="note">Bought once in the app through the App Store, yours forever, restored on your other devices.</p></div>
+<div><h3>Boards</h3><ul>
+<li>24 more boards, each sold separately in the app</li>
+<li>Preview any board before you buy</li>
+</ul></div>
+</div>
+<p class="muted">Purchases never affect the dice or the computer. No account needed; progress can be kept in your own iCloud.</p>
+"""
     else:
         about = """<p class="lead">Короткие и длинные нарды (турнирные правила) против сильного компьютера или вдвоём на одном телефоне. Работает без интернета.</p>
 <ul>
