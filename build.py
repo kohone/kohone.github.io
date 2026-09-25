@@ -12,7 +12,7 @@ import os
 SITE = "https://kohone.github.io"
 DEV = "Maks Beskrovnyi"
 EMAIL = None  # почта поддержки — будет позже
-UPDATED = "2026-09-23"
+UPDATED = "2026-09-25"
 
 APPS = [
     {"slug": "fair-dice", "icon": "/assets/fair-dice-icon.jpg",
@@ -147,25 +147,45 @@ def nardy_pages(lang):
     if lang == "en":
         privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
 <p class="muted">{t['updated']}: {UPDATED}</p>
-<p><b>The app does not collect any data.</b> It has no accounts and no analytics, and it does not send your games or statistics anywhere.</p>
+<p>The game itself needs no account and sends your games nowhere. The only third party in the app is advertising (Google AdMob), described below.</p>
 <h2>What stays on your device</h2>
-<p>Your games, history, statistics and settings are stored only on your iPhone (the current game in the Keychain, the rest in the app's own storage). They are deleted when you delete the app. We never receive them.</p>
+<p>Your games, history, statistics and settings are stored on your iPhone (the current game in the Keychain, the rest in the app's own storage). We have no servers and never receive them.</p>
+<h2>iCloud (optional)</h2>
+<p>If you turn on “Save progress to iCloud”, your history, statistics, dice log and settings are copied to your own private iCloud storage so they appear on your other devices. This copy is handled by Apple under your Apple ID; we cannot see it. You can turn it off in Settings at any time.</p>
+<h2>Advertising</h2>
+<p>The free version shows ads between games and optional videos that give extra hints. Ads are served by Google AdMob, which may collect device identifiers, approximate location (from the IP address), and information about ad views and clicks, to show and measure ads and to prevent fraud.</p>
+<ul>
+<li>Before any personalized ads, iOS asks whether the app may track you (App Tracking Transparency). If you decline, Google shows only non-personalized ads.</li>
+<li>In the EEA, the UK and Switzerland you are asked for consent first (Google's consent form).</li>
+<li>Google's policy: <a href="https://policies.google.com/technologies/partner-sites">How Google uses information from apps that use its services</a>.</li>
+</ul>
+<p>Ads never affect the dice or the computer. Pro removes ads completely.</p>
 <h2>Purchases</h2>
-<p>Optional boards are sold through the App Store. Payment is handled by Apple; we do not receive your payment details or personal information. Apple's privacy policy applies to purchases.</p>
+<p>Pro and optional boards are sold through the App Store. Payment is handled by Apple; we do not receive your payment details or personal information.</p>
 <h2>Children</h2>
-<p>The app does not collect data from anyone, including children.</p>
+<p>The app is not directed at children under 13 and we do not knowingly collect their data.</p>
 <h2>Changes and contact</h2>
 <p>If this policy changes, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
     else:
         privacy = f"""<h1>Политика конфиденциальности — {a['name']['ru']}</h1>
 <p class="muted">{t['updated']}: {UPDATED}</p>
-<p><b>Приложение не собирает никаких данных.</b> В нём нет аккаунтов, рекламы, аналитики и сторонних SDK, и оно не обращается к нашим серверам — их у нас нет.</p>
+<p>Для игры не нужен аккаунт, и партии никуда не отправляются. Единственная сторонняя служба в приложении — реклама Google AdMob, о ней ниже.</p>
 <h2>Что хранится на устройстве</h2>
-<p>Партии, история, статистика и настройки хранятся только на вашем iPhone (текущая партия — в связке ключей, остальное — в хранилище приложения). Они удаляются вместе с приложением. Мы их не получаем.</p>
+<p>Партии, история, статистика и настройки хранятся на вашем iPhone (текущая партия — в связке ключей, остальное — в хранилище приложения). Своих серверов у нас нет, и мы эти данные не получаем.</p>
+<h2>iCloud (по желанию)</h2>
+<p>Если включить «Сохранять прогресс в iCloud», история, статистика, журнал бросков и настройки копируются в ваше личное хранилище iCloud, чтобы появиться на других ваших устройствах. Копию хранит Apple под вашим Apple ID; мы её не видим. Выключается в настройках в любой момент.</p>
+<h2>Реклама</h2>
+<p>В бесплатной версии между партиями показывается реклама, а за ролик по желанию даются подсказки. Рекламу показывает Google AdMob. Для показа, подсчёта и защиты от мошенничества он может собирать идентификаторы устройства, примерное местоположение (по IP-адресу) и сведения о просмотрах и нажатиях.</p>
+<ul>
+<li>Перед персонализированной рекламой iOS спрашивает разрешение на отслеживание (App Tracking Transparency). Если отказаться, Google показывает только неперсонализированную рекламу.</li>
+<li>В ЕЭЗ, Великобритании и Швейцарии сначала запрашивается согласие (форма Google).</li>
+<li>Политика Google: <a href="https://policies.google.com/technologies/partner-sites">как Google использует данные из приложений партнёров</a>.</li>
+</ul>
+<p>Реклама никогда не влияет на кости и компьютер. Pro убирает рекламу полностью.</p>
 <h2>Покупки</h2>
-<p>Дополнительные доски продаются через App Store. Оплату проводит Apple; мы не получаем ни платёжных, ни личных данных. К покупкам применяется политика конфиденциальности Apple.</p>
+<p>Pro и дополнительные доски продаются через App Store. Оплату проводит Apple; мы не получаем ни платёжных, ни личных данных.</p>
 <h2>Дети</h2>
-<p>Приложение не собирает данные ни у кого, в том числе у детей.</p>
+<p>Приложение не предназначено для детей младше 13 лет, и мы сознательно не собираем их данные.</p>
 <h2>Изменения и связь</h2>
 <p>Если политика изменится, новая версия появится на этой странице с новой датой. Вопросы: {contact('ru')}</p>"""
     page(lang, base + "privacy", t["privacy"] + " — " + a["name"][lang], app_nav(lang, base, "privacy") + privacy)
@@ -177,7 +197,10 @@ def nardy_pages(lang):
 <h2>Frequently asked</h2>
 <p><b>Are the dice really random?</b> Yes, and you can check it. See <a href="{url('en', base + 'verify')}">how to verify the dice</a> and the <a href="{url('en', base + 'dice-report')}">100-million-roll report</a>.</p>
 <p><b>Does the level change the dice?</b> No. The level only changes the computer's moves; the rolls are sealed before the game.</p>
-<p><b>I bought a board on another device.</b> Settings → Board → Restore purchases.</p>
+<p><b>I bought Pro or a board on another device.</b> Settings → Restore purchases.</p>
+<p><b>What does Pro include?</b> No ads and unlimited hints, forever. Everything else in the game is free.</p>
+<p><b>How many hints are free?</b> 3 a day against the computer, plus 3 more for each video you choose to watch. Games with a friend have no hints.</p>
+<p><b>My games on a new iPhone.</b> Turn on Settings → Save progress to iCloud on both phones with the same Apple ID.</p>
 <p><b>Which rules are used in long nardy?</b> Standard tournament rules: one checker from the head per turn (except 6-6, 4-4, 3-3 on the first roll), no six-point wall in front of all opposing checkers, mars counts 2 points.</p>"""
     else:
         support = f"""<h1>Поддержка — {a['name']['ru']}</h1>
@@ -185,7 +208,10 @@ def nardy_pages(lang):
 <h2>Частые вопросы</h2>
 <p><b>Кости правда случайные?</b> Да, и это можно проверить. Смотрите <a href="{url('ru', base + 'verify')}">как проверить кости</a> и <a href="{url('ru', base + 'dice-report')}">отчёт о 100 млн бросков</a>.</p>
 <p><b>Уровень влияет на кости?</b> Нет. Уровень меняет только ходы компьютера, броски запечатаны до партии.</p>
-<p><b>Купил доску на другом устройстве.</b> Настройки → Доска → Восстановить покупки.</p>
+<p><b>Купил Pro или доску на другом устройстве.</b> Настройки → Восстановить покупки.</p>
+<p><b>Что даёт Pro?</b> Без рекламы и подсказки без ограничений — навсегда. Всё остальное в игре бесплатно.</p>
+<p><b>Сколько подсказок бесплатно?</b> 3 в день в игре против компьютера и ещё 3 за каждый ролик по желанию. В игре вдвоём подсказок нет.</p>
+<p><b>Мои партии на новом iPhone.</b> Включите «Настройки → Сохранять прогресс в iCloud» на обоих телефонах с одним Apple ID.</p>
 <p><b>По каким правилам длинные нарды?</b> По турнирным правилам: с головы одна шашка за ход (кроме 6-6, 4-4, 3-3 первым броском), нельзя ставить шесть пунктов подряд перед всеми шашками соперника, марс — 2 очка.</p>"""
     page(lang, base + "support", t["support"] + " — " + a["name"][lang], app_nav(lang, base, "support") + support)
 
