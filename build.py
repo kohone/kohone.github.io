@@ -11,7 +11,7 @@ import os
 
 SITE = "https://kohone.github.io"
 DEV = "Maks Beskrovnyi"
-EMAIL = None  # почта поддержки — будет позже
+EMAIL = "support@kohone.net"
 UPDATED = "2026-09-25"
 
 APPS = [
