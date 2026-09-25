@@ -164,3 +164,9 @@ footer p { margin: 6px 0; }
 /* Подписи в ленте — одной высоты (до двух строк), чтобы снимки стояли на одной линии */
 .strip figcaption { min-height: 3.1em; }
 @media (max-width: 880px) { .strip figcaption { min-height: 0; } }
+
+/* Меню разделов — одно место на всех страницах приложения: под шапкой, в обёртке обычной ширины */
+.subbar { padding-top: 12px; padding-bottom: 20px; }
+.subbar nav.sub { margin: 0; }
+.subbar + main { padding-top: 8px; }
+.subbar + main.landing { padding-top: 0; }

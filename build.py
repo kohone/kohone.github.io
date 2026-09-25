@@ -45,7 +45,7 @@ def url(lang, path):
     return ("/ru" if lang == "ru" else "") + path
 
 
-def page(lang, path, title, body, desc="", landing=False):
+def page(lang, path, title, body, desc="", landing=False, sub=""):
     other = "en" if lang == "ru" else "ru"
     t = T[lang]
     doc = f"""<!doctype html>
@@ -62,6 +62,7 @@ def page(lang, path, title, body, desc="", landing=False):
 <a class="brand" href="{url(lang, '/')}">{DEV}</a>
 <nav><a href="{url(lang, '/')}">{t['apps']}</a></nav>
 </div></header>
+{('<div class="wrap subbar">' + sub + '</div>') if sub else ''}
 {('<main class="landing">' + body + '</main>') if landing else ('<main><div class="wrap">' + body + '</div></main>')}
 <footer><div class="wrap">
 <nav><a href="/">Home</a><a href="/fair-dice/">Backgammon: Fair Dice</a><a href="/fair-dice/verify">Verify the dice</a><a href="/fair-dice/dice-report">Dice report</a><a href="/fair-dice/privacy">Privacy Policy</a><a href="/fair-dice/support">Support</a></nav>
@@ -134,7 +135,6 @@ def nardy_pages(lang):
         store_cta = app_store_badge(a["store"], on_dark=True) if a["store"] else '<span class="soon">Coming soon to the App Store</span>'
         img = lambda n, alt, cls="": f'<img class="{cls}" src="/assets/fair-dice/{n}.jpg" alt="{html.escape(alt)}" width="540" height="1174" loading="lazy">'
         body = f"""
-<div class="wrap subnav">{app_nav(lang, base, "")}</div>
 <div class="lhero"><div class="wrap">
 <div class="hero-text">
 <div class="app-id"><img src="{a["icon"]}" alt=""><div><b>{a["name"]["en"]}</b><span>Backgammon &amp; long nardy for iPhone</span></div></div>
@@ -228,7 +228,7 @@ def nardy_pages(lang):
 <details><summary>How do I move my games to a new iPhone?</summary><p>Turn on Settings → Save progress to iCloud on both phones with the same Apple ID. Pro and boards are restored with Settings → Restore purchases.</p></details>
 </div></div></section>
 """
-        page(lang, base, a["name"][lang], body, a["tag"][lang], landing=True)
+        page(lang, base, a["name"][lang], body, a["tag"][lang], landing=True, sub=app_nav(lang, base, ""))
     else:
         about = """<p class="lead">Короткие и длинные нарды (турнирные правила) против сильного компьютера или вдвоём на одном телефоне. Работает без интернета.</p>
 <ul>
@@ -237,7 +237,7 @@ def nardy_pages(lang):
 <li><b>Разбор, статистика, уроки.</b> Разбор партии с оценкой ошибок, статистика костей против честных шансов, уроки правил на живой доске.</li>
 <li><b>Без аккаунтов.</b> Партии и статистика остаются на вашем телефоне.</li>
 </ul>"""
-        page(lang, base, a["name"][lang], app_nav(lang, base, "") + hero + about, a["tag"][lang])
+        page(lang, base, a["name"][lang], hero + about, a["tag"][lang], sub=app_nav(lang, base, ""))
 
     # Политика конфиденциальности
     if lang == "en":
@@ -284,7 +284,7 @@ def nardy_pages(lang):
 <p>Приложение не предназначено для детей младше 13 лет, и мы сознательно не собираем их данные.</p>
 <h2>Изменения и связь</h2>
 <p>Если политика изменится, новая версия появится на этой странице с новой датой. Вопросы: {contact('ru')}</p>"""
-    page(lang, base + "privacy", t["privacy"] + " — " + a["name"][lang], app_nav(lang, base, "privacy") + privacy)
+    page(lang, base + "privacy", t["privacy"] + " — " + a["name"][lang], privacy, sub=app_nav(lang, base, "privacy"))
 
     # Поддержка
     if lang == "en":
@@ -309,7 +309,7 @@ def nardy_pages(lang):
 <p><b>Сколько подсказок бесплатно?</b> 3 в день в игре против компьютера и ещё 3 за каждый ролик по желанию. В игре вдвоём подсказок нет.</p>
 <p><b>Мои партии на новом iPhone.</b> Включите «Настройки → Сохранять прогресс в iCloud» на обоих телефонах с одним Apple ID.</p>
 <p><b>По каким правилам длинные нарды?</b> По турнирным правилам: с головы одна шашка за ход (кроме 6-6, 4-4, 3-3 первым броском), нельзя ставить шесть пунктов подряд перед всеми шашками соперника, марс — 2 очка.</p>"""
-    page(lang, base + "support", t["support"] + " — " + a["name"][lang], app_nav(lang, base, "support") + support)
+    page(lang, base + "support", t["support"] + " — " + a["name"][lang], support, sub=app_nav(lang, base, "support"))
 
     verify_page(lang, base)
     report_page(lang, base)
@@ -393,7 +393,7 @@ document.getElementById("go").onclick = async () => {{
   out.textContent = "{L('Compare with the roll log in the app:', 'Сравните с журналом бросков в приложении:')}\\n" + lines.join("\\n");
 }};
 </script>"""
-    page(lang, base + "verify", L("Verify the dice", "Проверка костей") + " — Backgammon: Fair Dice", app_nav(lang, base, "verify") + body)
+    page(lang, base + "verify", L("Verify the dice", "Проверка костей") + " — Backgammon: Fair Dice", body, sub=app_nav(lang, base, "verify"))
 
 
 def report_page(lang, base):
@@ -423,7 +423,7 @@ def report_page(lang, base):
 <p>{L('Conclusion: faces, pairs and roll types are uniform, consecutive rolls are independent, and the opening roll is no different from the others. The generator behaves like perfect dice.',
       'Вывод: грани, пары и типы броска распределены равномерно, соседние броски независимы, первый бросок партии не отличается от остальных. Генератор ведёт себя как идеальные кости.')}</p>
 <p><a href="{url(lang, base + 'verify')}">{L('Verify the dice of your own game →', 'Проверить кости своей партии →')}</a></p>"""
-    page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Backgammon: Fair Dice", app_nav(lang, base, "dice-report") + body)
+    page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Backgammon: Fair Dice", body, sub=app_nav(lang, base, "dice-report"))
 
 
 # Сайт только на английском; русские тексты в функциях оставлены на случай перевода.
