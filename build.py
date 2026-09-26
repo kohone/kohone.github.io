@@ -256,6 +256,19 @@ def nardy_pages(lang):
 <li>Google's policy: <a href="https://policies.google.com/technologies/partner-sites">How Google uses information from apps that use its services</a>.</li>
 </ul>
 <p>Ads never affect the dice or the computer. Pro removes ads completely.</p>
+<h2>How long data is kept and how to delete it</h2>
+<ul>
+<li><b>On your device:</b> kept until you delete it. Deleting the app deletes your history, statistics and settings; the unfinished game is kept in the Keychain and is removed when you start a new game or reset the device.</li>
+<li><b>In your iCloud:</b> kept until you turn off “Save progress to iCloud” and delete the app's data in iPhone Settings → your name → iCloud → Manage Storage.</li>
+<li><b>By Google (ads):</b> kept under Google's own retention rules, described in its privacy policy.</li>
+</ul>
+<h2>Your choices</h2>
+<ul>
+<li>Allow or deny tracking at any time: iPhone Settings → Privacy &amp; Security → Tracking.</li>
+<li>In the EEA, the UK and Switzerland you can change or withdraw your consent to ads in the app: Settings → Ad privacy choices.</li>
+<li>Turn the iCloud copy on or off in the app's Settings.</li>
+<li>Buy Pro to stop ads completely.</li>
+</ul>
 <h2>Purchases</h2>
 <p>Pro and optional boards are sold through the App Store. Payment is handled by Apple; we do not receive your payment details or personal information.</p>
 <h2>Children</h2>
