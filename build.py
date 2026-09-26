@@ -20,6 +20,11 @@ APPS = [
      "tag": {"en": "Backgammon and long nardy with fair, verifiable dice",
              "ru": "Короткие и длинные нарды с честными проверяемыми костями"},
      "store": None},
+    {"slug": "solunar", "icon": "/assets/solunar-icon.jpg",
+     "name": {"en": "Solunar Times: Hunt & Fish", "ru": "Solunar Times: Hunt & Fish"},
+     "tag": {"en": "Major and minor feeding times, sunrise and moonrise — computed on your iPhone, offline",
+             "ru": "Основные и второстепенные периоды, восход солнца и луны — на iPhone, без сети"},
+     "store": None},
     # Приложение со своим сайтом: карточка ведёт наружу, страниц здесь нет.
     {"slug": "cycleally", "icon": "/assets/cycleally-icon.jpg", "external": "https://cycleally.com",
      "name": {"en": "Cycle Ally", "ru": "Cycle Ally"},
@@ -439,10 +444,102 @@ def report_page(lang, base):
     page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Backgammon: Fair Dice", body, sub=app_nav(lang, base, "dice-report"))
 
 
+# ── Solunar Times ─────────────────────────────────────────────────────
+# ЧЕРНОВИК (appgate g14): политика — строго по фактам g13 проекта ~/Apps/solunar; допиливает владелец (g22).
+
+SOLUNAR_UPDATED = "2026-09-26"
+
+
+def solunar_nav(lang, current):
+    items = [("", "Overview"), ("privacy", "Privacy"), ("terms", "Terms"), ("support", "Support")]
+    base = "/solunar/"
+    links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
+                    for slug, name in items)
+    return f'<nav class="sub">{links}</nav>'
+
+
+def solunar_pages(lang):
+    a = next(x for x in APPS if x["slug"] == "solunar")
+    base = "/solunar/"
+    store = app_store_badge(a["store"]) if a["store"] else '<span class="badge">Coming to the App Store</span>'
+    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"]["en"]}</h1>{store}</div></div>'
+    overview = hero + """<p class="lead">Plan when to be out: major and minor feeding periods, sunrise, sunset, moonrise, moonset
+and the moon phase for any place — computed on your iPhone, so it works with no signal.</p>
+<ul>
+<li><b>Accurate.</b> Sun and moon times within a minute of the U.S. Naval Observatory, in the time zone of the place, 12- or 24-hour like your iPhone. Days with no moonrise say so.</li>
+<li><b>Honest.</b> A 0–5 day score with the reasons shown. A plan for your trip, not a promise of a catch.</li>
+<li><b>Test it yourself.</b> Log bites, catches and game sightings in two taps and see whether they land in the periods more often than chance.</li>
+<li><b>Widgets, Live Activity, alerts</b> before major periods — all planned on the phone, no connection needed.</li>
+</ul>
+<p>Free: today and tomorrow for your current location. Pro is a one-time purchase — no subscription, no ads, no account.</p>"""
+    page(lang, base, a["name"]["en"], overview, a["tag"]["en"], sub=solunar_nav(lang, ""))
+
+    privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
+<p class="muted">Last updated: {SOLUNAR_UPDATED}</p>
+<p>Solunar Times collects no personal data. It has no account, no analytics, no advertising and no servers of ours.</p>
+<h2>What the app uses, and where it goes</h2>
+<ul>
+<li><b>Location</b> (only while the app is open, and only if you allow it): to compute sun and moon times for where you are. All calculations happen on your iPhone.</li>
+<li><b>Place name and time zone.</b> When you set a place from GPS or by tapping the map, the app asks Apple's geocoding service (part of iOS) for the place's name and time zone. Only the coordinates of that place are sent, to Apple, under Apple's privacy policy. Nothing is sent to us.</li>
+<li><b>The map.</b> Choosing a place shows Apple Maps; your iPhone requests map tiles for the area on screen from Apple, as every app with Apple Maps does.</li>
+<li><b>Your places, settings and journal</b> (bites, catches, sightings, notes): stored in the app's storage on your iPhone and shared only with this app's widgets on the same iPhone. There is no cloud copy of ours.</li>
+<li><b>Alerts</b> are local notifications planned on your iPhone; no push server is involved.</li>
+</ul>
+<h2>Purchases</h2>
+<p>Pro is a one-time purchase through the App Store. Payment is handled by Apple; we do not receive your payment details or personal information.</p>
+<h2>How long data is kept and how to delete it</h2>
+<ul>
+<li>Places and journal entries stay on your iPhone until you delete them in the app (swipe to delete) or delete the app, which removes all of them.</li>
+<li>If you use iCloud Backup or a computer backup for your iPhone, those backups include the app's data under Apple's terms.</li>
+<li>We keep nothing, because we receive nothing.</li>
+</ul>
+<h2>Your choices</h2>
+<ul>
+<li>Allow or stop location access: iPhone Settings → Privacy &amp; Security → Location Services → Solunar Times. Without it, set places on the map.</li>
+<li>Turn alerts on or off in the app's Settings or in iPhone Settings → Notifications.</li>
+</ul>
+<h2>Children</h2>
+<p>The app is not directed at children under 13 and collects no data from anyone.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
+    page(lang, base + "privacy", "Privacy — " + a["name"]["en"], privacy, sub=solunar_nav(lang, "privacy"))
+
+    terms = f"""<h1>Terms of Use — {a['name']['en']}</h1>
+<p class="muted">Last updated: {SOLUNAR_UPDATED}</p>
+<p>These terms apply together with Apple's Licensed Application End User License Agreement.</p>
+<h2>A planning aid, not a promise</h2>
+<p>Solunar theory is a way to plan when to be out. It does not guarantee a catch or a sighting, and the day score is a transparent formula, not a forecast of animal behaviour. Weather, pressure and local conditions are not included.</p>
+<h2>Accuracy</h2>
+<p>Sun and moon times are computed with published astronomical algorithms (Jean Meeus) and are tested against the U.S. Naval Observatory to within one minute. Results depend on the place and time zone you set; a time zone guessed without a connection is marked in the app.</p>
+<h2>Safety and the law</h2>
+<p>Follow hunting and fishing regulations, seasons and legal shooting hours where you are. Legal hours are set by your local authority, not by this app.</p>
+<h2>Purchases</h2>
+<p>Pro is a one-time purchase handled by Apple. Refunds are handled by Apple.</p>
+<h2>No affiliation</h2>
+<p>Solunar Times is independent and not affiliated with the publishers of any solunar tables.</p>
+<h2>No warranty</h2>
+<p>The app is provided “as is”, without warranties of any kind, to the extent permitted by law.</p>
+<h2>Contact</h2>
+<p>{contact('en')}</p>"""
+    page(lang, base + "terms", "Terms — " + a["name"]["en"], terms, sub=solunar_nav(lang, "terms"))
+
+    support = f"""<h1>Support — {a['name']['en']}</h1>
+<p>Write to us: {contact('en')}</p>
+<h2>Frequently asked</h2>
+<p><b>Why does a day say “No moonrise today”?</b> The moon rises about 50 minutes later each day, so roughly once a month it rises after midnight and skips a calendar day. The app says so instead of showing a time from another day.</p>
+<p><b>Why are the times different from another app or site?</b> Check the time zone of the place (Places tab). We compute times in the time zone of the place, not your phone, and round to the nearest minute like the U.S. Naval Observatory.</p>
+<p><b>How is the day score made?</b> Tap “Why this score?” on the Today screen — the formula and the reasons for that day are shown.</p>
+<p><b>12- or 24-hour time?</b> The app follows your iPhone: Settings → General → Date &amp; Time.</p>
+<p><b>Alerts didn't arrive.</b> Alerts are planned two weeks ahead for the selected place. Open the app now and then, and check that notifications are allowed for Solunar Times.</p>
+<p><b>I bought Pro on another iPhone.</b> Settings → Restore Purchases.</p>"""
+    page(lang, base + "support", "Support — " + a["name"]["en"], support, sub=solunar_nav(lang, "support"))
+
+
 # Сайт только на английском; русские тексты в функциях оставлены на случай перевода.
 for lang in ("en",):
     home(lang)
     nardy_pages(lang)
+    solunar_pages(lang)
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".nojekyll"), "w"):
     pass
 print("готово")
