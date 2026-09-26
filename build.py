@@ -12,7 +12,7 @@ import os
 SITE = "https://kohone.net"
 DEV = "Maks Beskrovnyi"
 EMAIL = "support@kohone.net"
-UPDATED = "2026-09-25"
+UPDATED = "2026-09-27"
 
 APPS = [
     {"slug": "fair-dice", "icon": "/assets/fair-dice-icon.jpg",
@@ -31,11 +31,11 @@ APPS = [
 T = {
     "en": {"apps": "Apps", "home_lead": "Web developer and mobile app developer. I build apps and games for iPhone.",
            "overview": "Overview", "my_apps": "My apps",
-           "soon": "Coming to the App Store", "privacy": "Privacy", "support": "Support", "verify": "Verify the dice",
+           "soon": "Coming to the App Store", "privacy": "Privacy", "terms": "Terms", "support": "Support", "verify": "Verify the dice",
            "report": "Dice report", "lang": "Русский", "contact_soon": "A support e-mail will appear here soon.",
            "updated": "Last updated"},
     "ru": {"apps": "Приложения", "home_lead": "Делаю приложения и игры для iPhone.",
-           "soon": "Скоро в App Store", "privacy": "Конфиденциальность", "support": "Поддержка", "verify": "Проверка костей",
+           "soon": "Скоро в App Store", "privacy": "Конфиденциальность", "terms": "Условия", "support": "Поддержка", "verify": "Проверка костей",
            "report": "Отчёт о костях", "lang": "English", "contact_soon": "Почта поддержки скоро появится здесь.",
            "updated": "Обновлено"},
 }
@@ -65,7 +65,7 @@ def page(lang, path, title, body, desc="", landing=False, sub=""):
 {('<div class="wrap subbar">' + sub + '</div>') if sub else ''}
 {('<main class="landing">' + body + '</main>') if landing else ('<main><div class="wrap">' + body + '</div></main>')}
 <footer><div class="wrap">
-<nav><a href="/">Home</a><a href="/fair-dice/">Backgammon: Fair Dice</a><a href="/fair-dice/verify">Verify the dice</a><a href="/fair-dice/dice-report">Dice report</a><a href="/fair-dice/privacy">Privacy Policy</a><a href="/fair-dice/support">Support</a></nav>
+<nav><a href="/">Home</a><a href="/fair-dice/">Backgammon: Fair Dice</a><a href="/fair-dice/verify">Verify the dice</a><a href="/fair-dice/dice-report">Dice report</a><a href="/fair-dice/privacy">Privacy Policy</a><a href="/fair-dice/terms">Terms of Use</a><a href="/fair-dice/support">Support</a></nav>
 <p>Made by one person, {DEV}. Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
 <p class="muted" style="font-size:13px">Apple, iPhone, iCloud and App Store are trademarks of Apple Inc. These apps are independent and not affiliated with, endorsed by, or sponsored by Apple Inc.</p>
 </div></footer>
@@ -114,7 +114,7 @@ def app_nav(lang, base, current):
     """Меню разделов приложения — над содержимым каждой его страницы."""
     t = T[lang]
     items = [("", t["overview"]), ("verify", t["verify"]), ("dice-report", t["report"]),
-             ("privacy", t["privacy"]), ("support", t["support"])]
+             ("privacy", t["privacy"]), ("terms", t["terms"]), ("support", t["support"])]
     links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
                     for slug, name in items)
     return f'<nav class="sub">{links}</nav>'
@@ -127,6 +127,7 @@ def nardy_pages(lang):
     links = (f'<ul class="links"><li><a href="{url(lang, base + "verify")}">{t["verify"]}</a></li>'
              f'<li><a href="{url(lang, base + "dice-report")}">{t["report"]}</a></li>'
              f'<li><a href="{url(lang, base + "privacy")}">{t["privacy"]}</a></li>'
+             f'<li><a href="{url(lang, base + "terms")}">{t["terms"]}</a></li>'
              f'<li><a href="{url(lang, base + "support")}">{t["support"]}</a></li></ul>')
     hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"][lang]}</h1>{store}</div></div>'
 
@@ -202,7 +203,7 @@ def nardy_pages(lang):
 <li>If you switch it on, a copy goes to your own iCloud so another iPhone can pick it up — we cannot see it.</li>
 <li>The free version shows ads from Google AdMob between games; iOS asks your permission before any tracking. Pro removes ads completely.</li>
 </ul>
-<p class="after-block"><a href="/fair-dice/privacy">Privacy Policy</a> &nbsp;·&nbsp; <a href="/fair-dice/support">Support</a></p>
+<p class="after-block"><a href="/fair-dice/privacy">Privacy Policy</a> &nbsp;·&nbsp; <a href="/fair-dice/terms">Terms of Use</a> &nbsp;·&nbsp; <a href="/fair-dice/support">Support</a></p>
 </div></div></section>
 
 <section class="band-soft"><div class="wrap">
@@ -258,7 +259,7 @@ def nardy_pages(lang):
 <p>Ads never affect the dice or the computer. Pro removes ads completely.</p>
 <h2>How long data is kept and how to delete it</h2>
 <ul>
-<li><b>On your device:</b> kept until you delete it. Deleting the app deletes your history, statistics and settings; the unfinished game is kept in the Keychain and is removed when you start a new game or reset the device.</li>
+<li><b>On your device:</b> kept until you delete it. Deleting the app deletes your history, statistics and settings. The unfinished game is kept in the Keychain, which iOS does not clear with the app; the app deletes it on the first launch after a new install.</li>
 <li><b>In your iCloud:</b> kept until you turn off “Save progress to iCloud” and delete the app's data in iPhone Settings → your name → iCloud → Manage Storage.</li>
 <li><b>By Google (ads):</b> kept under Google's own retention rules, described in its privacy policy.</li>
 </ul>
@@ -291,6 +292,19 @@ def nardy_pages(lang):
 <li>Политика Google: <a href="https://policies.google.com/technologies/partner-sites">как Google использует данные из приложений партнёров</a>.</li>
 </ul>
 <p>Реклама никогда не влияет на кости и компьютер. Pro убирает рекламу полностью.</p>
+<h2>Сколько хранятся данные и как их удалить</h2>
+<ul>
+<li><b>На устройстве:</b> пока вы их не удалите. Удаление приложения удаляет историю, статистику и настройки. Незаконченная партия лежит в связке ключей, которую iOS вместе с приложением не очищает; приложение удаляет её при первом запуске после новой установки.</li>
+<li><b>В вашем iCloud:</b> пока вы не выключите «Сохранять прогресс в iCloud» и не удалите данные приложения в «Настройки iPhone → ваше имя → iCloud → Управление хранилищем».</li>
+<li><b>У Google (реклама):</b> по правилам хранения Google, описанным в её политике конфиденциальности.</li>
+</ul>
+<h2>Ваш выбор</h2>
+<ul>
+<li>Разрешить или запретить отслеживание: «Настройки iPhone → Конфиденциальность и безопасность → Отслеживание».</li>
+<li>В ЕЭЗ, Великобритании и Швейцарии согласие на рекламу меняется или отзывается в приложении: «Настройки → Настройки конфиденциальности рекламы».</li>
+<li>Копия в iCloud включается и выключается в настройках приложения.</li>
+<li>Pro убирает рекламу полностью.</li>
+</ul>
 <h2>Покупки</h2>
 <p>Pro и дополнительные доски продаются через App Store. Оплату проводит Apple; мы не получаем ни платёжных, ни личных данных.</p>
 <h2>Дети</h2>
@@ -298,6 +312,47 @@ def nardy_pages(lang):
 <h2>Изменения и связь</h2>
 <p>Если политика изменится, новая версия появится на этой странице с новой датой. Вопросы: {contact('ru')}</p>"""
     page(lang, base + "privacy", t["privacy"] + " — " + a["name"][lang], privacy, sub=app_nav(lang, base, "privacy"))
+
+    # Условия использования
+    if lang == "en":
+        terms = f"""<h1>Terms of Use — {a['name']['en']}</h1>
+<p class="muted">{t['updated']}: {UPDATED}</p>
+<p>The app is licensed to you under Apple's <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Standard Licensed Application End User License Agreement</a>. These terms add what is specific to this app.</p>
+<h2>The game</h2>
+<p>Backgammon: Fair Dice is a board game for entertainment and learning. Points in the game have no money value; there are no bets, coins or prizes.</p>
+<h2>Dice</h2>
+<p>Before each game the app seals the sequence of rolls and shows its fingerprint; after the game you get the key to check every roll. Neither the computer's level nor any purchase changes the dice.</p>
+<h2>Purchases</h2>
+<ul>
+<li>Pro is a one-time purchase: no ads and unlimited hints, for as long as you use the app with the same Apple ID. Boards are bought separately, also once.</li>
+<li>Purchases are processed and refunded by Apple under its rules; restore them in Settings → Restore purchases.</li>
+</ul>
+<h2>Free version</h2>
+<p>The free version shows a short ad after every second game (never during a game) and gives 3 hints a day against the computer, plus 3 for an optional video. The ad schedule and the hint limit may change in future versions.</p>
+<h2>No warranty</h2>
+<p>The app is provided “as is”. We work to keep the rules, the computer and the statistics correct, but we do not guarantee that the app is free of errors. Hints, the coach and the game review are advice, not a promise of a result.</p>
+<h2>Changes and contact</h2>
+<p>If these terms change, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
+    else:
+        terms = f"""<h1>Условия использования — {a['name']['ru']}</h1>
+<p class="muted">{t['updated']}: {UPDATED}</p>
+<p>Приложение предоставляется по <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">стандартному лицензионному соглашению Apple с конечным пользователем</a>. Эти условия добавляют то, что относится к этому приложению.</p>
+<h2>Игра</h2>
+<p>«Нарды: длинные и короткие» — настольная игра для развлечения и обучения. Очки в игре не имеют денежной ценности; ставок, монет и призов нет.</p>
+<h2>Кости</h2>
+<p>Перед каждой партией приложение запечатывает серию бросков и показывает её отпечаток; после партии вы получаете ключ и можете проверить каждый бросок. Ни уровень компьютера, ни покупки кости не меняют.</p>
+<h2>Покупки</h2>
+<ul>
+<li>Pro покупается один раз: без рекламы и подсказки без ограничений, пока вы пользуетесь приложением с тем же Apple ID. Доски покупаются отдельно, тоже один раз.</li>
+<li>Покупки проводит и возвращает Apple по своим правилам; восстановить их — «Настройки → Восстановить покупки».</li>
+</ul>
+<h2>Бесплатная версия</h2>
+<p>В бесплатной версии после каждой второй партии показывается короткая реклама (никогда во время партии), подсказок — 3 в день против компьютера и ещё 3 за ролик по желанию. Расписание рекламы и лимит подсказок могут измениться в новых версиях.</p>
+<h2>Без гарантий</h2>
+<p>Приложение предоставляется «как есть». Мы следим, чтобы правила, компьютер и статистика были верными, но не гарантируем отсутствие ошибок. Подсказки, тренер и разбор партии — совет, а не обещание результата.</p>
+<h2>Изменения и связь</h2>
+<p>Если условия изменятся, новая версия появится на этой странице с новой датой. Вопросы: {contact('ru')}</p>"""
+    page(lang, base + "terms", t["terms"] + " — " + a["name"][lang], terms, sub=app_nav(lang, base, "terms"))
 
     # Поддержка
     if lang == "en":
