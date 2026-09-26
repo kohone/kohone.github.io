@@ -20,6 +20,11 @@ APPS = [
      "tag": {"en": "Backgammon and long nardy with fair, verifiable dice",
              "ru": "Короткие и длинные нарды с честными проверяемыми костями"},
      "store": None},
+    {"slug": "mgrs-land-nav", "icon": "/assets/mgrs-land-nav-icon.jpg",
+     "name": {"en": "MGRS Land Nav – Military GPS", "ru": "MGRS Land Nav – Military GPS"},
+     "tag": {"en": "Your MGRS grid, and a trainer for pace count, azimuth and plotting",
+             "ru": "Позиция в MGRS и тренажёр шагов, азимута и нанесения"},
+     "store": None},
     # Приложение со своим сайтом: карточка ведёт наружу, страниц здесь нет.
     {"slug": "cycleally", "icon": "/assets/cycleally-icon.jpg", "external": "https://cycleally.com",
      "name": {"en": "Cycle Ally", "ru": "Cycle Ally"},
@@ -439,10 +444,101 @@ def report_page(lang, base):
     page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Backgammon: Fair Dice", body, sub=app_nav(lang, base, "dice-report"))
 
 
+# ── MGRS Land Nav ─────────────────────────────────────────────────────
+# ЧЕРНОВИК (appgate g14): политика — строго по фактам g13 проекта ~/Apps/mgrs-nav; допиливает владелец (g22).
+
+MGRS_UPDATED = "2026-09-26"
+
+
+def mgrs_nav(lang, current):
+    items = [("", "Overview"), ("privacy", "Privacy"), ("terms", "Terms"), ("support", "Support")]
+    base = "/mgrs-land-nav/"
+    links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
+                    for slug, name in items)
+    return f'<nav class="sub">{links}</nav>'
+
+
+def mgrs_pages(lang):
+    a = next(x for x in APPS if x["slug"] == "mgrs-land-nav")
+    base = "/mgrs-land-nav/"
+    store = app_store_badge(a["store"]) if a["store"] else '<span class="badge">Coming to the App Store</span>'
+    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"]["en"]}</h1>{store}</div></div>'
+    overview = hero + """<p class="lead">Your position as a big, clear MGRS grid — and a trainer for the land navigation skills you need
+when the phone goes in the bag.</p>
+<ul>
+<li><b>Position.</b> 10- or 8-digit MGRS from GPS, truncated like on a map, never rounded. UTM, lat/lon, and the G-M angle for where you stand.</li>
+<li><b>Points and courses.</b> Type a grid the way you read it from a map, project a point by azimuth and distance, plan legs in mils with pace counts. GPX in and out.</li>
+<li><b>Train.</b> Calibrate your pace count, walk a blind leg and see exactly where you drifted, drill 8-digit plotting.</li>
+<li><b>Honest note.</b> A training aid: on a graded land navigation course your phone is not allowed.</li>
+</ul>
+<p>No ads, no account, no tracking.</p>"""
+    page(lang, base, a["name"]["en"], overview, a["tag"]["en"], sub=mgrs_nav(lang, ""))
+
+    privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
+<p class="muted">Last updated: {MGRS_UPDATED}</p>
+<p>MGRS Land Nav collects no personal data. It has no account, no analytics, no advertising and no servers of ours.</p>
+<h2>What the app uses, and where it stays</h2>
+<ul>
+<li><b>Location</b> (only while the app is open): to show your grid, azimuths and distances, and to fix the start and finish of a training leg. It is processed on your iPhone and never sent to us.</li>
+<li><b>Motion (pedometer step counts)</b>: to count your steps between the start and finish of a pace-count walk or a training leg. Read on your iPhone only.</li>
+<li><b>Your points, courses and training history</b>: stored in the app's storage on your iPhone. There is no cloud copy.</li>
+<li><b>Settings</b> (units, north reference, grid digits): stored on your iPhone.</li>
+</ul>
+<h2>The map</h2>
+<p>The map screen shows Apple Maps. To draw it, your iPhone requests map tiles for the area on screen from Apple, as every app with Apple Maps does. Apple handles those requests under its own privacy policy; your points and training data are not sent with them. Everything else works offline.</p>
+<h2>Purchases</h2>
+<p>Pro is a one-time purchase through the App Store. Payment is handled by Apple; we do not receive your payment details or personal information.</p>
+<h2>How long data is kept and how to delete it</h2>
+<ul>
+<li>Your points, courses and training records stay on your iPhone until you delete them in the app (swipe to delete) or delete the app, which removes all of them.</li>
+<li>We keep nothing, because we receive nothing.</li>
+</ul>
+<h2>Your choices</h2>
+<ul>
+<li>Allow or stop location access: iPhone Settings → Privacy &amp; Security → Location Services → MGRS Land Nav.</li>
+<li>Allow or stop motion access: iPhone Settings → Privacy &amp; Security → Motion &amp; Fitness.</li>
+</ul>
+<h2>Children</h2>
+<p>The app is not directed at children under 13 and collects no data from anyone.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
+    page(lang, base + "privacy", "Privacy — " + a["name"]["en"], privacy, sub=mgrs_nav(lang, "privacy"))
+
+    terms = f"""<h1>Terms of Use — {a['name']['en']}</h1>
+<p class="muted">Last updated: {MGRS_UPDATED}</p>
+<p>These terms apply together with Apple's Licensed Application End User License Agreement.</p>
+<h2>A training aid</h2>
+<p>MGRS Land Nav is made for practice and general navigation. It is not a certified navigation instrument. GPS and the iPhone compass can be wrong — near metal, in cars, under tree cover or in cities. Always carry a map and a compass and check what the app shows. Do not rely on it where a mistake could put anyone in danger.</p>
+<p>On graded land navigation courses phones are not allowed. Follow the rules of your course and your chain of command.</p>
+<h2>Accuracy</h2>
+<p>Coordinate calculations follow published methods and are tested against reference software, and the magnetic declination comes from the World Magnetic Model 2025, valid until the end of 2029. The results can only be as good as the GPS position and compass reading they start from.</p>
+<h2>Purchases</h2>
+<p>Pro is a one-time purchase handled by Apple. Refunds are handled by Apple.</p>
+<h2>No affiliation</h2>
+<p>MGRS Land Nav is independent and not affiliated with, or endorsed by, the U.S. Army or any government agency.</p>
+<h2>No warranty</h2>
+<p>The app is provided “as is”, without warranties of any kind, to the extent permitted by law.</p>
+<h2>Contact</h2>
+<p>{contact('en')}</p>"""
+    page(lang, base + "terms", "Terms — " + a["name"]["en"], terms, sub=mgrs_nav(lang, "terms"))
+
+    support = f"""<h1>Support — {a['name']['en']}</h1>
+<p>Write to us: {contact('en')}</p>
+<h2>Frequently asked</h2>
+<p><b>Why do the last digits of my grid change while I stand still?</b> GPS on a phone is accurate to a few metres; the app shows the accuracy next to the grid. For a 10-digit grid (1 m) the last digits will move.</p>
+<p><b>Why truncated, not rounded?</b> An MGRS grid names the south-west corner of its square, the way you read it from a map. Rounding could put you in the next square.</p>
+<p><b>Which north is this azimuth from?</b> Every azimuth is labelled Grid, Mag or True. Change it with the picker above the number.</p>
+<p><b>The compass looks wrong.</b> Move away from metal and cars and wave the phone in a figure 8. The app warns when compass accuracy is poor.</p>
+<p><b>I bought Pro on another iPhone.</b> Settings → Restore purchase.</p>
+<p><b>Can I use it on a graded land nav course?</b> No — phones are not allowed there. Use it to practise before.</p>"""
+    page(lang, base + "support", "Support — " + a["name"]["en"], support, sub=mgrs_nav(lang, "support"))
+
+
 # Сайт только на английском; русские тексты в функциях оставлены на случай перевода.
 for lang in ("en",):
     home(lang)
     nardy_pages(lang)
+    mgrs_pages(lang)
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".nojekyll"), "w"):
     pass
 print("готово")
