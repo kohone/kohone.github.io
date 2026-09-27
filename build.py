@@ -481,7 +481,7 @@ def logbook_pages(lang):
         ("Import and export", "Files from ForeFlight, LogTen and MyFlightbook come in; CSV and a printable PDF go out. The import shows what will be added, updated and skipped before it writes anything."),
         ("Instructor signatures", "An instructor signs on the phone with a finger or an Apple Pencil; the entry then locks, and editing it takes removing the signature, which is recorded."),
         ("Night time suggested", "Civil twilight for your route and date, computed on the device from the airport database. The suggestion is editable."),
-        ("Works with no signal", "Airports ship with the app. Entry, totals and currency need no connection, no account and no server."),
+        ("Works with no signal", "Airports ship with the app. Entry, totals, currency and export need no connection, no account and no server — only buying goes through the App Store."),
     ])
     plans = ("<div class=\"plans\">"
              "<div><h3>Free</h3><ul><li>The first 25 flights you type in</li>"
@@ -501,7 +501,7 @@ def logbook_pages(lang):
 <h2>Price</h2>
 {plans}
 <h2>Your data stays on your phone</h2>
-<p>There is no account and no server. The book is stored on the device, the app makes no network calls, and there is no analytics or advertising code in it. Details are on the <a href="{url(lang, base + 'privacy')}">privacy page</a>.</p>
+<p>There is no account and no server of ours. The book is stored on the device, the app sends nothing anywhere, and there is no analytics or advertising code in it. The only network traffic is Apple's own: the App Store, asked for the price and for whether you have bought. Details are on the <a href="{url(lang, base + 'privacy')}">privacy page</a>.</p>
 <p class="muted">You are responsible for your own logbook and for meeting the regulations that apply to you. The app computes from what you enter, following 14 CFR part 61; it does not replace the regulations, your instructor or your own check. This app is independent and is not affiliated with or endorsed by the Federal Aviation Administration.</p>"""
     page(lang, base, a["name"]["en"] + " — a pilot logbook for iPhone and iPad", body,
          desc="A pilot logbook for iPhone: totals, 90-day and instrument currency, medical and flight review dates, and the FAA Form 8710-1 Record of Pilot Time.",
@@ -510,7 +510,7 @@ def logbook_pages(lang):
     privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
 <p class="muted">{t['updated']}: {UPDATED}</p>
 <h2>The short version</h2>
-<p>The app collects nothing. It has no account, no server of ours, and it makes no network calls at all. Your logbook is stored on your device and goes nowhere unless you export it yourself.</p>
+<p>The app collects nothing. It has no account and no server of ours, and it never sends your logbook anywhere. The book is stored on your device and goes nowhere unless you export it yourself.</p>
 <h2>What is stored, and where</h2>
 <ul>
 <li><b>Your logbook</b> — flights, aircraft, instructor signatures, your certificates, medical and flight review dates, and the settings of the app. All of it lives in the app's own storage on the device.</li>
@@ -520,6 +520,7 @@ def logbook_pages(lang):
 <h2>What is not there</h2>
 <ul>
 <li>No analytics, no crash reporting service, no advertising, no third-party SDKs.</li>
+<li>No server of ours: there is nowhere for your flights to be sent, and nothing to hack into.</li>
 <li>No tracking, in the sense of Apple's App Tracking Transparency: nothing to permit, because nothing is collected.</li>
 <li>No location access: night time is computed from the airports you enter, not from where the phone is.</li>
 <li>No e-mail address, name or password is asked for.</li>
@@ -529,7 +530,7 @@ def logbook_pages(lang):
 <li><b>Export.</b> CSV and PDF files go where you send them: a file you save, a message you write, a printer. We do not see them.</li>
 <li><b>Import.</b> A file you choose is read on the device.</li>
 <li><b>Device backup.</b> If you have iCloud Backup or an encrypted computer backup turned on, iOS includes the app's data in it, under Apple's terms.</li>
-<li><b>Purchases.</b> The subscription and the one-time unlock are sold by Apple. Apple processes the payment and tells the app only whether the purchase is active; we receive no payment details and no identity from it.</li>
+<li><b>Purchases.</b> The subscription and the one-time unlock are sold by Apple. To show the price and to know whether you have bought, the app asks Apple's StoreKit, which talks to the App Store — that is the only network traffic in the app, it carries no logbook data, and it is covered by Apple's privacy policy. Apple processes the payment and tells the app only whether the purchase is active; we receive no payment details and no identity from it.</li>
 <li><b>Reminders.</b> Notifications about your medical and flight review are local to the device; no reminder is sent through any server.</li>
 </ul>
 <h2>How long it is kept, and how to delete it</h2>
@@ -581,7 +582,7 @@ def logbook_pages(lang):
 <p><b>Can my instructor sign on the phone?</b> Yes — open the flight, Sign, and the instructor signs with a finger or an Apple Pencil and enters their name and certificate number. The entry is then locked; to edit it, remove the signature, which is recorded.</p>
 <p><b>How do I get a paper copy?</b> Export → PDF gives printable spreads with carried-forward totals, page numbers and room for signatures. Export → CSV gives the data itself.</p>
 <p><b>How do I delete my data?</b> Delete flights in the app, or delete the app — everything is on your device and nothing is stored anywhere else.</p>
-<p><b>Does it need a connection?</b> No. Airports ship with the app; entry, totals and currency work in airplane mode.</p>"""
+<p><b>Does it need a connection?</b> Not for flying or for logging. Airports ship with the app; entry, totals, currency and export all work in airplane mode. A connection is needed only to buy or to restore a purchase, because that goes through the App Store.</p>"""
     page(lang, base + "support", t["support"] + " — " + a["name"]["en"], support,
          desc="Support and frequently asked questions for Pilot Logbook.",
          sub=logbook_nav(lang, base, "support"))
