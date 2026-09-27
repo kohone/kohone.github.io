@@ -20,6 +20,11 @@ APPS = [
      "tag": {"en": "Backgammon and long nardy with fair, verifiable dice",
              "ru": "Короткие и длинные нарды с честными проверяемыми костями"},
      "store": None},
+    {"slug": "logbook", "icon": "/assets/logbook-icon.jpg",
+     "name": {"en": "Pilot Logbook", "ru": "Pilot Logbook"},
+     "tag": {"en": "A pilot logbook that counts currency and fills the 8710 grid",
+             "ru": "Лётная книжка: считает допуски и заполняет сетку 8710"},
+     "store": None},
     # Приложение со своим сайтом: карточка ведёт наружу, страниц здесь нет.
     {"slug": "cycleally", "icon": "/assets/cycleally-icon.jpg", "external": "https://cycleally.com",
      "name": {"en": "Cycle Ally", "ru": "Cycle Ally"},
@@ -31,11 +36,11 @@ APPS = [
 T = {
     "en": {"apps": "Apps", "home_lead": "Web developer and mobile app developer. I build apps and games for iPhone.",
            "overview": "Overview", "my_apps": "My apps",
-           "soon": "Coming to the App Store", "privacy": "Privacy", "support": "Support", "verify": "Verify the dice",
+           "soon": "Coming to the App Store", "privacy": "Privacy", "terms": "Terms", "support": "Support", "verify": "Verify the dice",
            "report": "Dice report", "lang": "Русский", "contact_soon": "A support e-mail will appear here soon.",
            "updated": "Last updated"},
     "ru": {"apps": "Приложения", "home_lead": "Делаю приложения и игры для iPhone.",
-           "soon": "Скоро в App Store", "privacy": "Конфиденциальность", "support": "Поддержка", "verify": "Проверка костей",
+           "soon": "Скоро в App Store", "privacy": "Конфиденциальность", "terms": "Условия", "support": "Поддержка", "verify": "Проверка костей",
            "report": "Отчёт о костях", "lang": "English", "contact_soon": "Почта поддержки скоро появится здесь.",
            "updated": "Обновлено"},
 }
@@ -66,6 +71,7 @@ def page(lang, path, title, body, desc="", landing=False, sub=""):
 {('<main class="landing">' + body + '</main>') if landing else ('<main><div class="wrap">' + body + '</div></main>')}
 <footer><div class="wrap">
 <nav><a href="/">Home</a><a href="/fair-dice/">Backgammon: Fair Dice</a><a href="/fair-dice/verify">Verify the dice</a><a href="/fair-dice/dice-report">Dice report</a><a href="/fair-dice/privacy">Privacy Policy</a><a href="/fair-dice/support">Support</a></nav>
+<nav><a href="/logbook/">Pilot Logbook</a><a href="/logbook/privacy">Privacy Policy</a><a href="/logbook/terms">Terms of Use</a><a href="/logbook/support">Support</a></nav>
 <p>Made by one person, {DEV}. Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
 <p class="muted" style="font-size:13px">Apple, iPhone, iCloud and App Store are trademarks of Apple Inc. These apps are independent and not affiliated with, endorsed by, or sponsored by Apple Inc.</p>
 </div></footer>
@@ -110,11 +116,12 @@ def app_store_badge(link, on_dark=False):
             '<img src="/assets/app-store-badge-black.svg" alt="Download on the App Store" height="44"></picture></a>')
 
 
-def app_nav(lang, base, current):
-    """Меню разделов приложения — над содержимым каждой его страницы."""
+def app_nav(lang, base, current, items=None):
+    """Меню разделов приложения — над содержимым каждой его страницы. Пункты задаёт приложение."""
     t = T[lang]
-    items = [("", t["overview"]), ("verify", t["verify"]), ("dice-report", t["report"]),
-             ("privacy", t["privacy"]), ("support", t["support"])]
+    if items is None:
+        items = [("", t["overview"]), ("verify", t["verify"]), ("dice-report", t["report"]),
+                 ("privacy", t["privacy"]), ("support", t["support"])]
     links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
                     for slug, name in items)
     return f'<nav class="sub">{links}</nav>'
@@ -439,10 +446,152 @@ def report_page(lang, base):
     page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Backgammon: Fair Dice", body, sub=app_nav(lang, base, "dice-report"))
 
 
+
+
+# ── Лётная книжка ─────────────────────────────────────────────────────
+
+
+def logbook_nav(lang, base, current):
+    t = T[lang]
+    return app_nav(lang, base, current, items=[("", t["overview"]), ("privacy", t["privacy"]),
+                                               ("terms", t["terms"]), ("support", t["support"])])
+
+
+def logbook_pages(lang):
+    """Страницы Pilot Logbook. Рынок США — тексты только на английском."""
+    if lang != "en":
+        return
+    a, t = next(x for x in APPS if x["slug"] == "logbook"), T[lang]
+    base = "/logbook/"
+    store = app_store_badge(a["store"]) if a["store"] else f'<span class="badge">{t["soon"]}</span>'
+    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"]["en"]}</h1>{store}</div></div>'
+
+    shot = lambda n, cap: (f'<figure><img src="/assets/logbook/{n}.jpg" alt="{html.escape(cap)}" '
+                           f'width="368" height="800" loading="lazy"><figcaption>{cap}</figcaption></figure>')
+    feature = lambda title, text: f"<div><b>{title}</b><p>{text}</p></div>"
+    features = "".join(feature(*f) for f in [
+        ("Entry in seconds", "A new flight opens with the aircraft, route and distance of the last one. Repeat a flight or reverse the route in one tap; “Save and next” keeps the form open for a day of pattern work."),
+        ("Whole minutes", "Time is kept in minutes, not decimal hours. Three legs of 40 minutes add up to 2:00, not to 2:01."),
+        ("Totals that match", "PIC, SIC, solo, dual received, dual given, night, actual and simulated instrument — in total, over the last 12 months and over any period, split by class and by type."),
+        ("Cross-country, all seven ways", "14 CFR 61.1 defines cross-country seven times: 50, 25 and 15 nautical miles and no distance at all. Pick what you are counting toward and the app counts that one."),
+        ("Currency", "Three takeoffs and landings in 90 days per category and class, the night window of 61.57(b) with full-stop landings, and instrument currency with the six-month window of 61.57(d) and the IPC after it."),
+        ("Deadlines", "Medical duration by class, age at the exam and kind of operation (61.23(d)); flight review through the 24th calendar month (61.56). Reminders 60, 30 and 7 days before."),
+        ("Form 8710-1", "The Record of Pilot Time grid, filled from your flights — the part of the application people recount by hand."),
+        ("Progress to a rating", "Hours against 61.109 for private, 61.65 for instrument and 61.129 for commercial: what is covered and what is left."),
+        ("Import and export", "Files from ForeFlight, LogTen and MyFlightbook come in; CSV and a printable PDF go out. The import shows what will be added, updated and skipped before it writes anything."),
+        ("Instructor signatures", "An instructor signs on the phone with a finger or an Apple Pencil; the entry then locks, and editing it takes removing the signature, which is recorded."),
+        ("Night time suggested", "Civil twilight for your route and date, computed on the device from the airport database. The suggestion is editable."),
+        ("Works with no signal", "Airports ship with the app. Entry, totals and currency need no connection, no account and no server."),
+    ])
+    plans = ("<div class=\"plans\">"
+             "<div><h3>Free</h3><ul><li>The first 25 flights you type in</li>"
+             "<li>Imported flights do not use up the 25</li>"
+             "<li>Totals, currency and CSV export included</li></ul></div>"
+             "<div><h3>$24.99 a year</h3><ul><li>Unlimited flights</li><li>Everything in the app</li>"
+             "<li>Renews yearly until cancelled</li></ul></div>"
+             "<div><h3>$59.99 once</h3><ul><li>Unlimited flights</li><li>Everything in the app</li>"
+             "<li>One payment, no renewal</li></ul></div>"
+             "<p class=\"note\">Prices are in US dollars and may differ in your country's App Store.</p></div>")
+
+    body = f"""{hero}
+<p class="lead">A logbook for US pilots. You log the flight; the app keeps the totals, the 90-day and instrument currency, the medical and flight-review dates, and the Record of Pilot Time grid of FAA Form 8710-1.</p>
+<div class="shots">{shot('flights', 'The book: a flight is a line, a tap opens it')}{shot('totals', 'Totals by role and condition, by class and by type')}{shot('currency', 'Currency with the date each one runs out')}{shot('f8710', 'The 8710-1 Record of Pilot Time grid')}</div>
+<h2>What it does</h2>
+<div class="features">{features}</div>
+<h2>Price</h2>
+{plans}
+<h2>Your data stays on your phone</h2>
+<p>There is no account and no server. The book is stored on the device, the app makes no network calls, and there is no analytics or advertising code in it. Details are on the <a href="{url(lang, base + 'privacy')}">privacy page</a>.</p>
+<p class="muted">You are responsible for your own logbook and for meeting the regulations that apply to you. The app computes from what you enter, following 14 CFR part 61; it does not replace the regulations, your instructor or your own check. This app is independent and is not affiliated with or endorsed by the Federal Aviation Administration.</p>"""
+    page(lang, base, a["name"]["en"] + " — a pilot logbook for iPhone and iPad", body,
+         desc="A pilot logbook for iPhone: totals, 90-day and instrument currency, medical and flight review dates, and the FAA Form 8710-1 Record of Pilot Time.",
+         sub=logbook_nav(lang, base, ""))
+
+    privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
+<p class="muted">{t['updated']}: {UPDATED}</p>
+<h2>The short version</h2>
+<p>The app collects nothing. It has no account, no server of ours, and it makes no network calls at all. Your logbook is stored on your device and goes nowhere unless you export it yourself.</p>
+<h2>What is stored, and where</h2>
+<ul>
+<li><b>Your logbook</b> — flights, aircraft, instructor signatures, your certificates, medical and flight review dates, and the settings of the app. All of it lives in the app's own storage on the device.</li>
+<li><b>Backup copies</b> — on launch the app writes a copy of the book as a CSV file inside its own storage and keeps the five most recent ones. They never leave the device by themselves.</li>
+<li><b>Airports</b> — the airport database ships inside the app; nothing is looked up online.</li>
+</ul>
+<h2>What is not there</h2>
+<ul>
+<li>No analytics, no crash reporting service, no advertising, no third-party SDKs.</li>
+<li>No tracking, in the sense of Apple's App Tracking Transparency: nothing to permit, because nothing is collected.</li>
+<li>No location access: night time is computed from the airports you enter, not from where the phone is.</li>
+<li>No e-mail address, name or password is asked for.</li>
+</ul>
+<h2>When data does leave the device — because you send it</h2>
+<ul>
+<li><b>Export.</b> CSV and PDF files go where you send them: a file you save, a message you write, a printer. We do not see them.</li>
+<li><b>Import.</b> A file you choose is read on the device.</li>
+<li><b>Device backup.</b> If you have iCloud Backup or an encrypted computer backup turned on, iOS includes the app's data in it, under Apple's terms.</li>
+<li><b>Purchases.</b> The subscription and the one-time unlock are sold by Apple. Apple processes the payment and tells the app only whether the purchase is active; we receive no payment details and no identity from it.</li>
+<li><b>Reminders.</b> Notifications about your medical and flight review are local to the device; no reminder is sent through any server.</li>
+</ul>
+<h2>How long it is kept, and how to delete it</h2>
+<p>Everything is kept for as long as the app is on your device, because it is on your device. Delete a flight and it is gone from the book; delete the app and iOS removes its storage, including the backup copies. There is nothing on our side to request or to erase. Export your book first if you want to keep it.</p>
+<h2>Children</h2>
+<p>The app is a tool for pilots and is not directed to children under 13. It collects nothing from anyone.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the new version appears on this page with a new date. Questions: {contact('en')}</p>"""
+    page(lang, base + "privacy", t["privacy"] + " — " + a["name"]["en"], privacy,
+         desc="Privacy policy for Pilot Logbook: no collection, no network calls, no account.",
+         sub=logbook_nav(lang, base, "privacy"))
+
+    terms = f"""<h1>Terms of Use — {a['name']['en']}</h1>
+<p class="muted">{t['updated']}: {UPDATED}</p>
+<p>The app is licensed to you under Apple's <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Standard Licensed Application End User License Agreement</a>. These terms add what is specific to this app.</p>
+<h2>What the app is</h2>
+<p>Pilot Logbook records flights and computes from them: totals, cross-country under the definitions of 14 CFR 61.1, recent flight experience under 61.57, the deadlines of 61.23(d) and 61.56, progress toward the aeronautical experience of 61.109, 61.65 and 61.129, and the Record of Pilot Time grid of FAA Form 8710-1.</p>
+<h2>Your logbook is yours to keep correct</h2>
+<p>Logging flight time and meeting the requirements that apply to you are your responsibility as a pilot. The app computes from the data you enter; wrong or missing entries give wrong results, and rules change. Check what the app tells you against the regulations and, where it matters, with your instructor or examiner. The app does not give regulatory or legal advice and is not a substitute for the current text of the regulations.</p>
+<h2>Independence</h2>
+<p>This app is made by one developer. It is not affiliated with, endorsed by or sponsored by the Federal Aviation Administration, and it is not connected with ForeFlight, LogTen or MyFlightbook — importing their files does not imply any relationship.</p>
+<h2>Purchases</h2>
+<ul>
+<li><b>Free.</b> The first 25 flights you enter by hand are free, and flights brought in by import do not use them up. Reading, totals, currency and CSV export work in the free version.</li>
+<li><b>Subscription.</b> $24.99 per year, charged to your Apple Account at confirmation of purchase. It renews automatically for another year unless you turn off auto-renewal at least 24 hours before the current period ends; the renewal is charged within 24 hours before that. Manage or cancel it in Settings → your Apple Account → Subscriptions.</li>
+<li><b>One-time unlock.</b> $59.99 once, for the same features, with nothing to renew.</li>
+<li>Prices are in US dollars; your App Store may show a different price and currency. Apple processes payments, renewals and refunds under its own rules. Restore a purchase on another device with Settings → Restore purchases in the app.</li>
+</ul>
+<h2>Data</h2>
+<p>Your book stays on your device (see the <a href="{url(lang, base + 'privacy')}">privacy page</a>). Keeping your own copies is up to you: the app writes backup copies on launch and exports CSV and PDF at any time, including in the free version.</p>
+<h2>No warranty</h2>
+<p>The app is provided “as is”, without warranties of any kind. We work to keep the calculations right and test them against the text of the regulations, but we do not warrant that the app is free of errors or fit for any particular purpose, and we are not liable for decisions made from its output.</p>
+<h2>Changes and contact</h2>
+<p>If these terms change, the new version is published on this page with a new date. Questions: {contact('en')}</p>"""
+    page(lang, base + "terms", t["terms"] + " — " + a["name"]["en"], terms,
+         desc="Terms of use for Pilot Logbook, including subscription and one-time purchase terms.",
+         sub=logbook_nav(lang, base, "terms"))
+
+    support = f"""<h1>Support — {a['name']['en']}</h1>
+<p>Write to us: {contact('en')}. One person reads that mailbox, and answers in a day or two. A screenshot and your iOS version help.</p>
+<h2>Frequently asked</h2>
+<p><b>How do I move my logbook in?</b> Settings → Import, then pick a file exported from ForeFlight, LogTen or MyFlightbook. You see how many entries will be added, updated and skipped, and why, before anything is written. Importing the same file twice does not duplicate flights.</p>
+<p><b>What is free?</b> The first 25 flights you type in yourself. Flights that come in by import do not use them up, and reading, totals, currency and CSV export keep working.</p>
+<p><b>I bought on another device.</b> Settings → Restore purchases.</p>
+<p><b>How do I cancel the subscription?</b> In iOS Settings → your Apple Account → Subscriptions, at least 24 hours before the year ends. Cancelling leaves the book on your device.</p>
+<p><b>My totals differ from my old logbook by a minute or two.</b> This app keeps time in whole minutes and converts to decimal hours only for display and export. Apps that store decimal hours round every leg, and the rounding adds up.</p>
+<p><b>Which cross-country does it count?</b> The one you choose. 14 CFR 61.1 has seven definitions with different distances, so the answer depends on what the time is for; the totals screen lets you pick.</p>
+<p><b>Why is a flight not counting toward night currency?</b> 61.57(b) uses the window from one hour after sunset to one hour before sunrise and requires landings to a full stop — a different window from the night flight time of 1.1, which uses civil twilight. The app counts both, separately.</p>
+<p><b>Can my instructor sign on the phone?</b> Yes — open the flight, Sign, and the instructor signs with a finger or an Apple Pencil and enters their name and certificate number. The entry is then locked; to edit it, remove the signature, which is recorded.</p>
+<p><b>How do I get a paper copy?</b> Export → PDF gives printable spreads with carried-forward totals, page numbers and room for signatures. Export → CSV gives the data itself.</p>
+<p><b>How do I delete my data?</b> Delete flights in the app, or delete the app — everything is on your device and nothing is stored anywhere else.</p>
+<p><b>Does it need a connection?</b> No. Airports ship with the app; entry, totals and currency work in airplane mode.</p>"""
+    page(lang, base + "support", t["support"] + " — " + a["name"]["en"], support,
+         desc="Support and frequently asked questions for Pilot Logbook.",
+         sub=logbook_nav(lang, base, "support"))
+
+
 # Сайт только на английском; русские тексты в функциях оставлены на случай перевода.
 for lang in ("en",):
     home(lang)
     nardy_pages(lang)
+    logbook_pages(lang)
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".nojekyll"), "w"):
     pass
 print("готово")
