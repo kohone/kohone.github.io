@@ -20,6 +20,11 @@ APPS = [
      "tag": {"en": "Backgammon and long nardy with fair, verifiable dice",
              "ru": "Короткие и длинные нарды с честными проверяемыми костями"},
      "store": None},
+    {"slug": "bowling", "icon": "/assets/bowling-icon.jpg",
+     "name": {"en": "Bowling Score Keeper", "ru": "Боулинг: счёт и статистика"},
+     "tag": {"en": "Frame-by-frame scoring, spare conversion by leave, average by month",
+             "ru": "Счёт по кадрам, конверсия спэров по раскладам, средняя по месяцам"},
+     "store": None},
     # Приложение со своим сайтом: карточка ведёт наружу, страниц здесь нет.
     {"slug": "cycleally", "icon": "/assets/cycleally-icon.jpg", "external": "https://cycleally.com",
      "name": {"en": "Cycle Ally", "ru": "Cycle Ally"},
@@ -31,11 +36,12 @@ APPS = [
 T = {
     "en": {"apps": "Apps", "home_lead": "Web developer and mobile app developer. I build apps and games for iPhone.",
            "overview": "Overview", "my_apps": "My apps",
-           "soon": "Coming to the App Store", "privacy": "Privacy", "support": "Support", "verify": "Verify the dice",
+           "soon": "Coming to the App Store", "privacy": "Privacy", "terms": "Terms", "support": "Support", "verify": "Verify the dice",
            "report": "Dice report", "lang": "Русский", "contact_soon": "A support e-mail will appear here soon.",
            "updated": "Last updated"},
     "ru": {"apps": "Приложения", "home_lead": "Делаю приложения и игры для iPhone.",
-           "soon": "Скоро в App Store", "privacy": "Конфиденциальность", "support": "Поддержка", "verify": "Проверка костей",
+           "overview": "Обзор", "my_apps": "Мои приложения",
+           "soon": "Скоро в App Store", "privacy": "Конфиденциальность", "terms": "Условия", "support": "Поддержка", "verify": "Проверка костей",
            "report": "Отчёт о костях", "lang": "English", "contact_soon": "Почта поддержки скоро появится здесь.",
            "updated": "Обновлено"},
 }
@@ -439,10 +445,125 @@ def report_page(lang, base):
     page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Backgammon: Fair Dice", body, sub=app_nav(lang, base, "dice-report"))
 
 
+
+
+# ── Боулинг ───────────────────────────────────────────────────────────
+
+
+def bowling_nav(lang, base, current):
+    t = T[lang]
+    items = [("", t["overview"]), ("privacy", t["privacy"]), ("terms", t["terms"]), ("support", t["support"])]
+    links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
+                    for slug, name in items)
+    return f'<nav class="sub">{links}</nav>'
+
+
+def bowling_pages(lang):
+    """Черновики страниц приложения для боулинга. Лендинг дорабатывается отдельно."""
+    a, t = APPS[1], T[lang]
+    base = "/bowling/"
+    name = a["name"][lang]
+    store = app_store_badge(a["store"]) if a["store"] else f'<span class="badge">{t["soon"]}</span>'
+    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{name}</h1>{store}</div></div>'
+
+    overview = f"""{hero}
+<p class="lead">A scorekeeper for ten-pin bowling: enter a game frame by frame, mark the pins you leave standing,
+and see where your points actually go.</p>
+<h2>What it does</h2>
+<ul>
+<li>Frame-by-frame entry with the tenth frame handled by the USBC rules, or a single final score when you are in a hurry.</li>
+<li>As many games in a session as you played &mdash; four, five, a whole tournament.</li>
+<li>Any roll, game or session can be corrected or deleted afterwards.</li>
+<li>Average by month, strike rate, spares split into single pins, multi-pin leaves and splits.</li>
+<li>A table of every leave: which ones you convert and which you do not.</li>
+<li>Your arsenal of balls, with the average for each one.</li>
+<li>Export to CSV and PDF, import from CSV.</li>
+</ul>
+<h2>What it does not do</h2>
+<ul>
+<li>No account and no sign-in.</li>
+<li>No ads and no trackers.</li>
+<li>It does not read the scoreboard with the camera and does not track the ball down the lane.</li>
+</ul>
+<p class="muted">Entering games and seeing your whole history are free. The breakdown &mdash; average by month,
+the leave table, the percentages, the filters and export &mdash; is the paid part.</p>
+<p>Questions: {contact(lang)}</p>"""
+    page(lang, base, name, overview, desc=a["tag"][lang], sub=bowling_nav(lang, base, ""))
+
+    privacy = f"""<h1>Privacy Policy &mdash; {name}</h1>
+<p class="muted">Last updated: {UPDATED}</p>
+<p>The app has no account, no analytics and no advertising. There is no server of ours for your data to go to.</p>
+<h2>What stays on your device</h2>
+<p>Your sessions, games, rolls, marked pins, balls and their photos are stored on your iPhone in the app's own
+storage. Photos you pick for a ball are copied into the app's folder and never leave it.</p>
+<h2>iCloud</h2>
+<p>If you are signed in to iCloud and the app is allowed to use it, your data is also kept in <b>your own</b>
+private iCloud database so a new phone does not start empty. That data belongs to your Apple Account: we have
+no access to it and cannot read it. Turning iCloud off for the app keeps everything local.</p>
+<h2>Files you create yourself</h2>
+<p>Export produces a CSV or PDF file. Where it goes &mdash; Files, mail, another app &mdash; is entirely your choice;
+the app only hands the file to the system share sheet.</p>
+<h2>What we do not collect</h2>
+<ul>
+<li>No identifiers for advertising, no tracking across apps or sites.</li>
+<li>No usage analytics, no crash SDKs from third parties.</li>
+<li>No contacts, no location, no health data, no microphone.</li>
+</ul>
+<h2>Purchases</h2>
+<p>Purchases are processed by Apple. We never see your card, and we do not receive your name or address.</p>
+<h2>Children</h2>
+<p>The app is not directed at children and collects nothing from anyone.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the date above changes with it. Questions: {contact(lang)}</p>"""
+    page(lang, base + "privacy", f"Privacy &mdash; {name}", privacy, sub=bowling_nav(lang, base, "privacy"))
+
+    terms = f"""<h1>Terms of Use &mdash; {name}</h1>
+<p class="muted">Last updated: {UPDATED}</p>
+<h2>What you get</h2>
+<p>A licence to use the app on devices tied to your Apple Account, for your own bowling. Entering games and
+seeing your own history are free and stay free. The breakdown of your statistics is unlocked by a purchase.</p>
+<h2>Purchases</h2>
+<p>Purchases and refunds are handled by Apple under the terms of the App Store. A subscription renews until you
+cancel it in your Apple Account settings; a one-time unlock does not renew. Restoring purchases on a new device
+is free and available in the app.</p>
+<h2>Your data is yours</h2>
+<p>You can export everything to CSV or PDF at any time, and delete any session, game or ball. Deleting the app
+deletes its local data.</p>
+<h2>What the app does not promise</h2>
+<p>The app counts what you enter. It does not read the scoreboard, does not watch the lane, and is not affiliated
+with, endorsed by or certified by the United States Bowling Congress or any bowling centre. Scores entered by
+mistake stay wrong until you correct them.</p>
+<h2>Liability</h2>
+<p>The app is provided as is. It is a scorekeeper, not a document of record: keep your own export if a score
+matters to you.</p>
+<h2>Contact</h2>
+<p>{contact(lang)}</p>"""
+    page(lang, base + "terms", f"Terms of Use &mdash; {name}", terms, sub=bowling_nav(lang, base, "terms"))
+
+    support = f"""<h1>Support &mdash; {name}</h1>
+<p class="lead">Written by one person. Write to {contact(lang)} and you will get an answer from that person.</p>
+<h2>Before you write</h2>
+<ul>
+<li><b>A score looks wrong.</b> Tell me the frames as you bowled them &mdash; the counting is covered by tests
+against the USBC rules, so a real mistake is worth finding.</li>
+<li><b>Moving to a new phone.</b> Turn iCloud on for the app on both phones, or export to CSV on the old one and
+import it on the new one.</li>
+<li><b>A session ruined your average.</b> Any session, game or roll can be deleted or corrected.</li>
+<li><b>Restoring a purchase.</b> The Data tab has the restore action; it is free and works on any device with the
+same Apple Account.</li>
+</ul>
+<h2>What helps me answer faster</h2>
+<p>The iOS version, the app version, and what you expected to see instead. A screenshot is better than a description.</p>
+<h2>Contact</h2>
+<p>{contact(lang)}</p>"""
+    page(lang, base + "support", f"Support &mdash; {name}", support, sub=bowling_nav(lang, base, "support"))
+
+
 # Сайт только на английском; русские тексты в функциях оставлены на случай перевода.
 for lang in ("en",):
     home(lang)
     nardy_pages(lang)
+    bowling_pages(lang)
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".nojekyll"), "w"):
     pass
 print("готово")
