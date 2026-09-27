@@ -482,14 +482,15 @@ def logbook_pages(lang):
         ("Instructor signatures", "An instructor signs on the phone with a finger or an Apple Pencil; the entry then locks, and editing it takes removing the signature, which is recorded."),
         ("Night time suggested", "Civil twilight for your route and date, computed on the device from the airport database. The suggestion is editable."),
         ("Works with no signal", "Airports ship with the app. Entry, totals, currency and export need no connection, no account and no server — only buying goes through the App Store."),
+        ("A copy in your iCloud", "With the full version the logbook is copied to your own iCloud Drive after every change, as one CSV file you can open in Files. A new phone or a reinstall offers to restore it. It is a copy, not a sync between two devices — merging two logbooks is where other apps lose entries."),
     ])
     plans = ("<div class=\"plans\">"
              "<div><h3>Free</h3><ul><li>The first 25 flights you type in</li>"
              "<li>Imported flights do not use up the 25</li>"
              "<li>Totals, currency and CSV export included</li></ul></div>"
-             "<div><h3>$24.99 a year</h3><ul><li>Unlimited flights</li><li>Everything in the app</li>"
+             "<div><h3>$24.99 a year</h3><ul><li>Unlimited flights</li><li>Copy in your iCloud Drive</li>"
              "<li>Renews yearly until cancelled</li></ul></div>"
-             "<div><h3>$59.99 once</h3><ul><li>Unlimited flights</li><li>Everything in the app</li>"
+             "<div><h3>$59.99 once</h3><ul><li>Unlimited flights</li><li>Copy in your iCloud Drive</li>"
              "<li>One payment, no renewal</li></ul></div>"
              "<p class=\"note\">Prices are in US dollars and may differ in your country's App Store.</p></div>")
 
@@ -500,8 +501,8 @@ def logbook_pages(lang):
 <div class="features">{features}</div>
 <h2>Price</h2>
 {plans}
-<h2>Your data stays on your phone</h2>
-<p>There is no account and no server of ours. The book is stored on the device, the app sends nothing anywhere, and there is no analytics or advertising code in it. The only network traffic is Apple's own: the App Store, asked for the price and for whether you have bought. Details are on the <a href="{url(lang, base + 'privacy')}">privacy page</a>.</p>
+<h2>Your data stays yours</h2>
+<p>There is no account and no server of ours. The book is stored on your device; with the full version a copy also goes to your own iCloud Drive, where only you can read it. There is no analytics and no advertising code. The rest of the network traffic is Apple's own: the App Store, asked for the price and for whether you have bought. Details are on the <a href="{url(lang, base + 'privacy')}">privacy page</a>.</p>
 <p class="muted">You are responsible for your own logbook and for meeting the regulations that apply to you. The app computes from what you enter, following 14 CFR part 61; it does not replace the regulations, your instructor or your own check. This app is independent and is not affiliated with or endorsed by the Federal Aviation Administration.</p>"""
     page(lang, base, a["name"]["en"] + " — a pilot logbook for iPhone and iPad", body,
          desc="A pilot logbook for iPhone: totals, 90-day and instrument currency, medical and flight review dates, and the FAA Form 8710-1 Record of Pilot Time.",
@@ -510,11 +511,12 @@ def logbook_pages(lang):
     privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
 <p class="muted">{t['updated']}: {UPDATED}</p>
 <h2>The short version</h2>
-<p>The app collects nothing. It has no account and no server of ours, and it never sends your logbook anywhere. The book is stored on your device and goes nowhere unless you export it yourself.</p>
+<p>The app collects nothing. It has no account and no server of ours, and it never sends your logbook to us or to anyone else. The book is stored on your device; with the full version a copy is also written to your own iCloud Drive, under your Apple Account, where only you can read it.</p>
 <h2>What is stored, and where</h2>
 <ul>
 <li><b>Your logbook</b> — flights, aircraft, instructor signatures, your certificates, medical and flight review dates, and the settings of the app. All of it lives in the app's own storage on the device.</li>
-<li><b>Backup copies</b> — on launch the app writes a copy of the book as a CSV file inside its own storage and keeps the five most recent ones. They never leave the device by themselves.</li>
+<li><b>Backup copies</b> — on launch the app writes a copy of the book as a CSV file inside its own storage and keeps the five most recent ones. These stay on the device.</li>
+<li><b>The iCloud copy</b> — with the full version the app also writes the book to your own iCloud Drive, after every change, as a single CSV file you can see in Files. It goes to your Apple Account, not to us; we have no access to it and no way to read it. Turn it off in iPhone Settings → your Apple Account → iCloud → Apps Using iCloud, and the app keeps working with the local copies.</li>
 <li><b>Airports</b> — the airport database ships inside the app; nothing is looked up online.</li>
 </ul>
 <h2>What is not there</h2>
@@ -530,11 +532,12 @@ def logbook_pages(lang):
 <li><b>Export.</b> CSV and PDF files go where you send them: a file you save, a message you write, a printer. We do not see them.</li>
 <li><b>Import.</b> A file you choose is read on the device.</li>
 <li><b>Device backup.</b> If you have iCloud Backup or an encrypted computer backup turned on, iOS includes the app's data in it, under Apple's terms.</li>
+<li><b>iCloud Drive.</b> The copy described above is stored by Apple in your own iCloud, under Apple's privacy policy and your Apple Account. Deleting the file in Files deletes the copy.</li>
 <li><b>Purchases.</b> The subscription and the one-time unlock are sold by Apple. To show the price and to know whether you have bought, the app asks Apple's StoreKit, which talks to the App Store — that is the only network traffic in the app, it carries no logbook data, and it is covered by Apple's privacy policy. Apple processes the payment and tells the app only whether the purchase is active; we receive no payment details and no identity from it.</li>
 <li><b>Reminders.</b> Notifications about your medical and flight review are local to the device; no reminder is sent through any server.</li>
 </ul>
 <h2>How long it is kept, and how to delete it</h2>
-<p>Everything is kept for as long as the app is on your device, because it is on your device. Delete a flight and it is gone from the book; delete the app and iOS removes its storage, including the backup copies. There is nothing on our side to request or to erase. Export your book first if you want to keep it.</p>
+<p>Everything is kept for as long as the app is on your device, because it is on your device. Delete a flight and it is gone from the book; delete the app and iOS removes its storage, including the local backup copies. The iCloud copy stays in your iCloud Drive until you delete the file yourself — that is the point of it, and it is deleted like any other file in Files. There is nothing on our side to request or to erase. Export your book first if you want to keep it.</p>
 <h2>Children</h2>
 <p>The app is a tool for pilots and is not directed to children under 13. It collects nothing from anyone.</p>
 <h2>Changes and contact</h2>
@@ -560,7 +563,7 @@ def logbook_pages(lang):
 <li>Prices are in US dollars; your App Store may show a different price and currency. Apple processes payments, renewals and refunds under its own rules. Restore a purchase on another device with Settings → Restore purchases in the app.</li>
 </ul>
 <h2>Data</h2>
-<p>Your book stays on your device (see the <a href="{url(lang, base + 'privacy')}">privacy page</a>). Keeping your own copies is up to you: the app writes backup copies on launch and exports CSV and PDF at any time, including in the free version.</p>
+<p>Your book stays on your device, and with the full version a copy is written to your own iCloud Drive (see the <a href="{url(lang, base + 'privacy')}">privacy page</a>). That copy is a copy, not a sync: the app writes it and never merges two devices. Keeping your own copies is up to you as well — the app writes local backups on launch and exports CSV and PDF at any time, including in the free version.</p>
 <h2>No warranty</h2>
 <p>The app is provided “as is”, without warranties of any kind. We work to keep the calculations right and test them against the text of the regulations, but we do not warrant that the app is free of errors or fit for any particular purpose, and we are not liable for decisions made from its output.</p>
 <h2>Changes and contact</h2>
@@ -581,7 +584,8 @@ def logbook_pages(lang):
 <p><b>Why is a flight not counting toward night currency?</b> 61.57(b) uses the window from one hour after sunset to one hour before sunrise and requires landings to a full stop — a different window from the night flight time of 1.1, which uses civil twilight. The app counts both, separately.</p>
 <p><b>Can my instructor sign on the phone?</b> Yes — open the flight, Sign, and the instructor signs with a finger or an Apple Pencil and enters their name and certificate number. The entry is then locked; to edit it, remove the signature, which is recorded.</p>
 <p><b>How do I get a paper copy?</b> Export → PDF gives printable spreads with carried-forward totals, page numbers and room for signatures. Export → CSV gives the data itself.</p>
-<p><b>How do I delete my data?</b> Delete flights in the app, or delete the app — everything is on your device and nothing is stored anywhere else.</p>
+<p><b>What happens to my logbook on a new phone?</b> With the full version the book is copied to your own iCloud Drive after every change. Install the app on the new phone, and it offers to restore from that copy — you see how many entries will be added before anything is written. It is a copy for moving and for reinstalls, not a sync: the app does not merge two devices editing at once.</p>
+<p><b>How do I delete my data?</b> Delete flights in the app, or delete the app. The iCloud copy is a file in your own iCloud Drive — delete it in Files. Nothing is stored anywhere else.</p>
 <p><b>Does it need a connection?</b> Not for flying or for logging. Airports ship with the app; entry, totals, currency and export all work in airplane mode. A connection is needed only to buy or to restore a purchase, because that goes through the App Store.</p>"""
     page(lang, base + "support", t["support"] + " — " + a["name"]["en"], support,
          desc="Support and frequently asked questions for Pilot Logbook.",
