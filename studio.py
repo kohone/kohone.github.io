@@ -10,16 +10,16 @@ E = html.escape
 
 
 def legacy_apps():
-    return [dict(a, name={'en': a['name'], 'ru': a['name']}, tag={'en': a['description'], 'ru': a['description']}) for a in PRODUCTS]
+    """Fields the page generators in build.py read. page_description is the app's own tagline from its branch."""
+    return [dict(a, name={'en': a['name'], 'ru': a['name']}, tag={'en': a.get('page_description', a['description']), 'ru': a.get('page_description', a['description'])}) for a in PRODUCTS]
 
 
 def href(a):
     return a.get('external') or '/' + a['slug'] + '/'
 
 
-def phone(a, detail=False, eager=False):
-    src = a.get('detail_screen', a['screen']) if detail else a['screen']
-    return f'<img class="device" src="{src}" alt="{E(a["name"])} app interface" width="368" height="800" loading="{"eager" if eager else "lazy"}" decoding="async">'
+def phone(a, eager=False):
+    return f'<img class="device" src="{a["screen"]}" alt="{E(a["name"])} app interface" width="368" height="800" loading="{"eager" if eager else "lazy"}" decoding="async">'
 
 
 def shell(path, title, body, desc='', sub='', kind='document'):
@@ -50,7 +50,8 @@ def write_page(path, title, body, desc='', sub=''):
     if product and product['slug'] == 'fair-dice':
         shell(path, title, '<div class="fair-landing wood">'+body+'</div>', desc, sub, kind='product')
     elif product:
-        product_page(product)
+        # The app's own landing text from build.py, in the shared design. Copy is not generated here.
+        shell(path, title, f'<article class="app-landing {product["theme"]}">'+body+'</article>', desc, sub, kind='product')
     else:
         shell(path, title, '<article class="document-body">'+body+'</article>', desc, sub)
 
@@ -78,18 +79,3 @@ def home():
 </section>
 <section class="maker-section" id="about"><div class="wide maker-grid"><div><p class="eyebrow">THE PERSON BEHIND THE PIXELS</p><h2>One developer.<br><span class="serif">Many little obsessions.</span></h2></div><div><p class="maker-lead">Hi, I’m Maks. I build apps for people who care about the details.</p><p>The right move on a backgammon board. A clearer picture of your own patterns. Small things deserve good software, too.</p><a class="text-link" href="mailto:support@kohone.net">Have a question? You’ll reach me. ↗</a></div></div><div class="wide maker-values"><div><span>01</span><h3>A reason to exist.</h3><p>Each app starts with a particular problem and the person trying to solve it.</p></div><div><span>02</span><h3>Care below the surface.</h3><p>From verifiable dice to a clearer picture of your own patterns, the details are part of the product.</p></div><div><span>03</span><h3>Always a work in progress.</h3><p>A growing collection, built and refined one thoughtful app at a time.</p></div></div></section>'''
     shell('/', 'Kohone — Thoughtfully made apps by Maks Beskrovnyi', body, 'Independent iPhone apps and games by Maks Beskrovnyi. Explore Cycle Ally and Backgammon: Fair Dice.', kind='home')
-
-
-def product_page(a):
-    base = '/' + a['slug'] + '/'
-    cta = f'<a class="button primary" href="{E(a["store"])}">Download on the App Store ↗</a>' if a.get('store') else '<span class="release-status"><span class="live-dot"></span> In development · Coming to the App Store</span>'
-    special = '<a class="text-link" href="/fair-dice/verify">Verify a game’s dice →</a><a class="text-link" href="/fair-dice/dice-report">Read the dice report →</a>' if a['slug']=='fair-dice' else ''
-    features = ''.join(f'<article><span class="feature-number">0{i+1}</span><h3>{E(title)}</h3><p>{E(text)}</p></article>' for i,(title,text) in enumerate(a['features']))
-    related = [p for p in PUBLIC_PRODUCTS if p['slug']!=a['slug']][:3]
-    body = f'''<div class="product-page {a['theme']}"><div class="wide product-nav"><a href="/#apps">← All apps</a><span>{E(a['short'])}</span><a href="{base}support">Support ↗</a></div>
-<section class="wide product-hero"><div><div class="product-identity"><img src="{a['icon']}" alt="" width="54" height="54"><span>{E(a['name'])}<small>{E(a['category'])} / Made for iPhone</small></span></div><h1>{E(a['headline']).replace(chr(10),'<br>')}</h1><p class="hero-description">{E(a['description'])}</p>{cta}<div class="product-facts">{''.join(f'<span>{E(x)}</span>' for x in a['facts'])}</div></div><div class="product-stage"><span class="orbit"></span>{phone(a,eager=True)}<span class="stage-caption">A CLOSER LOOK AT {E(a['short'].upper())}</span></div></section></div>
-<section class="wide story"><div class="story-image {a['theme']}">{phone(a,detail=True)}</div><div><p class="eyebrow">MADE FOR THE WAY YOU USE IT</p><h2>{E(a['story_title'])}</h2><p>{E(a['story'])}</p><div class="story-links">{special}</div></div></section>
-<section class="wide feature-section"><p class="eyebrow">THE DETAILS THAT MAKE A DIFFERENCE</p><div class="feature-grid">{features}</div></section>
-<section class="wide practical"><div><p class="eyebrow">SIMPLE & UPFRONT</p><h2>Good to know.</h2></div><div><details open><summary>What does it cost?</summary><p>{E(a['pricing'])}</p></details><details><summary>What happens to my data?</summary><p>{E(a['privacy'])}</p><a href="{base}privacy">Read the privacy policy →</a></details><details><summary>How can I get help?</summary><p>Email <a href="mailto:support@kohone.net">support@kohone.net</a>. You’ll hear directly from the developer.</p><a href="{base}support">App support →</a></details>{f'<p class="product-note">{E(a["note"])}</p>' if a.get('note') else ''}<div class="legal-links"><a href="{base}privacy">Privacy policy</a>{f'<a href="{base}terms">Terms of use</a>' if a['slug']!='fair-dice' else ''}<a href="{base}support">Support</a></div></div></section>
-<section class="more-apps wide"><div class="section-heading"><div><p class="eyebrow">FROM THE SAME MAKER</p><h2>More to explore.</h2></div><a class="text-link" href="/#apps">All apps ↗</a></div><div class="related-grid">{''.join(f'<a href="{href(p)}"><img src="{p["icon"]}" alt="" width="54" height="54"><span>{E(p["short"])}<small>{E(p["category"])}</small></span><b aria-hidden="true">↗</b></a>' for p in related)}</div></section>'''
-    shell(base, a['name']+' — Kohone', body, a['description'], kind='product')

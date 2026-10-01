@@ -13,6 +13,7 @@ SITE = "https://kohone.net"
 DEV = "Maks Beskrovnyi"
 EMAIL = "support@kohone.net"
 UPDATED = "2026-09-25"
+FAIR_DICE_UPDATED = "2026-09-27"
 MGRS_UPDATED = "2026-09-26"
 SOLUNAR_UPDATED = "2026-09-26"
 
@@ -97,7 +98,7 @@ def nardy_pages(lang):
 <p class="lede">Backgammon and long nardy against a strong computer or a friend on the same phone. The dice of every game are sealed before the first roll — after the game you get the key and check every roll yourself.</p>
 <p class="for-whom">For anyone who has ever suspected an app of rigging the dice — and for anyone who simply wants a good game.</p>
 <div class="cta">{store_cta}<a class="button" href="#how">See what it does</a></div>
-<div class="hero-meta"><nav class="hero-legal" aria-label="App information"><a href="/fair-dice/privacy">Privacy Policy</a><span aria-hidden="true">·</span><a href="/fair-dice/terms">Terms of Use</a><span aria-hidden="true">·</span><a href="/fair-dice/support">Support</a></nav></div>
+<p class="small">Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
 </div>
 {img("hint", "A game with the best move shown by arrows", "hero-shot")}
 </div></div>
@@ -197,7 +198,7 @@ def nardy_pages(lang):
     # Политика конфиденциальности
     if lang == "en":
         privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
-<p class="muted">{t['updated']}: {UPDATED}</p>
+<p class="muted">{t['updated']}: {FAIR_DICE_UPDATED}</p>
 <p>The game itself needs no account and sends your games nowhere. The only third party in the app is advertising (Google AdMob), described below.</p>
 <h2>What stays on your device</h2>
 <p>Your games, history, statistics and settings are stored on your iPhone (the current game in the Keychain, the rest in the app's own storage). We have no servers and never receive them.</p>
@@ -232,7 +233,7 @@ def nardy_pages(lang):
 <p>If this policy changes, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
     else:
         privacy = f"""<h1>Политика конфиденциальности — {a['name']['ru']}</h1>
-<p class="muted">{t['updated']}: {UPDATED}</p>
+<p class="muted">{t['updated']}: {FAIR_DICE_UPDATED}</p>
 <p>Для игры не нужен аккаунт, и партии никуда не отправляются. Единственная сторонняя служба в приложении — реклама Google AdMob, о ней ниже.</p>
 <h2>Что хранится на устройстве</h2>
 <p>Партии, история, статистика и настройки хранятся на вашем iPhone (текущая партия — в связке ключей, остальное — в хранилище приложения). Своих серверов у нас нет, и мы эти данные не получаем.</p>
@@ -270,7 +271,7 @@ def nardy_pages(lang):
     # Условия использования
     if lang == "en":
         terms = f"""<h1>Terms of Use — {a['name']['en']}</h1>
-<p class="muted">{t['updated']}: {UPDATED}</p>
+<p class="muted">{t['updated']}: {FAIR_DICE_UPDATED}</p>
 <p>The app is licensed to you under Apple's <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Standard Licensed Application End User License Agreement</a>. These terms add what is specific to this app.</p>
 <h2>The game</h2>
 <p>Backgammon: Fair Dice is a board game for entertainment and learning. Points in the game have no money value; there are no bets, coins or prizes.</p>
@@ -289,7 +290,7 @@ def nardy_pages(lang):
 <p>If these terms change, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
     else:
         terms = f"""<h1>Условия использования — {a['name']['ru']}</h1>
-<p class="muted">{t['updated']}: {UPDATED}</p>
+<p class="muted">{t['updated']}: {FAIR_DICE_UPDATED}</p>
 <p>Приложение предоставляется по <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">стандартному лицензионному соглашению Apple с конечным пользователем</a>. Эти условия добавляют то, что относится к этому приложению.</p>
 <h2>Игра</h2>
 <p>«Нарды: длинные и короткие» — настольная игра для развлечения и обучения. Очки в игре не имеют денежной ценности; ставок, монет и призов нет.</p>
@@ -883,9 +884,6 @@ for lang in ("en",):
     bowling_pages(lang)
     mgrs_pages(lang)
     solunar_pages(lang)
-for product in studio.PUBLIC_PRODUCTS:
-    if not product.get("external") and product["slug"] != "fair-dice":
-        studio.product_page(product)
 # Remove only known generated pages for products not yet published.
 # Their source content remains in the generator and their product branches.
 for product in studio.PRODUCTS:

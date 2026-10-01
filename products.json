@@ -7,36 +7,12 @@
     "theme": "wood",
     "tag": "A good game. A fair roll.",
     "description": "Backgammon and long nardy with a worthy opponent, beautiful boards, and dice you can verify yourself.",
-    "headline": "Enjoy the game.\nTrust the dice.",
+    "page_description": "Backgammon and long nardy with fair, verifiable dice",
     "icon": "/assets/fair-dice-icon.jpg",
     "screen": "/assets/fair-dice/hint.jpg",
-    "detail_screen": "/assets/fair-dice/review.jpg",
     "status": "In development",
     "store": null,
     "featured": true,
-    "facts": [
-      "Two classic games",
-      "Play offline",
-      "Verifiable dice"
-    ],
-    "story_title": "The proof is part of the game.",
-    "story": "Every dice sequence is sealed before the first move. When the game ends, the key is revealed. Check the rolls yourself, right here on the website.",
-    "features": [
-      [
-        "An opponent you can grow with",
-        "Five levels, hints on the board, and a coach that explains mistakes. Review the moments that changed your game."
-      ],
-      [
-        "Find your favorite board",
-        "Wood, stone, leather, and regional designs. Make a familiar game feel like your own."
-      ],
-      [
-        "Play your way",
-        "Backgammon or long nardy. Play against the computer, or share your phone with a friend."
-      ]
-    ],
-    "pricing": "Both games are free to play. Optional Pro removes ads and the hint limit. Additional boards are sold separately.",
-    "privacy": "Games stay on your iPhone, with an optional copy in your own iCloud. The free version has ads between games; Pro removes them.",
     "published": true
   },
   {
@@ -47,37 +23,12 @@
     "theme": "sky",
     "tag": "Every flight. Every minute.",
     "description": "Your flights, totals, and currency in one clear logbook. Built for US pilots, ready when there is no signal.",
-    "headline": "More time flying.\nLess time counting.",
+    "page_description": "A pilot logbook that counts currency and fills the 8710 grid",
     "icon": "/assets/logbook-icon.jpg",
     "screen": "/assets/logbook/flights.jpg",
-    "detail_screen": "/assets/logbook/currency.jpg",
     "status": "In development",
     "store": null,
     "featured": true,
-    "facts": [
-      "Works offline",
-      "CSV & PDF export",
-      "iPhone & iPad"
-    ],
-    "story_title": "A clear picture of your flying.",
-    "story": "Keep flight totals, recent experience, and important dates together. See what is current and what is coming up, without recounting your logbook.",
-    "features": [
-      [
-        "Minutes that add up",
-        "Time is stored in whole minutes. Three flights of 40 minutes add up to exactly two hours."
-      ],
-      [
-        "Bring your history",
-        "Import from ForeFlight, LogTen, or MyFlightbook. Preview changes before they are written, and export your book to CSV or PDF."
-      ],
-      [
-        "Ready for the paperwork",
-        "The Record of Pilot Time grid for FAA Form 8710-1, filled from your flights. Instructor signatures and progress toward ratings, in the same book."
-      ]
-    ],
-    "pricing": "Your first 25 manually entered flights are free; imports do not count toward the limit. Unlimited flights: $24.99/year or $59.99 once. US prices; local App Store prices may vary.",
-    "privacy": "No account, analytics, or advertising. Your book lives on your device, with an optional iCloud Drive backup in the full version.",
-    "note": "You are responsible for your logbook and compliance with applicable regulations. The app does not replace your own checks or your instructor. Not affiliated with the FAA.",
     "published": false
   },
   {
@@ -88,7 +39,6 @@
     "theme": "rose",
     "tag": "Your patterns. A clearer picture.",
     "description": "A calm PCOS and PMOS journal that helps you bring your history to your next appointment.",
-    "headline": "Your health,\nin your own words.",
     "icon": "/assets/cycleally-icon.jpg",
     "screen": "/assets/cycleally/today.jpg",
     "external": "https://cycleally.com",
@@ -99,42 +49,17 @@
   },
   {
     "slug": "mgrs-land-nav",
-    "name": "MGRS Land Nav",
+    "name": "MGRS Land Nav – Military GPS",
     "short": "MGRS Land Nav",
     "category": "Outdoors",
     "theme": "moss",
     "tag": "Find your way. Build your skills.",
     "description": "Clear coordinates and practical training for pace count, azimuth, and plotting.",
-    "headline": "Know where you are.\nLearn where to go.",
+    "page_description": "Your MGRS grid, and a trainer for pace count, azimuth and plotting",
     "icon": "/assets/mgrs-land-nav-icon.jpg",
     "screen": "/assets/mgrs-land-nav/position.jpg",
-    "detail_screen": "/assets/mgrs-land-nav/review.jpg",
     "status": "In development",
     "store": null,
-    "facts": [
-      "MGRS coordinates",
-      "Navigation training",
-      "No ads"
-    ],
-    "story_title": "Practice before the phone goes away.",
-    "story": "Calibrate your pace count, walk a blind leg, and review where you drifted. Turn a position on a screen into a skill you can use in the field.",
-    "features": [
-      [
-        "Your grid, at a glance",
-        "Large 8- or 10-digit MGRS coordinates, alongside UTM, latitude and longitude, and the grid-to-magnetic angle."
-      ],
-      [
-        "Plan the next leg",
-        "Save points, project an azimuth and distance, and plan courses with pace counts. Import and export GPX."
-      ],
-      [
-        "Train your map skills",
-        "Practice plotting an 8-digit grid and review your blind-leg sessions. Learn from the route you actually walked."
-      ]
-    ],
-    "pricing": "Position and coordinate conversion are free. Training tools are available with a one-time Pro purchase.",
-    "privacy": "No account, advertising, or tracking. Location is used for navigation on your device.",
-    "note": "A training aid. Phones are not allowed on graded land navigation courses; practice with it beforehand.",
     "published": false
   },
   {
@@ -145,35 +70,11 @@
     "theme": "sand",
     "tag": "Make time for the outdoors.",
     "description": "Sun, moon, and solunar periods for your next trip. Calculated on your iPhone, even off the grid.",
-    "headline": "A little planning.\nMore time outside.",
+    "page_description": "Major and minor feeding times, sunrise and moonrise — computed on your iPhone, offline",
     "icon": "/assets/solunar-icon.jpg",
     "screen": "/assets/solunar/today.jpg",
-    "detail_screen": "/assets/solunar/calendar.jpg",
     "status": "In development",
     "store": null,
-    "facts": [
-      "Calculated offline",
-      "Sun & moon times",
-      "Trip journal"
-    ],
-    "story_title": "The day ahead, at a glance.",
-    "story": "See major and minor periods alongside sunrise, sunset, and moon times. Plan for your place and date, then leave the signal behind.",
-    "features": [
-      [
-        "Know why a day scores well",
-        "A day score with its reasons shown. A guide to planning your trip, never a promise of a catch."
-      ],
-      [
-        "Keep your own evidence",
-        "Log bites, catches, and sightings. See whether your own observations fall inside the suggested periods."
-      ],
-      [
-        "Stay in the moment",
-        "Widgets, Live Activity, and alerts before major periods. Your phone does the calculations, without a connection."
-      ]
-    ],
-    "pricing": "Today and tomorrow at your current location are free. Pro is a one-time purchase, with no subscription.",
-    "privacy": "No ads, account, or tracking. Times are computed on your iPhone.",
     "published": false
   },
   {
@@ -184,35 +85,11 @@
     "theme": "lilac",
     "tag": "There is a better game in you.",
     "description": "Keep the score. Find the spares that cost you points. Understand how your game is changing.",
-    "headline": "Every frame tells\na better story.",
+    "page_description": "Frame-by-frame scoring, spare conversion by leave, average by month",
     "icon": "/assets/bowling-icon.jpg",
     "screen": "/assets/bowling/stats.jpg",
-    "detail_screen": "/assets/bowling/spares.jpg",
     "status": "In development",
     "store": null,
-    "facts": [
-      "Frame-by-frame scoring",
-      "Spare analysis",
-      "CSV & PDF export"
-    ],
-    "story_title": "See beyond the final score.",
-    "story": "Track your average over time and see which leaves you convert. Find the patterns worth working on next time you step up to the lane.",
-    "features": [
-      [
-        "A quick game or a full session",
-        "Enter every frame or just the final score. Keep as many games in a session as you played."
-      ],
-      [
-        "Know your spares",
-        "Separate single-pin leaves, multi-pin leaves, and splits. See the conversions behind your average."
-      ],
-      [
-        "Build your own record",
-        "Track your arsenal and average by ball. Correct any entry, import CSV, and export your history."
-      ]
-    ],
-    "pricing": "Game entry and your full history are free. Detailed statistics, filters, and export are available with a paid upgrade.",
-    "privacy": "No account, advertising, or trackers. Your record stays on your device.",
     "published": false
   }
 ]
