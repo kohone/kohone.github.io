@@ -90,6 +90,6 @@
     "screen": "/assets/bowling/stats.jpg",
     "status": "In development",
     "store": null,
-    "published": false
+    "published": true
   }
 ]
