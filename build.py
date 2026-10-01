@@ -84,7 +84,7 @@ def nardy_pages(lang):
              f'<li><a href="{url(lang, base + "privacy")}">{t["privacy"]}</a></li>'
              f'<li><a href="{url(lang, base + "terms")}">{t["terms"]}</a></li>'
              f'<li><a href="{url(lang, base + "support")}">{t["support"]}</a></li></ul>')
-    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"][lang]}</h1>{store}</div></div>'
+    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{html.escape(a["name"][lang])}</h1>{store}</div></div>'
 
     if lang == "en":
         # Значок App Store — только с настоящей ссылкой (правила Apple); до выхода — надпись «скоро».
@@ -93,7 +93,7 @@ def nardy_pages(lang):
         body = f"""
 <div class="lhero"><div class="wrap">
 <div class="hero-text">
-<div class="app-id"><img src="{a["icon"]}" alt=""><div><b>{a["name"]["en"]}</b><span>Backgammon &amp; long nardy for iPhone</span></div></div>
+<div class="app-id"><img src="{a["icon"]}" alt=""><div><b>{html.escape(a["name"]["en"])}</b><span>Backgammon &amp; long nardy for iPhone</span></div></div>
 <h1>Dice you can check.</h1>
 <p class="lede">Backgammon and long nardy against a strong computer or a friend on the same phone. The dice of every game are sealed before the first roll — after the game you get the key and check every roll yourself.</p>
 <p class="for-whom">For anyone who has ever suspected an app of rigging the dice — and for anyone who simply wants a good game.</p>
@@ -274,7 +274,7 @@ def nardy_pages(lang):
 <p class="muted">{t['updated']}: {FAIR_DICE_UPDATED}</p>
 <p>The app is licensed to you under Apple's <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Standard Licensed Application End User License Agreement</a>. These terms add what is specific to this app.</p>
 <h2>The game</h2>
-<p>Backgammon: Fair Dice is a board game for entertainment and learning. Points in the game have no money value; there are no bets, coins or prizes.</p>
+<p>Backgammon: Fair Dice &amp; Nardy is a board game for entertainment and learning. Points in the game have no money value; there are no bets, coins or prizes.</p>
 <h2>Dice</h2>
 <p>Before each game the app seals the sequence of rolls and shows its fingerprint; after the game you get the key to check every roll. Neither the computer's level nor any purchase changes the dice.</p>
 <h2>Purchases</h2>
@@ -416,7 +416,7 @@ document.getElementById("go").onclick = async () => {{
   out.textContent = "{L('Compare with the roll log in the app:', 'Сравните с журналом бросков в приложении:')}\\n" + lines.join("\\n");
 }};
 </script>"""
-    page(lang, base + "verify", L("Verify the dice", "Проверка костей") + " — Backgammon: Fair Dice", body, sub=app_nav(lang, base, "verify"))
+    page(lang, base + "verify", L("Verify the dice", "Проверка костей") + " — Backgammon: Fair Dice & Nardy", body, sub=app_nav(lang, base, "verify"))
 
 
 def report_page(lang, base):
@@ -446,7 +446,7 @@ def report_page(lang, base):
 <p>{L('Conclusion: faces, pairs and roll types are uniform, consecutive rolls are independent, and the opening roll is no different from the others. The generator behaves like perfect dice.',
       'Вывод: грани, пары и типы броска распределены равномерно, соседние броски независимы, первый бросок партии не отличается от остальных. Генератор ведёт себя как идеальные кости.')}</p>
 <p><a href="{url(lang, base + 'verify')}">{L('Verify the dice of your own game →', 'Проверить кости своей партии →')}</a></p>"""
-    page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Backgammon: Fair Dice", body, sub=app_nav(lang, base, "dice-report"))
+    page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Backgammon: Fair Dice & Nardy", body, sub=app_nav(lang, base, "dice-report"))
 
 
 
