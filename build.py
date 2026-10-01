@@ -3,7 +3,7 @@
 
     python3.14 build.py   # нужен Python 3.12+ (f-строки с обратной косой)
 
-Новое приложение — запись в APPS и функция страниц (как nardy_pages). HTML пишется в корень репозитория,
+Каталог и лендинги задаются в products.json; юридические страницы — в функциях ниже. HTML пишется в корень репозитория,
 GitHub Pages отдаёт его как есть. Без сервера, без трекеров, без внешних скриптов.
 """
 import html
@@ -12,21 +12,14 @@ import os
 SITE = "https://kohone.net"
 DEV = "Maks Beskrovnyi"
 EMAIL = "support@kohone.net"
-UPDATED = "2026-09-27"
+UPDATED = "2026-09-25"
+FAIR_DICE_UPDATED = "2026-09-27"
+MGRS_UPDATED = "2026-09-26"
+SOLUNAR_UPDATED = "2026-09-26"
 
-APPS = [
-    {"slug": "fair-dice", "icon": "/assets/fair-dice-icon.jpg",
-     "name": {"en": "Backgammon: Fair Dice", "ru": "Нарды: длинные и короткие"},
-     "tag": {"en": "Backgammon and long nardy with fair, verifiable dice",
-             "ru": "Короткие и длинные нарды с честными проверяемыми костями"},
-     "store": None},
-    # Приложение со своим сайтом: карточка ведёт наружу, страниц здесь нет.
-    {"slug": "cycleally", "icon": "/assets/cycleally-icon.jpg", "external": "https://cycleally.com",
-     "name": {"en": "Cycle Ally", "ru": "Cycle Ally"},
-     "tag": {"en": "A PCOS and PMOS log you can hand to your doctor",
-             "ru": "Дневник СПКЯ, который можно показать врачу"},
-     "store": None},
-]
+import studio
+
+APPS = studio.legacy_apps()
 
 T = {
     "en": {"apps": "Apps", "home_lead": "Web developer and mobile app developer. I build apps and games for iPhone.",
@@ -46,50 +39,11 @@ def url(lang, path):
 
 
 def page(lang, path, title, body, desc="", landing=False, sub=""):
-    other = "en" if lang == "ru" else "ru"
-    t = T[lang]
-    doc = f"""<!doctype html>
-<html lang="{lang}">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{html.escape(title)}</title>
-<meta name="description" content="{html.escape(desc or title)}">
-<link rel="stylesheet" href="/assets/site.css">
-</head>
-<body>
-<header class="top"><div class="wrap">
-<a class="brand" href="{url(lang, '/')}">{DEV}</a>
-<nav><a href="{url(lang, '/')}">{t['apps']}</a></nav>
-</div></header>
-{('<div class="wrap subbar">' + sub + '</div>') if sub else ''}
-{('<main class="landing">' + body + '</main>') if landing else ('<main><div class="wrap">' + body + '</div></main>')}
-<footer><div class="wrap">
-<nav><a href="/">Home</a><a href="/fair-dice/">Backgammon: Fair Dice</a><a href="/fair-dice/verify">Verify the dice</a><a href="/fair-dice/dice-report">Dice report</a><a href="/fair-dice/privacy">Privacy Policy</a><a href="/fair-dice/terms">Terms of Use</a><a href="/fair-dice/support">Support</a></nav>
-<p>Made by one person, {DEV}. Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
-<p class="muted" style="font-size:13px">Apple, iPhone, iCloud and App Store are trademarks of Apple Inc. These apps are independent and not affiliated with, endorsed by, or sponsored by Apple Inc.</p>
-</div></footer>
-</body>
-</html>
-"""
-    rel = url(lang, path).lstrip("/")
-    if rel == "" or rel.endswith("/"):
-        rel += "index.html"
-    elif not rel.endswith(".html"):
-        rel += ".html"  # GitHub Pages отдаёт /nardy/verify из nardy/verify.html
-    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), rel)
-    os.makedirs(os.path.dirname(out), exist_ok=True)
-    with open(out, "w") as f:
-        f.write(doc)
+    studio.write_page(path, title, body, desc, sub)
 
 
 def home(lang):
-    t = T[lang]
-    cards = "\n".join(
-        f'<a class="app" href="{a.get("external") or url(lang, "/" + a["slug"] + "/")}"><img src="{a["icon"]}" alt="">'
-        f'<div><b>{a["name"][lang]}</b><span>{a["tag"][lang]}</span></div></a>' for a in APPS)
-    page(lang, "/", DEV + " — web and mobile developer", f"<section class=\"intro\"><h1>{DEV}</h1><p class=\"lead\">{t['home_lead']}</p></section>"
-                          f"<h2>{t['my_apps']}</h2><div class=\"apps\">{cards}</div>")
+    studio.home()
 
 
 def contact(lang):
@@ -110,11 +64,12 @@ def app_store_badge(link, on_dark=False):
             '<img src="/assets/app-store-badge-black.svg" alt="Download on the App Store" height="44"></picture></a>')
 
 
-def app_nav(lang, base, current):
-    """Меню разделов приложения — над содержимым каждой его страницы."""
+def app_nav(lang, base, current, items=None):
+    """Меню разделов приложения — над содержимым каждой его страницы. Пункты задаёт приложение."""
     t = T[lang]
-    items = [("", t["overview"]), ("verify", t["verify"]), ("dice-report", t["report"]),
-             ("privacy", t["privacy"]), ("terms", t["terms"]), ("support", t["support"])]
+    if items is None:
+        items = [("", t["overview"]), ("verify", t["verify"]), ("dice-report", t["report"]),
+                 ("privacy", t["privacy"]), ("terms", t["terms"]), ("support", t["support"])]
     links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
                     for slug, name in items)
     return f'<nav class="sub">{links}</nav>'
@@ -243,7 +198,7 @@ def nardy_pages(lang):
     # Политика конфиденциальности
     if lang == "en":
         privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
-<p class="muted">{t['updated']}: {UPDATED}</p>
+<p class="muted">{t['updated']}: {FAIR_DICE_UPDATED}</p>
 <p>The game itself needs no account and sends your games nowhere. The only third party in the app is advertising (Google AdMob), described below.</p>
 <h2>What stays on your device</h2>
 <p>Your games, history, statistics and settings are stored on your iPhone (the current game in the Keychain, the rest in the app's own storage). We have no servers and never receive them.</p>
@@ -278,7 +233,7 @@ def nardy_pages(lang):
 <p>If this policy changes, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
     else:
         privacy = f"""<h1>Политика конфиденциальности — {a['name']['ru']}</h1>
-<p class="muted">{t['updated']}: {UPDATED}</p>
+<p class="muted">{t['updated']}: {FAIR_DICE_UPDATED}</p>
 <p>Для игры не нужен аккаунт, и партии никуда не отправляются. Единственная сторонняя служба в приложении — реклама Google AdMob, о ней ниже.</p>
 <h2>Что хранится на устройстве</h2>
 <p>Партии, история, статистика и настройки хранятся на вашем iPhone (текущая партия — в связке ключей, остальное — в хранилище приложения). Своих серверов у нас нет, и мы эти данные не получаем.</p>
@@ -316,7 +271,7 @@ def nardy_pages(lang):
     # Условия использования
     if lang == "en":
         terms = f"""<h1>Terms of Use — {a['name']['en']}</h1>
-<p class="muted">{t['updated']}: {UPDATED}</p>
+<p class="muted">{t['updated']}: {FAIR_DICE_UPDATED}</p>
 <p>The app is licensed to you under Apple's <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Standard Licensed Application End User License Agreement</a>. These terms add what is specific to this app.</p>
 <h2>The game</h2>
 <p>Backgammon: Fair Dice is a board game for entertainment and learning. Points in the game have no money value; there are no bets, coins or prizes.</p>
@@ -335,7 +290,7 @@ def nardy_pages(lang):
 <p>If these terms change, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
     else:
         terms = f"""<h1>Условия использования — {a['name']['ru']}</h1>
-<p class="muted">{t['updated']}: {UPDATED}</p>
+<p class="muted">{t['updated']}: {FAIR_DICE_UPDATED}</p>
 <p>Приложение предоставляется по <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">стандартному лицензионному соглашению Apple с конечным пользователем</a>. Эти условия добавляют то, что относится к этому приложению.</p>
 <h2>Игра</h2>
 <p>«Нарды: длинные и короткие» — настольная игра для развлечения и обучения. Очки в игре не имеют денежной ценности; ставок, монет и призов нет.</p>
@@ -494,10 +449,450 @@ def report_page(lang, base):
     page(lang, base + "dice-report", L("Dice report", "Отчёт о костях") + " — Backgammon: Fair Dice", body, sub=app_nav(lang, base, "dice-report"))
 
 
+
+
+# ── Лётная книжка ─────────────────────────────────────────────────────
+
+
+def logbook_nav(lang, base, current):
+    t = T[lang]
+    return app_nav(lang, base, current, items=[("", t["overview"]), ("privacy", t["privacy"]),
+                                               ("terms", t["terms"]), ("support", t["support"])])
+
+
+def logbook_pages(lang):
+    """Страницы Pilot Logbook. Рынок США — тексты только на английском."""
+    if lang != "en":
+        return
+    a, t = next(x for x in APPS if x["slug"] == "logbook"), T[lang]
+    base = "/logbook/"
+    store = app_store_badge(a["store"]) if a["store"] else f'<span class="badge">{t["soon"]}</span>'
+    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"]["en"]}</h1>{store}</div></div>'
+
+    shot = lambda n, cap: (f'<figure><img src="/assets/logbook/{n}.jpg" alt="{html.escape(cap)}" '
+                           f'width="368" height="800" loading="lazy"><figcaption>{cap}</figcaption></figure>')
+    feature = lambda title, text: f"<div><b>{title}</b><p>{text}</p></div>"
+    features = "".join(feature(*f) for f in [
+        ("Entry in seconds", "A new flight opens with the aircraft, route and distance of the last one. Repeat a flight or reverse the route in one tap; “Save and next” keeps the form open for a day of pattern work."),
+        ("Whole minutes", "Time is kept in minutes, not decimal hours. Three legs of 40 minutes add up to 2:00, not to 2:01."),
+        ("Totals that match", "PIC, SIC, solo, dual received, dual given, night, actual and simulated instrument — in total, over the last 12 months and over any period, split by class and by type."),
+        ("Cross-country, all seven ways", "14 CFR 61.1 defines cross-country seven times: 50, 25 and 15 nautical miles and no distance at all. Pick what you are counting toward and the app counts that one."),
+        ("Currency", "Three takeoffs and landings in 90 days per category and class, the night window of 61.57(b) with full-stop landings, and instrument currency with the six-month window of 61.57(d) and the IPC after it."),
+        ("Deadlines", "Medical duration by class, age at the exam and kind of operation (61.23(d)); flight review through the 24th calendar month (61.56). Reminders 60, 30 and 7 days before."),
+        ("Form 8710-1", "The Record of Pilot Time grid, filled from your flights — the part of the application people recount by hand."),
+        ("Progress to a rating", "Hours against 61.109 for private, 61.65 for instrument and 61.129 for commercial: what is covered and what is left."),
+        ("Import and export", "Files from ForeFlight, LogTen and MyFlightbook come in; CSV and a printable PDF go out. The import shows what will be added, updated and skipped before it writes anything."),
+        ("Instructor signatures", "An instructor signs on the phone with a finger or an Apple Pencil; the entry then locks, and editing it takes removing the signature, which is recorded."),
+        ("Night time suggested", "Civil twilight for your route and date, computed on the device from the airport database. The suggestion is editable."),
+        ("Works with no signal", "Airports ship with the app. Entry, totals, currency and export need no connection, no account and no server — only buying goes through the App Store."),
+        ("A copy in your iCloud", "With the full version the logbook is copied to your own iCloud Drive after every change, as one CSV file you can open in Files. A new phone or a reinstall offers to restore it. It is a copy, not a sync between two devices — merging two logbooks is where other apps lose entries."),
+    ])
+    plans = ("<div class=\"plans\">"
+             "<div><h3>Free</h3><ul><li>The first 25 flights you type in</li>"
+             "<li>Imported flights do not use up the 25</li>"
+             "<li>Totals, currency and CSV export included</li></ul></div>"
+             "<div><h3>$24.99 a year</h3><ul><li>Unlimited flights</li><li>Copy in your iCloud Drive</li>"
+             "<li>Renews yearly until cancelled</li></ul></div>"
+             "<div><h3>$59.99 once</h3><ul><li>Unlimited flights</li><li>Copy in your iCloud Drive</li>"
+             "<li>One payment, no renewal</li></ul></div>"
+             "<p class=\"note\">Prices are in US dollars and may differ in your country's App Store.</p></div>")
+
+    body = f"""{hero}
+<p class="lead">A logbook for US pilots. You log the flight; the app keeps the totals, the 90-day and instrument currency, the medical and flight-review dates, and the Record of Pilot Time grid of FAA Form 8710-1.</p>
+<div class="shots">{shot('flights', 'The book: a flight is a line, a tap opens it')}{shot('totals', 'Totals by role and condition, by class and by type')}{shot('currency', 'Currency with the date each one runs out')}{shot('f8710', 'The 8710-1 Record of Pilot Time grid')}</div>
+<h2>What it does</h2>
+<div class="features">{features}</div>
+<h2>Price</h2>
+{plans}
+<h2>Your data stays yours</h2>
+<p>There is no account and no server of ours. The book is stored on your device; with the full version a copy also goes to your own iCloud Drive, where only you can read it. There is no analytics and no advertising code. The rest of the network traffic is Apple's own: the App Store, asked for the price and for whether you have bought. Details are on the <a href="{url(lang, base + 'privacy')}">privacy page</a>.</p>
+<p class="muted">You are responsible for your own logbook and for meeting the regulations that apply to you. The app computes from what you enter, following 14 CFR part 61; it does not replace the regulations, your instructor or your own check. This app is independent and is not affiliated with or endorsed by the Federal Aviation Administration.</p>"""
+    page(lang, base, a["name"]["en"] + " — a pilot logbook for iPhone and iPad", body,
+         desc="A pilot logbook for iPhone: totals, 90-day and instrument currency, medical and flight review dates, and the FAA Form 8710-1 Record of Pilot Time.",
+         sub=logbook_nav(lang, base, ""))
+
+    privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
+<p class="muted">{t['updated']}: {UPDATED}</p>
+<h2>The short version</h2>
+<p>The app collects nothing. It has no account and no server of ours, and it never sends your logbook to us or to anyone else. The book is stored on your device; with the full version a copy is also written to your own iCloud Drive, under your Apple Account, where only you can read it.</p>
+<h2>What is stored, and where</h2>
+<ul>
+<li><b>Your logbook</b> — flights, aircraft, instructor signatures, your certificates, medical and flight review dates, and the settings of the app. All of it lives in the app's own storage on the device.</li>
+<li><b>Backup copies</b> — on launch the app writes a copy of the book as a CSV file inside its own storage and keeps the five most recent ones. These stay on the device.</li>
+<li><b>The iCloud copy</b> — with the full version the app also writes the book to your own iCloud Drive, after every change, as a single CSV file you can see in Files. It goes to your Apple Account, not to us; we have no access to it and no way to read it. Turn it off in iPhone Settings → your Apple Account → iCloud → Apps Using iCloud, and the app keeps working with the local copies.</li>
+<li><b>Airports</b> — the airport database ships inside the app; nothing is looked up online.</li>
+</ul>
+<h2>What is not there</h2>
+<ul>
+<li>No analytics, no crash reporting service, no advertising, no third-party SDKs.</li>
+<li>No server of ours: there is nowhere for your flights to be sent, and nothing to hack into.</li>
+<li>No tracking, in the sense of Apple's App Tracking Transparency: nothing to permit, because nothing is collected.</li>
+<li>No location access: night time is computed from the airports you enter, not from where the phone is.</li>
+<li>No e-mail address, name or password is asked for.</li>
+</ul>
+<h2>When data does leave the device — because you send it</h2>
+<ul>
+<li><b>Export.</b> CSV and PDF files go where you send them: a file you save, a message you write, a printer. We do not see them.</li>
+<li><b>Import.</b> A file you choose is read on the device.</li>
+<li><b>Device backup.</b> If you have iCloud Backup or an encrypted computer backup turned on, iOS includes the app's data in it, under Apple's terms.</li>
+<li><b>iCloud Drive.</b> The copy described above is stored by Apple in your own iCloud, under Apple's privacy policy and your Apple Account. Deleting the file in Files deletes the copy.</li>
+<li><b>Purchases.</b> The subscription and the one-time unlock are sold by Apple. To show the price and to know whether you have bought, the app asks Apple's StoreKit, which talks to the App Store — that is the only network traffic in the app, it carries no logbook data, and it is covered by Apple's privacy policy. Apple processes the payment and tells the app only whether the purchase is active; we receive no payment details and no identity from it.</li>
+<li><b>Reminders.</b> Notifications about your medical and flight review are local to the device; no reminder is sent through any server.</li>
+</ul>
+<h2>How long it is kept, and how to delete it</h2>
+<p>Everything is kept for as long as the app is on your device, because it is on your device. Delete a flight and it is gone from the book; delete the app and iOS removes its storage, including the local backup copies. The iCloud copy stays in your iCloud Drive until you delete the file yourself — that is the point of it, and it is deleted like any other file in Files. There is nothing on our side to request or to erase. Export your book first if you want to keep it.</p>
+<h2>Children</h2>
+<p>The app is a tool for pilots and is not directed to children under 13. It collects nothing from anyone.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the new version appears on this page with a new date. Questions: {contact('en')}</p>"""
+    page(lang, base + "privacy", t["privacy"] + " — " + a["name"]["en"], privacy,
+         desc="Privacy policy for Pilot Logbook: no collection, no network calls, no account.",
+         sub=logbook_nav(lang, base, "privacy"))
+
+    terms = f"""<h1>Terms of Use — {a['name']['en']}</h1>
+<p class="muted">{t['updated']}: {UPDATED}</p>
+<p>The app is licensed to you under Apple's <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Standard Licensed Application End User License Agreement</a>. These terms add what is specific to this app.</p>
+<h2>What the app is</h2>
+<p>Pilot Logbook records flights and computes from them: totals, cross-country under the definitions of 14 CFR 61.1, recent flight experience under 61.57, the deadlines of 61.23(d) and 61.56, progress toward the aeronautical experience of 61.109, 61.65 and 61.129, and the Record of Pilot Time grid of FAA Form 8710-1.</p>
+<h2>Your logbook is yours to keep correct</h2>
+<p>Logging flight time and meeting the requirements that apply to you are your responsibility as a pilot. The app computes from the data you enter; wrong or missing entries give wrong results, and rules change. Check what the app tells you against the regulations and, where it matters, with your instructor or examiner. The app does not give regulatory or legal advice and is not a substitute for the current text of the regulations.</p>
+<h2>Independence</h2>
+<p>This app is made by one developer. It is not affiliated with, endorsed by or sponsored by the Federal Aviation Administration, and it is not connected with ForeFlight, LogTen or MyFlightbook — importing their files does not imply any relationship.</p>
+<h2>Purchases</h2>
+<ul>
+<li><b>Free.</b> The first 25 flights you enter by hand are free, and flights brought in by import do not use them up. Reading, totals, currency and CSV export work in the free version.</li>
+<li><b>Subscription.</b> $24.99 per year, charged to your Apple Account at confirmation of purchase. It renews automatically for another year unless you turn off auto-renewal at least 24 hours before the current period ends; the renewal is charged within 24 hours before that. Manage or cancel it in Settings → your Apple Account → Subscriptions.</li>
+<li><b>One-time unlock.</b> $59.99 once, for the same features, with nothing to renew.</li>
+<li>Prices are in US dollars; your App Store may show a different price and currency. Apple processes payments, renewals and refunds under its own rules. Restore a purchase on another device with Settings → Restore purchases in the app.</li>
+</ul>
+<h2>Data</h2>
+<p>Your book stays on your device, and with the full version a copy is written to your own iCloud Drive (see the <a href="{url(lang, base + 'privacy')}">privacy page</a>). That copy is a copy, not a sync: the app writes it and never merges two devices. Keeping your own copies is up to you as well — the app writes local backups on launch and exports CSV and PDF at any time, including in the free version.</p>
+<h2>No warranty</h2>
+<p>The app is provided “as is”, without warranties of any kind. We work to keep the calculations right and test them against the text of the regulations, but we do not warrant that the app is free of errors or fit for any particular purpose, and we are not liable for decisions made from its output.</p>
+<h2>Changes and contact</h2>
+<p>If these terms change, the new version is published on this page with a new date. Questions: {contact('en')}</p>"""
+    page(lang, base + "terms", t["terms"] + " — " + a["name"]["en"], terms,
+         desc="Terms of use for Pilot Logbook, including subscription and one-time purchase terms.",
+         sub=logbook_nav(lang, base, "terms"))
+
+    support = f"""<h1>Support — {a['name']['en']}</h1>
+<p>Write to us: {contact('en')}. One person reads that mailbox, and answers in a day or two. A screenshot and your iOS version help.</p>
+<h2>Frequently asked</h2>
+<p><b>How do I move my logbook in?</b> Settings → Import, then pick a file exported from ForeFlight, LogTen or MyFlightbook. You see how many entries will be added, updated and skipped, and why, before anything is written. Importing the same file twice does not duplicate flights.</p>
+<p><b>What is free?</b> The first 25 flights you type in yourself. Flights that come in by import do not use them up, and reading, totals, currency and CSV export keep working.</p>
+<p><b>I bought on another device.</b> Settings → Restore purchases.</p>
+<p><b>How do I cancel the subscription?</b> In iOS Settings → your Apple Account → Subscriptions, at least 24 hours before the year ends. Cancelling leaves the book on your device.</p>
+<p><b>My totals differ from my old logbook by a minute or two.</b> This app keeps time in whole minutes and converts to decimal hours only for display and export. Apps that store decimal hours round every leg, and the rounding adds up.</p>
+<p><b>Which cross-country does it count?</b> The one you choose. 14 CFR 61.1 has seven definitions with different distances, so the answer depends on what the time is for; the totals screen lets you pick.</p>
+<p><b>Why is a flight not counting toward night currency?</b> 61.57(b) uses the window from one hour after sunset to one hour before sunrise and requires landings to a full stop — a different window from the night flight time of 1.1, which uses civil twilight. The app counts both, separately.</p>
+<p><b>Can my instructor sign on the phone?</b> Yes — open the flight, Sign, and the instructor signs with a finger or an Apple Pencil and enters their name and certificate number. The entry is then locked; to edit it, remove the signature, which is recorded.</p>
+<p><b>How do I get a paper copy?</b> Export → PDF gives printable spreads with carried-forward totals, page numbers and room for signatures. Export → CSV gives the data itself.</p>
+<p><b>What happens to my logbook on a new phone?</b> With the full version the book is copied to your own iCloud Drive after every change. Install the app on the new phone, and it offers to restore from that copy — you see how many entries will be added before anything is written. It is a copy for moving and for reinstalls, not a sync: the app does not merge two devices editing at once.</p>
+<p><b>How do I delete my data?</b> Delete flights in the app, or delete the app. The iCloud copy is a file in your own iCloud Drive — delete it in Files. Nothing is stored anywhere else.</p>
+<p><b>Does it need a connection?</b> Not for flying or for logging. Airports ship with the app; entry, totals, currency and export all work in airplane mode. A connection is needed only to buy or to restore a purchase, because that goes through the App Store.</p>"""
+    page(lang, base + "support", t["support"] + " — " + a["name"]["en"], support,
+         desc="Support and frequently asked questions for Pilot Logbook.",
+         sub=logbook_nav(lang, base, "support"))
+
+
+def bowling_nav(lang, base, current):
+    t = T[lang]
+    items = [("", t["overview"]), ("privacy", t["privacy"]), ("terms", t["terms"]), ("support", t["support"])]
+    links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
+                    for slug, name in items)
+    return f'<nav class="sub">{links}</nav>'
+
+
+def bowling_pages(lang):
+    """Черновики страниц приложения для боулинга. Лендинг дорабатывается отдельно."""
+    a, t = next(a for a in APPS if a["slug"] == "bowling"), T[lang]
+    base = "/bowling/"
+    name = a["name"][lang]
+    store = app_store_badge(a["store"]) if a["store"] else f'<span class="badge">{t["soon"]}</span>'
+    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{name}</h1>{store}</div></div>'
+
+    overview = f"""{hero}
+<p class="lead">A scorekeeper for ten-pin bowling: enter a game frame by frame, mark the pins you leave standing,
+and see where your points actually go.</p>
+<h2>What it does</h2>
+<ul>
+<li>Frame-by-frame entry with the tenth frame handled by the USBC rules, or a single final score when you are in a hurry.</li>
+<li>As many games in a session as you played &mdash; four, five, a whole tournament.</li>
+<li>Any roll, game or session can be corrected or deleted afterwards.</li>
+<li>Average by month, strike rate, spares split into single pins, multi-pin leaves and splits.</li>
+<li>A table of every leave: which ones you convert and which you do not.</li>
+<li>Your arsenal of balls, with the average for each one.</li>
+<li>Export to CSV and PDF, import from CSV.</li>
+</ul>
+<h2>What it does not do</h2>
+<ul>
+<li>No account and no sign-in.</li>
+<li>No ads and no trackers.</li>
+<li>It does not read the scoreboard with the camera and does not track the ball down the lane.</li>
+</ul>
+<p class="muted">Entering games and seeing your whole history are free. The breakdown &mdash; average by month,
+the leave table, the percentages, the filters and export &mdash; is the paid part.</p>
+<p>Questions: {contact(lang)}</p>"""
+    page(lang, base, name, overview, desc=a["tag"][lang], sub=bowling_nav(lang, base, ""))
+
+    privacy = f"""<h1>Privacy Policy &mdash; {name}</h1>
+<p class="muted">Last updated: {UPDATED}</p>
+<p>The app has no account, no analytics and no advertising. There is no server of ours for your data to go to.</p>
+<h2>What stays on your device</h2>
+<p>Your sessions, games, rolls, marked pins, balls and their photos are stored on your iPhone in the app's own
+storage. Photos you pick for a ball are copied into the app's folder and never leave it.</p>
+<h2>iCloud</h2>
+<p>If you are signed in to iCloud and the app is allowed to use it, your data is also kept in <b>your own</b>
+private iCloud database so a new phone does not start empty. That data belongs to your Apple Account: we have
+no access to it and cannot read it. Turning iCloud off for the app keeps everything local.</p>
+<h2>Files you create yourself</h2>
+<p>Export produces a CSV or PDF file. Where it goes &mdash; Files, mail, another app &mdash; is entirely your choice;
+the app only hands the file to the system share sheet.</p>
+<h2>What we do not collect</h2>
+<ul>
+<li>No identifiers for advertising, no tracking across apps or sites.</li>
+<li>No usage analytics, no crash SDKs from third parties.</li>
+<li>No contacts, no location, no health data, no microphone.</li>
+</ul>
+<h2>Purchases</h2>
+<p>Purchases are processed by Apple. We never see your card, and we do not receive your name or address.</p>
+<h2>Children</h2>
+<p>The app is not directed at children and collects nothing from anyone.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the date above changes with it. Questions: {contact(lang)}</p>"""
+    page(lang, base + "privacy", f"Privacy &mdash; {name}", privacy, sub=bowling_nav(lang, base, "privacy"))
+
+    terms = f"""<h1>Terms of Use &mdash; {name}</h1>
+<p class="muted">Last updated: {UPDATED}</p>
+<h2>What you get</h2>
+<p>A licence to use the app on devices tied to your Apple Account, for your own bowling. Entering games and
+seeing your own history are free and stay free. The breakdown of your statistics is unlocked by a purchase.</p>
+<h2>Purchases</h2>
+<p>Purchases and refunds are handled by Apple under the terms of the App Store. A subscription renews until you
+cancel it in your Apple Account settings; a one-time unlock does not renew. Restoring purchases on a new device
+is free and available in the app.</p>
+<h2>Your data is yours</h2>
+<p>You can export everything to CSV or PDF at any time, and delete any session, game or ball. Deleting the app
+deletes its local data.</p>
+<h2>What the app does not promise</h2>
+<p>The app counts what you enter. It does not read the scoreboard, does not watch the lane, and is not affiliated
+with, endorsed by or certified by the United States Bowling Congress or any bowling centre. Scores entered by
+mistake stay wrong until you correct them.</p>
+<h2>Liability</h2>
+<p>The app is provided as is. It is a scorekeeper, not a document of record: keep your own export if a score
+matters to you.</p>
+<h2>Contact</h2>
+<p>{contact(lang)}</p>"""
+    page(lang, base + "terms", f"Terms of Use &mdash; {name}", terms, sub=bowling_nav(lang, base, "terms"))
+
+    support = f"""<h1>Support &mdash; {name}</h1>
+<p class="lead">Written by one person. Write to {contact(lang)} and you will get an answer from that person.</p>
+<h2>Before you write</h2>
+<ul>
+<li><b>A score looks wrong.</b> Tell me the frames as you bowled them &mdash; the counting is covered by tests
+against the USBC rules, so a real mistake is worth finding.</li>
+<li><b>Moving to a new phone.</b> Turn iCloud on for the app on both phones, or export to CSV on the old one and
+import it on the new one.</li>
+<li><b>A session ruined your average.</b> Any session, game or roll can be deleted or corrected.</li>
+<li><b>Restoring a purchase.</b> The Data tab has the restore action; it is free and works on any device with the
+same Apple Account.</li>
+</ul>
+<h2>What helps me answer faster</h2>
+<p>The iOS version, the app version, and what you expected to see instead. A screenshot is better than a description.</p>
+<h2>Contact</h2>
+<p>{contact(lang)}</p>"""
+    page(lang, base + "support", f"Support &mdash; {name}", support, sub=bowling_nav(lang, base, "support"))
+
+
+
+def mgrs_nav(lang, current):
+    items = [("", "Overview"), ("privacy", "Privacy"), ("terms", "Terms"), ("support", "Support")]
+    base = "/mgrs-land-nav/"
+    links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
+                    for slug, name in items)
+    return f'<nav class="sub">{links}</nav>'
+
+
+def mgrs_pages(lang):
+    a = next(x for x in APPS if x["slug"] == "mgrs-land-nav")
+    base = "/mgrs-land-nav/"
+    store = app_store_badge(a["store"]) if a["store"] else '<span class="badge">Coming to the App Store</span>'
+    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"]["en"]}</h1>{store}</div></div>'
+    overview = hero + """<p class="lead">Your position as a big, clear MGRS grid — and a trainer for the land navigation skills you need
+when the phone goes in the bag.</p>
+<ul>
+<li><b>Position.</b> 10- or 8-digit MGRS from GPS, truncated like on a map, never rounded. UTM, lat/lon, and the G-M angle for where you stand.</li>
+<li><b>Points and courses.</b> Type a grid the way you read it from a map, project a point by azimuth and distance, plan legs in mils with pace counts. GPX in and out.</li>
+<li><b>Train.</b> Calibrate your pace count, walk a blind leg and see exactly where you drifted, drill 8-digit plotting.</li>
+<li><b>Honest note.</b> A training aid: on a graded land navigation course your phone is not allowed.</li>
+</ul>
+<p>No ads, no account, no tracking.</p>"""
+    page(lang, base, a["name"]["en"], overview, a["tag"]["en"], sub=mgrs_nav(lang, ""))
+
+    privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
+<p class="muted">Last updated: {MGRS_UPDATED}</p>
+<p>MGRS Land Nav collects no personal data. It has no account, no analytics, no advertising and no servers of ours.</p>
+<h2>What the app uses, and where it stays</h2>
+<ul>
+<li><b>Location</b> (only while the app is open): to show your grid, azimuths and distances, and to fix the start and finish of a training leg. It is processed on your iPhone and never sent to us.</li>
+<li><b>Motion (pedometer step counts)</b>: to count your steps between the start and finish of a pace-count walk or a training leg. Read on your iPhone only.</li>
+<li><b>Your points, courses and training history</b>: stored in the app's storage on your iPhone. There is no cloud copy.</li>
+<li><b>Settings</b> (units, north reference, grid digits): stored on your iPhone.</li>
+</ul>
+<h2>The map</h2>
+<p>The map screen shows Apple Maps. To draw it, your iPhone requests map tiles for the area on screen from Apple, as every app with Apple Maps does. Apple handles those requests under its own privacy policy; your points and training data are not sent with them. Everything else works offline.</p>
+<h2>Purchases</h2>
+<p>Pro is a one-time purchase through the App Store. Payment is handled by Apple; we do not receive your payment details or personal information.</p>
+<h2>How long data is kept and how to delete it</h2>
+<ul>
+<li>Your points, courses and training records stay on your iPhone until you delete them in the app (swipe to delete) or delete the app, which removes all of them.</li>
+<li>We keep nothing, because we receive nothing.</li>
+</ul>
+<h2>Your choices</h2>
+<ul>
+<li>Allow or stop location access: iPhone Settings → Privacy &amp; Security → Location Services → MGRS Land Nav.</li>
+<li>Allow or stop motion access: iPhone Settings → Privacy &amp; Security → Motion &amp; Fitness.</li>
+</ul>
+<h2>Children</h2>
+<p>The app is not directed at children under 13 and collects no data from anyone.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
+    page(lang, base + "privacy", "Privacy — " + a["name"]["en"], privacy, sub=mgrs_nav(lang, "privacy"))
+
+    terms = f"""<h1>Terms of Use — {a['name']['en']}</h1>
+<p class="muted">Last updated: {MGRS_UPDATED}</p>
+<p>These terms apply together with Apple's Licensed Application End User License Agreement.</p>
+<h2>A training aid</h2>
+<p>MGRS Land Nav is made for practice and general navigation. It is not a certified navigation instrument. GPS and the iPhone compass can be wrong — near metal, in cars, under tree cover or in cities. Always carry a map and a compass and check what the app shows. Do not rely on it where a mistake could put anyone in danger.</p>
+<p>On graded land navigation courses phones are not allowed. Follow the rules of your course and your chain of command.</p>
+<h2>Accuracy</h2>
+<p>Coordinate calculations follow published methods and are tested against reference software, and the magnetic declination comes from the World Magnetic Model 2025, valid until the end of 2029. The results can only be as good as the GPS position and compass reading they start from.</p>
+<h2>Purchases</h2>
+<p>Pro is a one-time purchase handled by Apple. Refunds are handled by Apple.</p>
+<h2>No affiliation</h2>
+<p>MGRS Land Nav is independent and not affiliated with, or endorsed by, the U.S. Army or any government agency.</p>
+<h2>No warranty</h2>
+<p>The app is provided “as is”, without warranties of any kind, to the extent permitted by law.</p>
+<h2>Contact</h2>
+<p>{contact('en')}</p>"""
+    page(lang, base + "terms", "Terms — " + a["name"]["en"], terms, sub=mgrs_nav(lang, "terms"))
+
+    support = f"""<h1>Support — {a['name']['en']}</h1>
+<p>Write to us: {contact('en')}</p>
+<h2>Frequently asked</h2>
+<p><b>Why do the last digits of my grid change while I stand still?</b> GPS on a phone is accurate to a few metres; the app shows the accuracy next to the grid. For a 10-digit grid (1 m) the last digits will move.</p>
+<p><b>Why truncated, not rounded?</b> An MGRS grid names the south-west corner of its square, the way you read it from a map. Rounding could put you in the next square.</p>
+<p><b>Which north is this azimuth from?</b> Every azimuth is labelled Grid, Mag or True. Change it with the picker above the number.</p>
+<p><b>The compass looks wrong.</b> Move away from metal and cars and wave the phone in a figure 8. The app warns when compass accuracy is poor.</p>
+<p><b>I bought Pro on another iPhone.</b> Settings → Restore purchase.</p>
+<p><b>Can I use it on a graded land nav course?</b> No — phones are not allowed there. Use it to practise before.</p>"""
+    page(lang, base + "support", "Support — " + a["name"]["en"], support, sub=mgrs_nav(lang, "support"))
+
+
+
+def solunar_nav(lang, current):
+    items = [("", "Overview"), ("privacy", "Privacy"), ("terms", "Terms"), ("support", "Support")]
+    base = "/solunar/"
+    links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
+                    for slug, name in items)
+    return f'<nav class="sub">{links}</nav>'
+
+
+def solunar_pages(lang):
+    a = next(x for x in APPS if x["slug"] == "solunar")
+    base = "/solunar/"
+    store = app_store_badge(a["store"]) if a["store"] else '<span class="badge">Coming to the App Store</span>'
+    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"]["en"]}</h1>{store}</div></div>'
+    overview = hero + """<p class="lead">Plan when to be out: major and minor feeding periods, sunrise, sunset, moonrise, moonset
+and the moon phase for any place — computed on your iPhone, so it works with no signal.</p>
+<ul>
+<li><b>Accurate.</b> Sun and moon times within a minute of the U.S. Naval Observatory, in the time zone of the place, 12- or 24-hour like your iPhone. Days with no moonrise say so.</li>
+<li><b>Honest.</b> A 0–5 day score with the reasons shown. A plan for your trip, not a promise of a catch.</li>
+<li><b>Test it yourself.</b> Log bites, catches and game sightings in two taps and see whether they land in the periods more often than chance.</li>
+<li><b>Widgets, Live Activity, alerts</b> before major periods — all planned on the phone, no connection needed.</li>
+</ul>
+<p>Free: today and tomorrow for your current location. Pro is a one-time purchase — no subscription, no ads, no account.</p>"""
+    page(lang, base, a["name"]["en"], overview, a["tag"]["en"], sub=solunar_nav(lang, ""))
+
+    privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
+<p class="muted">Last updated: {SOLUNAR_UPDATED}</p>
+<p>Solunar Times collects no personal data. It has no account, no analytics, no advertising and no servers of ours.</p>
+<h2>What the app uses, and where it goes</h2>
+<ul>
+<li><b>Location</b> (only while the app is open, and only if you allow it): to compute sun and moon times for where you are. All calculations happen on your iPhone.</li>
+<li><b>Place name and time zone.</b> When you set a place from GPS or by tapping the map, the app asks Apple's geocoding service (part of iOS) for the place's name and time zone. Only the coordinates of that place are sent, to Apple, under Apple's privacy policy. Nothing is sent to us.</li>
+<li><b>The map.</b> Choosing a place shows Apple Maps; your iPhone requests map tiles for the area on screen from Apple, as every app with Apple Maps does.</li>
+<li><b>Your places, settings and journal</b> (bites, catches, sightings, notes): stored in the app's storage on your iPhone and shared only with this app's widgets on the same iPhone. There is no cloud copy of ours.</li>
+<li><b>Alerts</b> are local notifications planned on your iPhone; no push server is involved.</li>
+</ul>
+<h2>Purchases</h2>
+<p>Pro is a one-time purchase through the App Store. Payment is handled by Apple; we do not receive your payment details or personal information.</p>
+<h2>How long data is kept and how to delete it</h2>
+<ul>
+<li>Places and journal entries stay on your iPhone until you delete them in the app (swipe to delete) or delete the app, which removes all of them.</li>
+<li>If you use iCloud Backup or a computer backup for your iPhone, those backups include the app's data under Apple's terms.</li>
+<li>We keep nothing, because we receive nothing.</li>
+</ul>
+<h2>Your choices</h2>
+<ul>
+<li>Allow or stop location access: iPhone Settings → Privacy &amp; Security → Location Services → Solunar Times. Without it, set places on the map.</li>
+<li>Turn alerts on or off in the app's Settings or in iPhone Settings → Notifications.</li>
+</ul>
+<h2>Children</h2>
+<p>The app is not directed at children under 13 and collects no data from anyone.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
+    page(lang, base + "privacy", "Privacy — " + a["name"]["en"], privacy, sub=solunar_nav(lang, "privacy"))
+
+    terms = f"""<h1>Terms of Use — {a['name']['en']}</h1>
+<p class="muted">Last updated: {SOLUNAR_UPDATED}</p>
+<p>These terms apply together with Apple's Licensed Application End User License Agreement.</p>
+<h2>A planning aid, not a promise</h2>
+<p>Solunar theory is a way to plan when to be out. It does not guarantee a catch or a sighting, and the day score is a transparent formula, not a forecast of animal behaviour. Weather, pressure and local conditions are not included.</p>
+<h2>Accuracy</h2>
+<p>Sun and moon times are computed with published astronomical algorithms (Jean Meeus) and are tested against the U.S. Naval Observatory to within one minute. Results depend on the place and time zone you set; a time zone guessed without a connection is marked in the app.</p>
+<h2>Safety and the law</h2>
+<p>Follow hunting and fishing regulations, seasons and legal shooting hours where you are. Legal hours are set by your local authority, not by this app.</p>
+<h2>Purchases</h2>
+<p>Pro is a one-time purchase handled by Apple. Refunds are handled by Apple.</p>
+<h2>No affiliation</h2>
+<p>Solunar Times is independent and not affiliated with the publishers of any solunar tables.</p>
+<h2>No warranty</h2>
+<p>The app is provided “as is”, without warranties of any kind, to the extent permitted by law.</p>
+<h2>Contact</h2>
+<p>{contact('en')}</p>"""
+    page(lang, base + "terms", "Terms — " + a["name"]["en"], terms, sub=solunar_nav(lang, "terms"))
+
+    support = f"""<h1>Support — {a['name']['en']}</h1>
+<p>Write to us: {contact('en')}</p>
+<h2>Frequently asked</h2>
+<p><b>Why does a day say “No moonrise today”?</b> The moon rises about 50 minutes later each day, so roughly once a month it rises after midnight and skips a calendar day. The app says so instead of showing a time from another day.</p>
+<p><b>Why are the times different from another app or site?</b> Check the time zone of the place (Places tab). We compute times in the time zone of the place, not your phone, and round to the nearest minute like the U.S. Naval Observatory.</p>
+<p><b>How is the day score made?</b> Tap “Why this score?” on the Today screen — the formula and the reasons for that day are shown.</p>
+<p><b>12- or 24-hour time?</b> The app follows your iPhone: Settings → General → Date &amp; Time.</p>
+<p><b>Alerts didn't arrive.</b> Alerts are planned two weeks ahead for the selected place. Open the app now and then, and check that notifications are allowed for Solunar Times.</p>
+<p><b>I bought Pro on another iPhone.</b> Settings → Restore Purchases.</p>"""
+    page(lang, base + "support", "Support — " + a["name"]["en"], support, sub=solunar_nav(lang, "support"))
+
+
+
 # Сайт только на английском; русские тексты в функциях оставлены на случай перевода.
 for lang in ("en",):
     home(lang)
     nardy_pages(lang)
+    logbook_pages(lang)
+    bowling_pages(lang)
+    mgrs_pages(lang)
+    solunar_pages(lang)
+# Remove only known generated pages for products not yet published.
+# Their source content remains in the generator and their product branches.
+for product in studio.PRODUCTS:
+    if not product.get("published", False) and not product.get("external"):
+        for name in ("index.html", "privacy.html", "terms.html", "support.html"):
+            (studio.ROOT / product["slug"] / name).unlink(missing_ok=True)
+        directory = studio.ROOT / product["slug"]
+        if directory.is_dir() and not any(directory.iterdir()):
+            directory.rmdir()
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".nojekyll"), "w"):
     pass
 print("готово")
