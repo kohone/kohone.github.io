@@ -3,7 +3,7 @@
 
     python3.14 build.py   # нужен Python 3.12+ (f-строки с обратной косой)
 
-Новое приложение — запись в APPS и функция страниц (как nardy_pages). HTML пишется в корень репозитория,
+Каталог и лендинги задаются в products.json; юридические страницы — в функциях ниже. HTML пишется в корень репозитория,
 GitHub Pages отдаёт его как есть. Без сервера, без трекеров, без внешних скриптов.
 """
 import html
@@ -13,25 +13,12 @@ SITE = "https://kohone.net"
 DEV = "Maks Beskrovnyi"
 EMAIL = "support@kohone.net"
 UPDATED = "2026-09-25"
+MGRS_UPDATED = "2026-09-26"
+SOLUNAR_UPDATED = "2026-09-26"
 
-APPS = [
-    {"slug": "fair-dice", "icon": "/assets/fair-dice-icon.jpg",
-     "name": {"en": "Backgammon: Fair Dice", "ru": "Нарды: длинные и короткие"},
-     "tag": {"en": "Backgammon and long nardy with fair, verifiable dice",
-             "ru": "Короткие и длинные нарды с честными проверяемыми костями"},
-     "store": None},
-    {"slug": "logbook", "icon": "/assets/logbook-icon.jpg",
-     "name": {"en": "Pilot Logbook", "ru": "Pilot Logbook"},
-     "tag": {"en": "A pilot logbook that counts currency and fills the 8710 grid",
-             "ru": "Лётная книжка: считает допуски и заполняет сетку 8710"},
-     "store": None},
-    # Приложение со своим сайтом: карточка ведёт наружу, страниц здесь нет.
-    {"slug": "cycleally", "icon": "/assets/cycleally-icon.jpg", "external": "https://cycleally.com",
-     "name": {"en": "Cycle Ally", "ru": "Cycle Ally"},
-     "tag": {"en": "A PCOS and PMOS log you can hand to your doctor",
-             "ru": "Дневник СПКЯ, который можно показать врачу"},
-     "store": None},
-]
+import studio
+
+APPS = studio.legacy_apps()
 
 T = {
     "en": {"apps": "Apps", "home_lead": "Web developer and mobile app developer. I build apps and games for iPhone.",
@@ -51,51 +38,11 @@ def url(lang, path):
 
 
 def page(lang, path, title, body, desc="", landing=False, sub=""):
-    other = "en" if lang == "ru" else "ru"
-    t = T[lang]
-    doc = f"""<!doctype html>
-<html lang="{lang}">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{html.escape(title)}</title>
-<meta name="description" content="{html.escape(desc or title)}">
-<link rel="stylesheet" href="/assets/site.css">
-</head>
-<body>
-<header class="top"><div class="wrap">
-<a class="brand" href="{url(lang, '/')}">{DEV}</a>
-<nav><a href="{url(lang, '/')}">{t['apps']}</a></nav>
-</div></header>
-{('<div class="wrap subbar">' + sub + '</div>') if sub else ''}
-{('<main class="landing">' + body + '</main>') if landing else ('<main><div class="wrap">' + body + '</div></main>')}
-<footer><div class="wrap">
-<nav><a href="/">Home</a><a href="/fair-dice/">Backgammon: Fair Dice</a><a href="/fair-dice/verify">Verify the dice</a><a href="/fair-dice/dice-report">Dice report</a><a href="/fair-dice/privacy">Privacy Policy</a><a href="/fair-dice/support">Support</a></nav>
-<nav><a href="/logbook/">Pilot Logbook</a><a href="/logbook/privacy">Privacy Policy</a><a href="/logbook/terms">Terms of Use</a><a href="/logbook/support">Support</a></nav>
-<p>Made by one person, {DEV}. Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
-<p class="muted" style="font-size:13px">Apple, iPhone, iCloud and App Store are trademarks of Apple Inc. These apps are independent and not affiliated with, endorsed by, or sponsored by Apple Inc.</p>
-</div></footer>
-</body>
-</html>
-"""
-    rel = url(lang, path).lstrip("/")
-    if rel == "" or rel.endswith("/"):
-        rel += "index.html"
-    elif not rel.endswith(".html"):
-        rel += ".html"  # GitHub Pages отдаёт /nardy/verify из nardy/verify.html
-    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), rel)
-    os.makedirs(os.path.dirname(out), exist_ok=True)
-    with open(out, "w") as f:
-        f.write(doc)
+    studio.write_page(path, title, body, desc, sub)
 
 
 def home(lang):
-    t = T[lang]
-    cards = "\n".join(
-        f'<a class="app" href="{a.get("external") or url(lang, "/" + a["slug"] + "/")}"><img src="{a["icon"]}" alt="">'
-        f'<div><b>{a["name"][lang]}</b><span>{a["tag"][lang]}</span></div></a>' for a in APPS)
-    page(lang, "/", DEV + " — web and mobile developer", f"<section class=\"intro\"><h1>{DEV}</h1><p class=\"lead\">{t['home_lead']}</p></section>"
-                          f"<h2>{t['my_apps']}</h2><div class=\"apps\">{cards}</div>")
+    studio.home()
 
 
 def contact(lang):
@@ -121,7 +68,7 @@ def app_nav(lang, base, current, items=None):
     t = T[lang]
     if items is None:
         items = [("", t["overview"]), ("verify", t["verify"]), ("dice-report", t["report"]),
-                 ("privacy", t["privacy"]), ("support", t["support"])]
+                 ("privacy", t["privacy"]), ("terms", t["terms"]), ("support", t["support"])]
     links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
                     for slug, name in items)
     return f'<nav class="sub">{links}</nav>'
@@ -134,6 +81,7 @@ def nardy_pages(lang):
     links = (f'<ul class="links"><li><a href="{url(lang, base + "verify")}">{t["verify"]}</a></li>'
              f'<li><a href="{url(lang, base + "dice-report")}">{t["report"]}</a></li>'
              f'<li><a href="{url(lang, base + "privacy")}">{t["privacy"]}</a></li>'
+             f'<li><a href="{url(lang, base + "terms")}">{t["terms"]}</a></li>'
              f'<li><a href="{url(lang, base + "support")}">{t["support"]}</a></li></ul>')
     hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"][lang]}</h1>{store}</div></div>'
 
@@ -149,7 +97,7 @@ def nardy_pages(lang):
 <p class="lede">Backgammon and long nardy against a strong computer or a friend on the same phone. The dice of every game are sealed before the first roll — after the game you get the key and check every roll yourself.</p>
 <p class="for-whom">For anyone who has ever suspected an app of rigging the dice — and for anyone who simply wants a good game.</p>
 <div class="cta">{store_cta}<a class="button" href="#how">See what it does</a></div>
-<p class="small">Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
+<div class="hero-meta"><nav class="hero-legal" aria-label="App information"><a href="/fair-dice/privacy">Privacy Policy</a><span aria-hidden="true">·</span><a href="/fair-dice/terms">Terms of Use</a><span aria-hidden="true">·</span><a href="/fair-dice/support">Support</a></nav></div>
 </div>
 {img("hint", "A game with the best move shown by arrows", "hero-shot")}
 </div></div>
@@ -209,7 +157,7 @@ def nardy_pages(lang):
 <li>If you switch it on, a copy goes to your own iCloud so another iPhone can pick it up — we cannot see it.</li>
 <li>The free version shows ads from Google AdMob between games; iOS asks your permission before any tracking. Pro removes ads completely.</li>
 </ul>
-<p class="after-block"><a href="/fair-dice/privacy">Privacy Policy</a> &nbsp;·&nbsp; <a href="/fair-dice/support">Support</a></p>
+<p class="after-block"><a href="/fair-dice/privacy">Privacy Policy</a> &nbsp;·&nbsp; <a href="/fair-dice/terms">Terms of Use</a> &nbsp;·&nbsp; <a href="/fair-dice/support">Support</a></p>
 </div></div></section>
 
 <section class="band-soft"><div class="wrap">
@@ -265,7 +213,7 @@ def nardy_pages(lang):
 <p>Ads never affect the dice or the computer. Pro removes ads completely.</p>
 <h2>How long data is kept and how to delete it</h2>
 <ul>
-<li><b>On your device:</b> kept until you delete it. Deleting the app deletes your history, statistics and settings; the unfinished game is kept in the Keychain and is removed when you start a new game or reset the device.</li>
+<li><b>On your device:</b> kept until you delete it. Deleting the app deletes your history, statistics and settings. The unfinished game is kept in the Keychain, which iOS does not clear with the app; the app deletes it on the first launch after a new install.</li>
 <li><b>In your iCloud:</b> kept until you turn off “Save progress to iCloud” and delete the app's data in iPhone Settings → your name → iCloud → Manage Storage.</li>
 <li><b>By Google (ads):</b> kept under Google's own retention rules, described in its privacy policy.</li>
 </ul>
@@ -298,6 +246,19 @@ def nardy_pages(lang):
 <li>Политика Google: <a href="https://policies.google.com/technologies/partner-sites">как Google использует данные из приложений партнёров</a>.</li>
 </ul>
 <p>Реклама никогда не влияет на кости и компьютер. Pro убирает рекламу полностью.</p>
+<h2>Сколько хранятся данные и как их удалить</h2>
+<ul>
+<li><b>На устройстве:</b> пока вы их не удалите. Удаление приложения удаляет историю, статистику и настройки. Незаконченная партия лежит в связке ключей, которую iOS вместе с приложением не очищает; приложение удаляет её при первом запуске после новой установки.</li>
+<li><b>В вашем iCloud:</b> пока вы не выключите «Сохранять прогресс в iCloud» и не удалите данные приложения в «Настройки iPhone → ваше имя → iCloud → Управление хранилищем».</li>
+<li><b>У Google (реклама):</b> по правилам хранения Google, описанным в её политике конфиденциальности.</li>
+</ul>
+<h2>Ваш выбор</h2>
+<ul>
+<li>Разрешить или запретить отслеживание: «Настройки iPhone → Конфиденциальность и безопасность → Отслеживание».</li>
+<li>В ЕЭЗ, Великобритании и Швейцарии согласие на рекламу меняется или отзывается в приложении: «Настройки → Настройки конфиденциальности рекламы».</li>
+<li>Копия в iCloud включается и выключается в настройках приложения.</li>
+<li>Pro убирает рекламу полностью.</li>
+</ul>
 <h2>Покупки</h2>
 <p>Pro и дополнительные доски продаются через App Store. Оплату проводит Apple; мы не получаем ни платёжных, ни личных данных.</p>
 <h2>Дети</h2>
@@ -305,6 +266,47 @@ def nardy_pages(lang):
 <h2>Изменения и связь</h2>
 <p>Если политика изменится, новая версия появится на этой странице с новой датой. Вопросы: {contact('ru')}</p>"""
     page(lang, base + "privacy", t["privacy"] + " — " + a["name"][lang], privacy, sub=app_nav(lang, base, "privacy"))
+
+    # Условия использования
+    if lang == "en":
+        terms = f"""<h1>Terms of Use — {a['name']['en']}</h1>
+<p class="muted">{t['updated']}: {UPDATED}</p>
+<p>The app is licensed to you under Apple's <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Standard Licensed Application End User License Agreement</a>. These terms add what is specific to this app.</p>
+<h2>The game</h2>
+<p>Backgammon: Fair Dice is a board game for entertainment and learning. Points in the game have no money value; there are no bets, coins or prizes.</p>
+<h2>Dice</h2>
+<p>Before each game the app seals the sequence of rolls and shows its fingerprint; after the game you get the key to check every roll. Neither the computer's level nor any purchase changes the dice.</p>
+<h2>Purchases</h2>
+<ul>
+<li>Pro is a one-time purchase: no ads and unlimited hints, for as long as you use the app with the same Apple ID. Boards are bought separately, also once.</li>
+<li>Purchases are processed and refunded by Apple under its rules; restore them in Settings → Restore purchases.</li>
+</ul>
+<h2>Free version</h2>
+<p>The free version shows a short ad after every second game (never during a game) and gives 3 hints a day against the computer, plus 3 for an optional video. The ad schedule and the hint limit may change in future versions.</p>
+<h2>No warranty</h2>
+<p>The app is provided “as is”. We work to keep the rules, the computer and the statistics correct, but we do not guarantee that the app is free of errors. Hints, the coach and the game review are advice, not a promise of a result.</p>
+<h2>Changes and contact</h2>
+<p>If these terms change, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
+    else:
+        terms = f"""<h1>Условия использования — {a['name']['ru']}</h1>
+<p class="muted">{t['updated']}: {UPDATED}</p>
+<p>Приложение предоставляется по <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">стандартному лицензионному соглашению Apple с конечным пользователем</a>. Эти условия добавляют то, что относится к этому приложению.</p>
+<h2>Игра</h2>
+<p>«Нарды: длинные и короткие» — настольная игра для развлечения и обучения. Очки в игре не имеют денежной ценности; ставок, монет и призов нет.</p>
+<h2>Кости</h2>
+<p>Перед каждой партией приложение запечатывает серию бросков и показывает её отпечаток; после партии вы получаете ключ и можете проверить каждый бросок. Ни уровень компьютера, ни покупки кости не меняют.</p>
+<h2>Покупки</h2>
+<ul>
+<li>Pro покупается один раз: без рекламы и подсказки без ограничений, пока вы пользуетесь приложением с тем же Apple ID. Доски покупаются отдельно, тоже один раз.</li>
+<li>Покупки проводит и возвращает Apple по своим правилам; восстановить их — «Настройки → Восстановить покупки».</li>
+</ul>
+<h2>Бесплатная версия</h2>
+<p>В бесплатной версии после каждой второй партии показывается короткая реклама (никогда во время партии), подсказок — 3 в день против компьютера и ещё 3 за ролик по желанию. Расписание рекламы и лимит подсказок могут измениться в новых версиях.</p>
+<h2>Без гарантий</h2>
+<p>Приложение предоставляется «как есть». Мы следим, чтобы правила, компьютер и статистика были верными, но не гарантируем отсутствие ошибок. Подсказки, тренер и разбор партии — совет, а не обещание результата.</p>
+<h2>Изменения и связь</h2>
+<p>Если условия изменятся, новая версия появится на этой странице с новой датой. Вопросы: {contact('ru')}</p>"""
+    page(lang, base + "terms", t["terms"] + " — " + a["name"][lang], terms, sub=app_nav(lang, base, "terms"))
 
     # Поддержка
     if lang == "en":
@@ -592,11 +594,307 @@ def logbook_pages(lang):
          sub=logbook_nav(lang, base, "support"))
 
 
+def bowling_nav(lang, base, current):
+    t = T[lang]
+    items = [("", t["overview"]), ("privacy", t["privacy"]), ("terms", t["terms"]), ("support", t["support"])]
+    links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
+                    for slug, name in items)
+    return f'<nav class="sub">{links}</nav>'
+
+
+def bowling_pages(lang):
+    """Черновики страниц приложения для боулинга. Лендинг дорабатывается отдельно."""
+    a, t = next(a for a in APPS if a["slug"] == "bowling"), T[lang]
+    base = "/bowling/"
+    name = a["name"][lang]
+    store = app_store_badge(a["store"]) if a["store"] else f'<span class="badge">{t["soon"]}</span>'
+    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{name}</h1>{store}</div></div>'
+
+    overview = f"""{hero}
+<p class="lead">A scorekeeper for ten-pin bowling: enter a game frame by frame, mark the pins you leave standing,
+and see where your points actually go.</p>
+<h2>What it does</h2>
+<ul>
+<li>Frame-by-frame entry with the tenth frame handled by the USBC rules, or a single final score when you are in a hurry.</li>
+<li>As many games in a session as you played &mdash; four, five, a whole tournament.</li>
+<li>Any roll, game or session can be corrected or deleted afterwards.</li>
+<li>Average by month, strike rate, spares split into single pins, multi-pin leaves and splits.</li>
+<li>A table of every leave: which ones you convert and which you do not.</li>
+<li>Your arsenal of balls, with the average for each one.</li>
+<li>Export to CSV and PDF, import from CSV.</li>
+</ul>
+<h2>What it does not do</h2>
+<ul>
+<li>No account and no sign-in.</li>
+<li>No ads and no trackers.</li>
+<li>It does not read the scoreboard with the camera and does not track the ball down the lane.</li>
+</ul>
+<p class="muted">Entering games and seeing your whole history are free. The breakdown &mdash; average by month,
+the leave table, the percentages, the filters and export &mdash; is the paid part.</p>
+<p>Questions: {contact(lang)}</p>"""
+    page(lang, base, name, overview, desc=a["tag"][lang], sub=bowling_nav(lang, base, ""))
+
+    privacy = f"""<h1>Privacy Policy &mdash; {name}</h1>
+<p class="muted">Last updated: {UPDATED}</p>
+<p>The app has no account, no analytics and no advertising. There is no server of ours for your data to go to.</p>
+<h2>What stays on your device</h2>
+<p>Your sessions, games, rolls, marked pins, balls and their photos are stored on your iPhone in the app's own
+storage. Photos you pick for a ball are copied into the app's folder and never leave it.</p>
+<h2>iCloud</h2>
+<p>If you are signed in to iCloud and the app is allowed to use it, your data is also kept in <b>your own</b>
+private iCloud database so a new phone does not start empty. That data belongs to your Apple Account: we have
+no access to it and cannot read it. Turning iCloud off for the app keeps everything local.</p>
+<h2>Files you create yourself</h2>
+<p>Export produces a CSV or PDF file. Where it goes &mdash; Files, mail, another app &mdash; is entirely your choice;
+the app only hands the file to the system share sheet.</p>
+<h2>What we do not collect</h2>
+<ul>
+<li>No identifiers for advertising, no tracking across apps or sites.</li>
+<li>No usage analytics, no crash SDKs from third parties.</li>
+<li>No contacts, no location, no health data, no microphone.</li>
+</ul>
+<h2>Purchases</h2>
+<p>Purchases are processed by Apple. We never see your card, and we do not receive your name or address.</p>
+<h2>Children</h2>
+<p>The app is not directed at children and collects nothing from anyone.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the date above changes with it. Questions: {contact(lang)}</p>"""
+    page(lang, base + "privacy", f"Privacy &mdash; {name}", privacy, sub=bowling_nav(lang, base, "privacy"))
+
+    terms = f"""<h1>Terms of Use &mdash; {name}</h1>
+<p class="muted">Last updated: {UPDATED}</p>
+<h2>What you get</h2>
+<p>A licence to use the app on devices tied to your Apple Account, for your own bowling. Entering games and
+seeing your own history are free and stay free. The breakdown of your statistics is unlocked by a purchase.</p>
+<h2>Purchases</h2>
+<p>Purchases and refunds are handled by Apple under the terms of the App Store. A subscription renews until you
+cancel it in your Apple Account settings; a one-time unlock does not renew. Restoring purchases on a new device
+is free and available in the app.</p>
+<h2>Your data is yours</h2>
+<p>You can export everything to CSV or PDF at any time, and delete any session, game or ball. Deleting the app
+deletes its local data.</p>
+<h2>What the app does not promise</h2>
+<p>The app counts what you enter. It does not read the scoreboard, does not watch the lane, and is not affiliated
+with, endorsed by or certified by the United States Bowling Congress or any bowling centre. Scores entered by
+mistake stay wrong until you correct them.</p>
+<h2>Liability</h2>
+<p>The app is provided as is. It is a scorekeeper, not a document of record: keep your own export if a score
+matters to you.</p>
+<h2>Contact</h2>
+<p>{contact(lang)}</p>"""
+    page(lang, base + "terms", f"Terms of Use &mdash; {name}", terms, sub=bowling_nav(lang, base, "terms"))
+
+    support = f"""<h1>Support &mdash; {name}</h1>
+<p class="lead">Written by one person. Write to {contact(lang)} and you will get an answer from that person.</p>
+<h2>Before you write</h2>
+<ul>
+<li><b>A score looks wrong.</b> Tell me the frames as you bowled them &mdash; the counting is covered by tests
+against the USBC rules, so a real mistake is worth finding.</li>
+<li><b>Moving to a new phone.</b> Turn iCloud on for the app on both phones, or export to CSV on the old one and
+import it on the new one.</li>
+<li><b>A session ruined your average.</b> Any session, game or roll can be deleted or corrected.</li>
+<li><b>Restoring a purchase.</b> The Data tab has the restore action; it is free and works on any device with the
+same Apple Account.</li>
+</ul>
+<h2>What helps me answer faster</h2>
+<p>The iOS version, the app version, and what you expected to see instead. A screenshot is better than a description.</p>
+<h2>Contact</h2>
+<p>{contact(lang)}</p>"""
+    page(lang, base + "support", f"Support &mdash; {name}", support, sub=bowling_nav(lang, base, "support"))
+
+
+
+def mgrs_nav(lang, current):
+    items = [("", "Overview"), ("privacy", "Privacy"), ("terms", "Terms"), ("support", "Support")]
+    base = "/mgrs-land-nav/"
+    links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
+                    for slug, name in items)
+    return f'<nav class="sub">{links}</nav>'
+
+
+def mgrs_pages(lang):
+    a = next(x for x in APPS if x["slug"] == "mgrs-land-nav")
+    base = "/mgrs-land-nav/"
+    store = app_store_badge(a["store"]) if a["store"] else '<span class="badge">Coming to the App Store</span>'
+    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"]["en"]}</h1>{store}</div></div>'
+    overview = hero + """<p class="lead">Your position as a big, clear MGRS grid — and a trainer for the land navigation skills you need
+when the phone goes in the bag.</p>
+<ul>
+<li><b>Position.</b> 10- or 8-digit MGRS from GPS, truncated like on a map, never rounded. UTM, lat/lon, and the G-M angle for where you stand.</li>
+<li><b>Points and courses.</b> Type a grid the way you read it from a map, project a point by azimuth and distance, plan legs in mils with pace counts. GPX in and out.</li>
+<li><b>Train.</b> Calibrate your pace count, walk a blind leg and see exactly where you drifted, drill 8-digit plotting.</li>
+<li><b>Honest note.</b> A training aid: on a graded land navigation course your phone is not allowed.</li>
+</ul>
+<p>No ads, no account, no tracking.</p>"""
+    page(lang, base, a["name"]["en"], overview, a["tag"]["en"], sub=mgrs_nav(lang, ""))
+
+    privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
+<p class="muted">Last updated: {MGRS_UPDATED}</p>
+<p>MGRS Land Nav collects no personal data. It has no account, no analytics, no advertising and no servers of ours.</p>
+<h2>What the app uses, and where it stays</h2>
+<ul>
+<li><b>Location</b> (only while the app is open): to show your grid, azimuths and distances, and to fix the start and finish of a training leg. It is processed on your iPhone and never sent to us.</li>
+<li><b>Motion (pedometer step counts)</b>: to count your steps between the start and finish of a pace-count walk or a training leg. Read on your iPhone only.</li>
+<li><b>Your points, courses and training history</b>: stored in the app's storage on your iPhone. There is no cloud copy.</li>
+<li><b>Settings</b> (units, north reference, grid digits): stored on your iPhone.</li>
+</ul>
+<h2>The map</h2>
+<p>The map screen shows Apple Maps. To draw it, your iPhone requests map tiles for the area on screen from Apple, as every app with Apple Maps does. Apple handles those requests under its own privacy policy; your points and training data are not sent with them. Everything else works offline.</p>
+<h2>Purchases</h2>
+<p>Pro is a one-time purchase through the App Store. Payment is handled by Apple; we do not receive your payment details or personal information.</p>
+<h2>How long data is kept and how to delete it</h2>
+<ul>
+<li>Your points, courses and training records stay on your iPhone until you delete them in the app (swipe to delete) or delete the app, which removes all of them.</li>
+<li>We keep nothing, because we receive nothing.</li>
+</ul>
+<h2>Your choices</h2>
+<ul>
+<li>Allow or stop location access: iPhone Settings → Privacy &amp; Security → Location Services → MGRS Land Nav.</li>
+<li>Allow or stop motion access: iPhone Settings → Privacy &amp; Security → Motion &amp; Fitness.</li>
+</ul>
+<h2>Children</h2>
+<p>The app is not directed at children under 13 and collects no data from anyone.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
+    page(lang, base + "privacy", "Privacy — " + a["name"]["en"], privacy, sub=mgrs_nav(lang, "privacy"))
+
+    terms = f"""<h1>Terms of Use — {a['name']['en']}</h1>
+<p class="muted">Last updated: {MGRS_UPDATED}</p>
+<p>These terms apply together with Apple's Licensed Application End User License Agreement.</p>
+<h2>A training aid</h2>
+<p>MGRS Land Nav is made for practice and general navigation. It is not a certified navigation instrument. GPS and the iPhone compass can be wrong — near metal, in cars, under tree cover or in cities. Always carry a map and a compass and check what the app shows. Do not rely on it where a mistake could put anyone in danger.</p>
+<p>On graded land navigation courses phones are not allowed. Follow the rules of your course and your chain of command.</p>
+<h2>Accuracy</h2>
+<p>Coordinate calculations follow published methods and are tested against reference software, and the magnetic declination comes from the World Magnetic Model 2025, valid until the end of 2029. The results can only be as good as the GPS position and compass reading they start from.</p>
+<h2>Purchases</h2>
+<p>Pro is a one-time purchase handled by Apple. Refunds are handled by Apple.</p>
+<h2>No affiliation</h2>
+<p>MGRS Land Nav is independent and not affiliated with, or endorsed by, the U.S. Army or any government agency.</p>
+<h2>No warranty</h2>
+<p>The app is provided “as is”, without warranties of any kind, to the extent permitted by law.</p>
+<h2>Contact</h2>
+<p>{contact('en')}</p>"""
+    page(lang, base + "terms", "Terms — " + a["name"]["en"], terms, sub=mgrs_nav(lang, "terms"))
+
+    support = f"""<h1>Support — {a['name']['en']}</h1>
+<p>Write to us: {contact('en')}</p>
+<h2>Frequently asked</h2>
+<p><b>Why do the last digits of my grid change while I stand still?</b> GPS on a phone is accurate to a few metres; the app shows the accuracy next to the grid. For a 10-digit grid (1 m) the last digits will move.</p>
+<p><b>Why truncated, not rounded?</b> An MGRS grid names the south-west corner of its square, the way you read it from a map. Rounding could put you in the next square.</p>
+<p><b>Which north is this azimuth from?</b> Every azimuth is labelled Grid, Mag or True. Change it with the picker above the number.</p>
+<p><b>The compass looks wrong.</b> Move away from metal and cars and wave the phone in a figure 8. The app warns when compass accuracy is poor.</p>
+<p><b>I bought Pro on another iPhone.</b> Settings → Restore purchase.</p>
+<p><b>Can I use it on a graded land nav course?</b> No — phones are not allowed there. Use it to practise before.</p>"""
+    page(lang, base + "support", "Support — " + a["name"]["en"], support, sub=mgrs_nav(lang, "support"))
+
+
+
+def solunar_nav(lang, current):
+    items = [("", "Overview"), ("privacy", "Privacy"), ("terms", "Terms"), ("support", "Support")]
+    base = "/solunar/"
+    links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
+                    for slug, name in items)
+    return f'<nav class="sub">{links}</nav>'
+
+
+def solunar_pages(lang):
+    a = next(x for x in APPS if x["slug"] == "solunar")
+    base = "/solunar/"
+    store = app_store_badge(a["store"]) if a["store"] else '<span class="badge">Coming to the App Store</span>'
+    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{a["name"]["en"]}</h1>{store}</div></div>'
+    overview = hero + """<p class="lead">Plan when to be out: major and minor feeding periods, sunrise, sunset, moonrise, moonset
+and the moon phase for any place — computed on your iPhone, so it works with no signal.</p>
+<ul>
+<li><b>Accurate.</b> Sun and moon times within a minute of the U.S. Naval Observatory, in the time zone of the place, 12- or 24-hour like your iPhone. Days with no moonrise say so.</li>
+<li><b>Honest.</b> A 0–5 day score with the reasons shown. A plan for your trip, not a promise of a catch.</li>
+<li><b>Test it yourself.</b> Log bites, catches and game sightings in two taps and see whether they land in the periods more often than chance.</li>
+<li><b>Widgets, Live Activity, alerts</b> before major periods — all planned on the phone, no connection needed.</li>
+</ul>
+<p>Free: today and tomorrow for your current location. Pro is a one-time purchase — no subscription, no ads, no account.</p>"""
+    page(lang, base, a["name"]["en"], overview, a["tag"]["en"], sub=solunar_nav(lang, ""))
+
+    privacy = f"""<h1>Privacy Policy — {a['name']['en']}</h1>
+<p class="muted">Last updated: {SOLUNAR_UPDATED}</p>
+<p>Solunar Times collects no personal data. It has no account, no analytics, no advertising and no servers of ours.</p>
+<h2>What the app uses, and where it goes</h2>
+<ul>
+<li><b>Location</b> (only while the app is open, and only if you allow it): to compute sun and moon times for where you are. All calculations happen on your iPhone.</li>
+<li><b>Place name and time zone.</b> When you set a place from GPS or by tapping the map, the app asks Apple's geocoding service (part of iOS) for the place's name and time zone. Only the coordinates of that place are sent, to Apple, under Apple's privacy policy. Nothing is sent to us.</li>
+<li><b>The map.</b> Choosing a place shows Apple Maps; your iPhone requests map tiles for the area on screen from Apple, as every app with Apple Maps does.</li>
+<li><b>Your places, settings and journal</b> (bites, catches, sightings, notes): stored in the app's storage on your iPhone and shared only with this app's widgets on the same iPhone. There is no cloud copy of ours.</li>
+<li><b>Alerts</b> are local notifications planned on your iPhone; no push server is involved.</li>
+</ul>
+<h2>Purchases</h2>
+<p>Pro is a one-time purchase through the App Store. Payment is handled by Apple; we do not receive your payment details or personal information.</p>
+<h2>How long data is kept and how to delete it</h2>
+<ul>
+<li>Places and journal entries stay on your iPhone until you delete them in the app (swipe to delete) or delete the app, which removes all of them.</li>
+<li>If you use iCloud Backup or a computer backup for your iPhone, those backups include the app's data under Apple's terms.</li>
+<li>We keep nothing, because we receive nothing.</li>
+</ul>
+<h2>Your choices</h2>
+<ul>
+<li>Allow or stop location access: iPhone Settings → Privacy &amp; Security → Location Services → Solunar Times. Without it, set places on the map.</li>
+<li>Turn alerts on or off in the app's Settings or in iPhone Settings → Notifications.</li>
+</ul>
+<h2>Children</h2>
+<p>The app is not directed at children under 13 and collects no data from anyone.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
+    page(lang, base + "privacy", "Privacy — " + a["name"]["en"], privacy, sub=solunar_nav(lang, "privacy"))
+
+    terms = f"""<h1>Terms of Use — {a['name']['en']}</h1>
+<p class="muted">Last updated: {SOLUNAR_UPDATED}</p>
+<p>These terms apply together with Apple's Licensed Application End User License Agreement.</p>
+<h2>A planning aid, not a promise</h2>
+<p>Solunar theory is a way to plan when to be out. It does not guarantee a catch or a sighting, and the day score is a transparent formula, not a forecast of animal behaviour. Weather, pressure and local conditions are not included.</p>
+<h2>Accuracy</h2>
+<p>Sun and moon times are computed with published astronomical algorithms (Jean Meeus) and are tested against the U.S. Naval Observatory to within one minute. Results depend on the place and time zone you set; a time zone guessed without a connection is marked in the app.</p>
+<h2>Safety and the law</h2>
+<p>Follow hunting and fishing regulations, seasons and legal shooting hours where you are. Legal hours are set by your local authority, not by this app.</p>
+<h2>Purchases</h2>
+<p>Pro is a one-time purchase handled by Apple. Refunds are handled by Apple.</p>
+<h2>No affiliation</h2>
+<p>Solunar Times is independent and not affiliated with the publishers of any solunar tables.</p>
+<h2>No warranty</h2>
+<p>The app is provided “as is”, without warranties of any kind, to the extent permitted by law.</p>
+<h2>Contact</h2>
+<p>{contact('en')}</p>"""
+    page(lang, base + "terms", "Terms — " + a["name"]["en"], terms, sub=solunar_nav(lang, "terms"))
+
+    support = f"""<h1>Support — {a['name']['en']}</h1>
+<p>Write to us: {contact('en')}</p>
+<h2>Frequently asked</h2>
+<p><b>Why does a day say “No moonrise today”?</b> The moon rises about 50 minutes later each day, so roughly once a month it rises after midnight and skips a calendar day. The app says so instead of showing a time from another day.</p>
+<p><b>Why are the times different from another app or site?</b> Check the time zone of the place (Places tab). We compute times in the time zone of the place, not your phone, and round to the nearest minute like the U.S. Naval Observatory.</p>
+<p><b>How is the day score made?</b> Tap “Why this score?” on the Today screen — the formula and the reasons for that day are shown.</p>
+<p><b>12- or 24-hour time?</b> The app follows your iPhone: Settings → General → Date &amp; Time.</p>
+<p><b>Alerts didn't arrive.</b> Alerts are planned two weeks ahead for the selected place. Open the app now and then, and check that notifications are allowed for Solunar Times.</p>
+<p><b>I bought Pro on another iPhone.</b> Settings → Restore Purchases.</p>"""
+    page(lang, base + "support", "Support — " + a["name"]["en"], support, sub=solunar_nav(lang, "support"))
+
+
+
 # Сайт только на английском; русские тексты в функциях оставлены на случай перевода.
 for lang in ("en",):
     home(lang)
     nardy_pages(lang)
     logbook_pages(lang)
+    bowling_pages(lang)
+    mgrs_pages(lang)
+    solunar_pages(lang)
+for product in studio.PUBLIC_PRODUCTS:
+    if not product.get("external") and product["slug"] != "fair-dice":
+        studio.product_page(product)
+# Remove only known generated pages for products not yet published.
+# Their source content remains in the generator and their product branches.
+for product in studio.PRODUCTS:
+    if not product.get("published", False) and not product.get("external"):
+        for name in ("index.html", "privacy.html", "terms.html", "support.html"):
+            (studio.ROOT / product["slug"] / name).unlink(missing_ok=True)
+        directory = studio.ROOT / product["slug"]
+        if directory.is_dir() and not any(directory.iterdir()):
+            directory.rmdir()
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".nojekyll"), "w"):
     pass
 print("готово")
