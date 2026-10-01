@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+.idea/
+# Заметки для Claude Code: локальные, на сайт не публикуются (GitHub Pages отдаёт все файлы ветки).
+CLAUDE.md
