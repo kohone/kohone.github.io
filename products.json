@@ -60,7 +60,7 @@
     "screen": "/assets/mgrs-land-nav/position.jpg",
     "status": "In development",
     "store": null,
-    "published": false
+    "published": true
   },
   {
     "slug": "solunar",
