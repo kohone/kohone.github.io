@@ -75,7 +75,7 @@
     "screen": "/assets/solunar/today.jpg",
     "status": "In development",
     "store": null,
-    "published": false
+    "published": true
   },
   {
     "slug": "bowling",
