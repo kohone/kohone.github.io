@@ -2,6 +2,7 @@
 import html
 import json
 from pathlib import Path
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent
 PRODUCTS = json.loads((ROOT / 'products.json').read_text())
@@ -37,6 +38,9 @@ def shell(path, title, body, desc='', sub='', kind='document'):
 {('<div class="wide subbar">'+sub+'</div>') if sub else ''}
 <main id="main">{body}</main>
 <footer class="site-footer"><div class="wide"><div class="footer-top"><a class="brand" href="/">kohone.</a><p>Independent apps.<br>Considered down to the details.</p><a href="mailto:support@kohone.net">Let’s talk <span aria-hidden="true">↗</span><small>support@kohone.net</small></a></div><div class="footer-bottom"><span>© 2026 Maks Beskrovnyi</span><a href="/#apps">All apps</a><span>Made with care. Built to be used.</span></div></div></footer></body></html>'''
+    if owner:
+        # Mail from an app's pages arrives with the app's name as the subject.
+        content = content.replace('href="mailto:support@kohone.net"', f'href="mailto:support@kohone.net?subject={quote(owner["name"])}"')
     rel = path.lstrip('/')
     if not rel or rel.endswith('/'): rel += 'index.html'
     elif not rel.endswith('.html'): rel += '.html'
@@ -45,10 +49,16 @@ def shell(path, title, body, desc='', sub='', kind='document'):
     out.write_text(content)
 
 
+# Apps whose landing has its own page structure and CSS instead of the shared .app-landing.
+OWN_LAYOUT = {'bowling': 'bw'}
+
+
 def write_page(path, title, body, desc='', sub=''):
     product = next((a for a in PRODUCTS if path == '/' + a['slug'] + '/' and not a.get('external')), None)
     if product and product['slug'] == 'fair-dice':
         shell(path, title, '<div class="fair-landing wood">'+body+'</div>', desc, sub, kind='product')
+    elif product and product['slug'] in OWN_LAYOUT:
+        shell(path, title, f'<article class="{OWN_LAYOUT[product["slug"]]}">'+body+'</article>', desc, sub, kind='product')
     elif product:
         # The app's own landing text from build.py, in the shared design. Copy is not generated here.
         shell(path, title, f'<article class="app-landing {product["theme"]}">'+body+'</article>', desc, sub, kind='product')

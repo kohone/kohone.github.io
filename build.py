@@ -604,35 +604,59 @@ def bowling_nav(lang, base, current):
 
 
 def bowling_pages(lang):
-    """Черновики страниц приложения для боулинга. Лендинг дорабатывается отдельно."""
+    """Страницы приложения для боулинга."""
     a, t = next(a for a in APPS if a["slug"] == "bowling"), T[lang]
     base = "/bowling/"
     name = a["name"][lang]
     store = app_store_badge(a["store"]) if a["store"] else f'<span class="badge">{t["soon"]}</span>'
-    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{name}</h1>{store}</div></div>'
+    frames = "".join(f"<span><i>{n}</i></span>" for n in range(1, 10)) + '<span class="tenth"><i>10</i><b></b><b></b><b></b></span>'
 
-    overview = f"""{hero}
-<p class="lead">A scorekeeper for ten-pin bowling: enter a game frame by frame, mark the pins you leave standing,
-and see where your points actually go.</p>
-<h2>What it does</h2>
-<ul>
-<li>Frame-by-frame entry with the tenth frame handled by the USBC rules, or a single final score when you are in a hurry.</li>
-<li>As many games in a session as you played &mdash; four, five, a whole tournament.</li>
-<li>Any roll, game or session can be corrected or deleted afterwards.</li>
-<li>Average by month, strike rate, spares split into single pins, multi-pin leaves and splits.</li>
-<li>A table of every leave: which ones you convert and which you do not.</li>
-<li>Your arsenal of balls, with the average for each one.</li>
-<li>Export to CSV and PDF, import from CSV.</li>
-</ul>
-<h2>What it does not do</h2>
-<ul>
-<li>No account and no sign-in.</li>
-<li>No ads and no trackers.</li>
-<li>It does not read the scoreboard with the camera and does not track the ball down the lane.</li>
-</ul>
-<p class="muted">Entering games and seeing your whole history are free. The breakdown &mdash; average by month,
-the leave table, the percentages, the filters and export &mdash; is the paid part.</p>
-<p>Questions: {contact(lang)}</p>"""
+    def shot(n, alt):
+        return f'<img class="device" src="/assets/bowling/{n}.jpg" alt="{alt}" width="552" height="1200" loading="lazy">'
+
+    # Тексты разделов — из docs/APPSTORE.md приложения и со страниц privacy и support ниже.
+    overview = f"""<section class="bw-board"><div class="bw-copy"><div class="bw-id"><img src="{a["icon"]}" alt=""><div><h1>{name}</h1>{store}</div></div>
+<p class="bw-lead">A scorekeeper for ten-pin bowling: enter a game frame by frame, mark the pins you leave standing, and see where your points actually go.</p>
+<p class="bw-q">Questions: {contact(lang)}</p></div>
+<div class="bw-shots">{shot('01-game-entry','Frame entry with the pins left standing')}{shot('02-game-finished','A finished game')}</div>
+<div class="bw-frames" aria-hidden="true">{frames}</div></section>
+
+<section class="bw-state"><p class="bw-big">The counting is right, and it is tested.</p>
+<p>Strike streaks count by ball, not by frame, so a perfect game is twelve in a row. The tenth frame is marked by its first two balls: a strike there closes the frame even when the fill balls miss. Splits follow the full USBC rule, including the half that most apps drop &mdash; the 4-5 and the 5-6 are splits too. Unit tests stand behind every one of those sentences.</p></section>
+
+<section class="bw-work"><div class="bw-work-copy"><h2>See what to work on.</h2>
+<p>Average by month. Strike rate and first-ball average. Spares split into single pins, multi-pin leaves and splits, each with its own percentage. A table of every leave you have faced, with the splits marked. Filter it all by center and by league, tournament or practice, because an average from two different oil patterns is an average of nothing.</p></div>
+<div class="bw-strip">{shot('04-stats-top','Statistics: average by month')}{shot('05-stats-spares','Spares by group')}{shot('03-session','A session of several games')}</div></section>
+
+<section class="bw-do"><h2>What it does</h2><ul class="bw-rows">
+<li><b>Enter a game the way you have time for.</b> Frame by frame with the pins you leave standing, or a single final score when you just want the average. Both count toward your average, your best game and your series.</li>
+<li><b>As many games in a session as you played.</b> Four, five, a whole tournament day. Any roll, game or session can be corrected or deleted afterwards &mdash; a practice session will not sit in your season average forever.</li>
+<li><b>Your arsenal.</b> Every ball with its weight, the date you bought it, your layout and surface notes, and the average you actually shoot with it.</li>
+</ul></section>
+
+<section class="bw-dont"><h2>What it does not do</h2><ul class="bw-cells">
+<li>It does not read the scoreboard with the camera.</li>
+<li>It does not track the ball down the lane.</li>
+<li>It is an independent app, not affiliated with or endorsed by the United States Bowling Congress.</li></ul></section>
+
+<section class="bw-do bw-data"><h2>Your data stays yours.</h2><div><p class="bw-para">No account. No ads. No trackers. Everything lives on your iPhone, and you can export it to CSV or PDF at any time &mdash; or import a CSV you already keep in a spreadsheet.</p>
+<ul class="bw-rows">
+<li>There is no server of ours for your data to go to.</li>
+<li>No usage analytics, no crash SDKs from third parties.</li>
+<li>No contacts, no location, no health data, no microphone.</li>
+<li>Purchases are processed by Apple. We never see your card, and we do not receive your name or address.</li></ul>
+<p class="bw-q"><a href="/bowling/privacy">Privacy Policy</a></p></div></section>
+
+<section class="bw-cost"><h2>What it costs</h2><div class="bw-two">
+<div><p class="bw-price">Free</p><p>Entering games and seeing your whole history are free, and stay free.</p></div>
+<div><p class="bw-price">Paid</p><p>The breakdown &mdash; average by month, the leave table, the percentages, the filters and export &mdash; is the paid part.</p></div></div></section>
+
+<section class="bw-do bw-faq"><h2>Before you write</h2><div>
+<details><summary>A score looks wrong.</summary><p>Tell me the frames as you bowled them &mdash; the counting is covered by tests against the USBC rules, so a real mistake is worth finding.</p></details>
+<details><summary>Moving to a new phone.</summary><p>Turn iCloud on for the app on both phones, or export to CSV on the old one and import it on the new one.</p></details>
+<details><summary>A session ruined your average.</summary><p>Any session, game or roll can be deleted or corrected.</p></details>
+<details><summary>Restoring a purchase.</summary><p>The Data tab has the restore action; it is free and works on any device with the same Apple Account.</p></details>
+<p class="bw-note">Written by one person. Write to {contact(lang)} and you will get an answer from that person.</p></div></section>"""
     page(lang, base, name, overview, desc=a["tag"][lang], sub=bowling_nav(lang, base, ""))
 
     privacy = f"""<h1>Privacy Policy &mdash; {name}</h1>
