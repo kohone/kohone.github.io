@@ -892,8 +892,8 @@ def woman_pages(lang):
     store = app_store_badge(a["store"]) if a["store"] else '<span class="badge">Coming to the App Store</span>'
     hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{n}</h1>{store}</div></div>'
     store_cta = app_store_badge(a["store"]) if a["store"] else '<span class="soon">Coming to the App Store</span>'
-    def shot(alt, cap=""):
-        return f'<figure class="w-shot"><div class="w-frame" role="img" aria-label="{alt}">Screenshot to come</div>{("<figcaption>" + cap + "</figcaption>") if cap else ""}</figure>'
+    def shot(name, alt, cap=""):
+        return f'<figure class="w-shot"><div class="w-frame"><img src="/assets/aylin/{name}.jpg" alt="{alt}" width="552" height="1200" loading="lazy"></div>{("<figcaption>" + cap + "</figcaption>") if cap else ""}</figure>'
     def tile(t, d):
         return f'<div><h3>{t}</h3><p>{d}</p></div>'
     tiles = "".join(tile(*x) for x in [
@@ -928,7 +928,7 @@ def woman_pages(lang):
 <div class="cta">{store_cta}</div>
 <p class="small">Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
 </div>
-{shot("The main screen: the cycle day, days until the period, and the month calendar")}
+{shot("01-calendar", "The main screen: the month calendar with period days, the cycle day and the days until the period")}
 </div></div>
 
 <section><div class="wrap">
@@ -941,9 +941,9 @@ def woman_pages(lang):
 <p class="measure">Tap a day to mark your period, hold it for the details. The month shows what you marked and what is expected.</p>
 <div class="legend" aria-label="Day colours in the calendar"><span><b style="background:#f0cac4"></b>Period</span><span><b style="background:#edc1a6"></b>Forecast</span><span><b style="background:#f5eed8;box-shadow:inset 0 0 0 1px #c9bf9c"></b>May be fertile</span><span><b style="background:#d3e1cb"></b>Ovulation</span></div>
 <div class="strip">
-{shot("The month calendar with period days and the forecast", "Tap &mdash; period. Hold &mdash; day details")}
-{shot("The day sheet with flow, symptoms and a note", "Flow, symptoms, a note")}
-{shot("The cycle history with typical values", "History of cycles")}
+{shot("02-day-sheet", "The day sheet with sex, flow, symptoms and a note", "Hold a day &mdash; flow, symptoms, a note")}
+{shot("03-history", "The cycle history with typical cycle, range and period length", "History of cycles")}
+{shot("04-charts", "Charts of cycle length and symptoms per cycle", "Charts, in Aylin Plus")}
 </div>
 </div></section>
 
