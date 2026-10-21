@@ -16,6 +16,7 @@ UPDATED = "2026-09-25"
 FAIR_DICE_UPDATED = "2026-09-27"
 MGRS_UPDATED = "2026-09-26"
 SOLUNAR_UPDATED = "2026-09-26"
+WOMAN_UPDATED = "2026-10-21"
 
 import studio
 
@@ -876,6 +877,97 @@ and the moon phase for any place — computed on your iPhone, so it works with n
 
 
 
+def woman_nav(lang, current):
+    items = [("", "Overview"), ("privacy", "Privacy"), ("terms", "Terms"), ("support", "Support")]
+    base = "/woman/"
+    links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
+                    for slug, name in items)
+    return f'<nav class="sub">{links}</nav>'
+
+
+def woman_pages(lang):
+    a = next(x for x in APPS if x["slug"] == "woman")
+    base = "/woman/"
+    n = a["name"]["en"]
+    store = app_store_badge(a["store"]) if a["store"] else '<span class="badge">Coming to the App Store</span>'
+    hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{n}</h1>{store}</div></div>'
+    overview = hero + """<p class="lead">A period calendar. Tap a day to mark it, see the day of your cycle and when the next period is expected.
+Your records are stored only on this iPhone.</p>
+<ul>
+<li><b>Mark with a tap.</b> Tap a day to mark your period. Hold a day for flow, symptoms and a note; double tap marks sex. Flow runs from spotting to heavy. You can edit any past day, and add past periods by dates.</li>
+<li><b>Your cycle.</b> The cycle day and the days until your period, with a calendar for the month. The forecast is a range of dates when your cycles vary, and it sharpens after two marked periods. If you know your usual cycle length, it is used until then.</li>
+<li><b>Fertile days, if you want them.</b> Estimated fertile days and ovulation in the calendar, from cycle length. An estimate, not a measurement and not birth control.</li>
+<li><b>History.</b> Each period that started in the dates you choose: how long it lasted and how long the cycle was, next to your usual length and range.</li>
+<li><b>Symptoms and notes.</b> A short list &mdash; cramps, headache, back pain, breast tenderness, bloating, fatigue, mood changes, acne, nausea &mdash; and a note for any day.</li>
+<li><b>Reminders and a widget.</b> A reminder before your period, with your own text. A Home Screen widget shows the days left.</li>
+<li><b>Apple Health, both ways.</b> Period days you mark appear in Health, and period days added or removed in Health change here. Optional.</li>
+<li><b>Lock.</b> Lock Aylin with Face ID or your iPhone passcode.</li>
+<li><b>Your data.</b> Export your records as a table, import from a file, or delete all data from Settings.</li>
+<li><b>Languages.</b> English and Ukrainian.</li>
+</ul>
+<h2>Aylin Plus</h2>
+<p>One purchase, forever &mdash; not a subscription. It unlocks the report for a doctor (a PDF of one or two pages with marked periods, cycle lengths, symptoms and notes), charts, extra reminders, your own symptoms, and themes and icons. Marking days, the forecast, history, reminders and export stay free.</p>"""
+    page(lang, base, n, overview, a["tag"]["en"], sub=woman_nav(lang, ""))
+
+    privacy = f"""<h1>Privacy Policy &mdash; {n}</h1>
+<p class="muted">Last updated: {WOMAN_UPDATED}</p>
+<p>Aylin has no account, no advertising, no analytics and no tracking, and no servers of ours. Your records are stored only on your iPhone, and we do not receive them.</p>
+<h2>What the app stores, and where</h2>
+<ul>
+<li><b>Your records</b> (marked period days, flow, sex, symptoms, notes) and <b>settings</b>: stored in the app's storage on your iPhone. They are not synced to iCloud and not sent to us.</li>
+<li><b>The widget</b> reads the same records from storage shared between the app and its widget on your iPhone; it writes nothing and sends nothing.</li>
+<li><b>Reminders</b> are local notifications planned on your iPhone, with the text you wrote. No push server is involved.</li>
+</ul>
+<h2>Apple Health (optional)</h2>
+<p>If you turn on &ldquo;Sync with Apple Health&rdquo;, Aylin reads menstrual flow and intermenstrual bleeding (spotting) from Health and writes the period days you mark to Health. This stays within your iPhone's Health data and is governed by Health permissions, which you can change in iPhone Settings &rarr; Health &rarr; Data Access &amp; Devices. We do not receive Health data. If you delete all data in Aylin, period days already written to Health stay there; delete them in the Health app.</p>
+<h2>Face ID and passcode</h2>
+<p>The lock uses the system's authentication on your iPhone. Aylin never receives your face data or passcode.</p>
+<h2>Files you export and reports</h2>
+<p>Export and the PDF report for a doctor are created on your iPhone. Nothing is sent anywhere until you choose to share the file, and then it goes where you send it.</p>
+<h2>Purchases</h2>
+<p>Aylin Plus is a one-time purchase through the App Store. Payment is handled by Apple; we do not receive your payment details or personal information.</p>
+<h2>How long data is kept and how to delete it</h2>
+<ul>
+<li>Your records stay on your iPhone until you remove them: use &ldquo;Delete all data&rdquo; in Settings, or delete the app.</li>
+<li>If you use iCloud Backup or a computer backup for your iPhone, those backups may include the app's data under Apple's terms.</li>
+<li>We keep nothing, because we receive nothing.</li>
+</ul>
+<h2>Children</h2>
+<p>The app is not directed at children under 13 and collects no data from anyone.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
+    page(lang, base + "privacy", "Privacy — " + n, privacy, sub=woman_nav(lang, "privacy"))
+
+    terms = f"""<h1>Terms of Use &mdash; {n}</h1>
+<p class="muted">Last updated: {WOMAN_UPDATED}</p>
+<p>These terms apply together with Apple's Licensed Application End User License Agreement.</p>
+<h2>Not medical advice, not birth control</h2>
+<p>Aylin is a calendar for your own records. Forecasts and the fertile days and ovulation estimates are calculated from the cycle lengths you mark; they are estimates, not measurements, and must not be used as birth control. Aylin does not diagnose anything and does not replace a doctor. If you are worried about your cycle, talk to a healthcare professional.</p>
+<h2>Your records</h2>
+<p>Your records are stored only on your iPhone. If you delete the app or choose &ldquo;Delete all data&rdquo;, they cannot be restored. Export your records from time to time if you want a copy.</p>
+<h2>Purchases</h2>
+<p>Aylin Plus is a one-time, non-subscription purchase handled by Apple. It unlocks the doctor report, charts, extra reminders, your own symptoms, and themes and icons. Marking days, the forecast, history, reminders and export stay free. You can restore the purchase from the purchase screen. Refunds are handled by Apple.</p>
+<h2>No warranty</h2>
+<p>The app is provided &ldquo;as is&rdquo;, without warranties of any kind, to the extent permitted by law.</p>
+<h2>Contact</h2>
+<p>{contact('en')}</p>"""
+    page(lang, base + "terms", "Terms — " + n, terms, sub=woman_nav(lang, "terms"))
+
+    support = f"""<h1>Support &mdash; {n}</h1>
+<p>Write to us: {contact('en')}</p>
+<h2>Frequently asked</h2>
+<p><b>How do I mark a period?</b> Tap the day your period started in the calendar. Tap a day to mark it, double tap to mark sex, and hold a day for flow, symptoms and a note.</p>
+<p><b>Why is the forecast a range of dates?</b> When your cycles vary, the forecast shows a range. It sharpens after two marked periods. Before that, your usual cycle length is used if you set it.</p>
+<p><b>I forgot to mark some days.</b> Edit any past day, or use &ldquo;Add past periods&rdquo; to enter periods by their dates. Days after today cannot be marked.</p>
+<p><b>Reminders don't arrive.</b> Check that notifications are allowed for Aylin in iPhone Settings, then turn the reminder on again.</p>
+<p><b>Health doesn't take my days.</b> Allow Aylin in iPhone Settings &rarr; Health &rarr; Data Access &amp; Devices. Days written to Health by another app can be removed only there.</p>
+<p><b>How do I move my records?</b> In Settings, export your records as a table, or import from a file. Import adds only the days that have no record yet, and the first line of the file must read: date,flow,symptoms,note.</p>
+<p><b>How do I delete everything?</b> Settings &rarr; Delete all data. Period days already written to Health stay there; delete them in the Health app.</p>
+<p><b>I bought Aylin Plus on another iPhone.</b> Use &ldquo;Restore purchases&rdquo; on the purchase screen.</p>"""
+    page(lang, base + "support", "Support — " + n, support, sub=woman_nav(lang, "support"))
+
+
+
 # Сайт только на английском; русские тексты в функциях оставлены на случай перевода.
 for lang in ("en",):
     home(lang)
@@ -884,6 +976,7 @@ for lang in ("en",):
     bowling_pages(lang)
     mgrs_pages(lang)
     solunar_pages(lang)
+    woman_pages(lang)
 # Remove only known generated pages for products not yet published.
 # Their source content remains in the generator and their product branches.
 for product in studio.PRODUCTS:
