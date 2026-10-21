@@ -879,15 +879,15 @@ and the moon phase for any place — computed on your iPhone, so it works with n
 
 def woman_nav(lang, current):
     items = [("", "Overview"), ("privacy", "Privacy"), ("terms", "Terms"), ("support", "Support")]
-    base = "/woman/"
+    base = "/aylin/"
     links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
                     for slug, name in items)
     return f'<nav class="sub">{links}</nav>'
 
 
 def woman_pages(lang):
-    a = next(x for x in APPS if x["slug"] == "woman")
-    base = "/woman/"
+    a = next(x for x in APPS if x["slug"] == "aylin")
+    base = "/aylin/"
     n = a["name"]["en"]
     store = app_store_badge(a["store"]) if a["store"] else '<span class="badge">Coming to the App Store</span>'
     hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{n}</h1>{store}</div></div>'
@@ -967,7 +967,7 @@ def woman_pages(lang):
 <h2>Data and privacy</h2>
 <p>Your records and settings are stored on your iPhone, in a folder shared only with the app's widget. The one thing that goes online is the purchase, through Apple. Apple Health is used only if you turn it on, and Face ID or the passcode is checked by iOS &mdash; Aylin never sees them.</p>
 <p>Delete everything at any time with &ldquo;Delete all data&rdquo; in Settings.</p>
-<ul class="links"><li><a href="/woman/privacy">Privacy Policy</a></li><li><a href="/woman/terms">Terms of Use</a></li><li><a href="/woman/support">Support</a></li></ul>
+<ul class="links"><li><a href="/aylin/privacy">Privacy Policy</a></li><li><a href="/aylin/terms">Terms of Use</a></li><li><a href="/aylin/support">Support</a></li></ul>
 </div></div></section>
 
 <section class="band"><div class="wrap">
@@ -1046,6 +1046,27 @@ def woman_pages(lang):
 
 
 
+# Старые адреса → новые: страница-переадресация (meta refresh, canonical на новый адрес, ссылка для тех, у кого
+# переадресация не сработала). GitHub Pages не умеет серверных 301. Aylin жил в /woman/ до 2026-10-21.
+REDIRECTS = [("/woman/", "/aylin/"), ("/woman/privacy", "/aylin/privacy"), ("/woman/terms", "/aylin/terms"),
+             ("/woman/support", "/aylin/support")]
+
+
+def redirect(old, new):
+    to = SITE + new
+    body = f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moved</title><meta name="robots" content="noindex"><link rel="canonical" href="{to}">
+<meta http-equiv="refresh" content="0; url={new}"></head>
+<body><p>This page has moved to <a href="{new}">{to}</a>.</p></body></html>
+"""
+    rel = old.lstrip("/")
+    rel = rel + "index.html" if rel.endswith("/") else rel + ".html"
+    out = studio.ROOT / rel
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(body)
+
+
 # Сайт только на английском; русские тексты в функциях оставлены на случай перевода.
 for lang in ("en",):
     home(lang)
@@ -1055,6 +1076,8 @@ for lang in ("en",):
     mgrs_pages(lang)
     solunar_pages(lang)
     woman_pages(lang)
+for old, new in REDIRECTS:
+    redirect(old, new)
 # Remove only known generated pages for products not yet published.
 # Their source content remains in the generator and their product branches.
 for product in studio.PRODUCTS:
