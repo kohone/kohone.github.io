@@ -891,22 +891,100 @@ def woman_pages(lang):
     n = a["name"]["en"]
     store = app_store_badge(a["store"]) if a["store"] else '<span class="badge">Coming to the App Store</span>'
     hero = f'<div class="hero"><img src="{a["icon"]}" alt=""><div><h1>{n}</h1>{store}</div></div>'
-    overview = hero + """<p class="lead">A period calendar. Tap a day to mark it, see the day of your cycle and when the next period is expected.
-Your records are stored only on this iPhone.</p>
-<ul>
-<li><b>Mark with a tap.</b> Tap a day to mark your period. Hold a day for flow, symptoms and a note; double tap marks sex. Flow runs from spotting to heavy. You can edit any past day, and add past periods by dates.</li>
-<li><b>Your cycle.</b> The cycle day and the days until your period, with a calendar for the month. The forecast is a range of dates when your cycles vary, and it sharpens after two marked periods. If you know your usual cycle length, it is used until then.</li>
-<li><b>Fertile days, if you want them.</b> Estimated fertile days and ovulation in the calendar, from cycle length. An estimate, not a measurement and not birth control.</li>
-<li><b>History.</b> Each period that started in the dates you choose: how long it lasted and how long the cycle was, next to your usual length and range.</li>
-<li><b>Symptoms and notes.</b> A short list &mdash; cramps, headache, back pain, breast tenderness, bloating, fatigue, mood changes, acne, nausea &mdash; and a note for any day.</li>
-<li><b>Reminders and a widget.</b> A reminder before your period, with your own text. A Home Screen widget shows the days left.</li>
-<li><b>Apple Health, both ways.</b> Period days you mark appear in Health, and period days added or removed in Health change here. Optional.</li>
-<li><b>Lock.</b> Lock Aylin with Face ID or your iPhone passcode.</li>
-<li><b>Your data.</b> Export your records as a table, import from a file, or delete all data from Settings.</li>
-<li><b>Languages.</b> English and Ukrainian.</li>
+    store_cta = app_store_badge(a["store"]) if a["store"] else '<span class="soon">Coming to the App Store</span>'
+    def shot(alt, cap=""):
+        return f'<figure class="w-shot"><div class="w-frame" role="img" aria-label="{alt}">Screenshot to come</div>{("<figcaption>" + cap + "</figcaption>") if cap else ""}</figure>'
+    def tile(t, d):
+        return f'<div><h3>{t}</h3><p>{d}</p></div>'
+    tiles = "".join(tile(*x) for x in [
+        ("Mark with a tap", "Tap a day and it is a period day; tap again to remove it. Days after today are pale and do not respond."),
+        ("Cycle day and forecast", "The cycle day, and the days until your period &mdash; one date for a steady cycle, a range of dates when your cycles vary."),
+        ("Day details", "Hold a day to open its sheet: flow from spotting to heavy, sex, symptoms from a short list, and a note."),
+        ("Past periods", "Edit any past day, or add several past periods by their first and last day. Cycles and forecast are rebuilt."),
+        ("History and typical values", "Every cycle with its length and the length of the period, plus your typical cycle, period and range. Free."),
+        ("Reminder and widget", "A reminder some days before your period, with your own text, and a Home Screen widget with the days left."),
+        ("Apple Health, both ways", "Optional. Period days and spotting you mark are written to Health, and changes made in Health come back."),
+        ("Lock, export, import", "Lock with Face ID, Touch ID or the passcode. Export all records as a table, import your own export back."),
+    ])
+    faq = [
+        ("Where are my records kept?", "Only on your iPhone: there is no account, no server of ours, and no iCloud copy. Only the purchase goes through the App Store."),
+        ("What if my cycle is irregular?", "The forecast shows a range of dates instead of one date, and it sharpens after two marked periods. A long cycle is never called wrong."),
+        ("I take hormonal contraceptives.", "Turn on &ldquo;I take hormonal contraceptives&rdquo; in Settings: the forecast from your own cycles is switched off, while marking days and history keep working."),
+        ("Can I use the fertile days as birth control?", "No. They are an estimate from cycle length, not a measurement and not birth control, and you can switch them off in Settings."),
+        ("Can I bring my old records?", "Yes. Add past periods by their dates, import a file made by &ldquo;Export records&rdquo;, or turn on Apple Health sync."),
+        ("Can I show my doctor?", "Yes. Aylin Plus makes a PDF report of one or two pages with periods, cycle lengths, symptoms and notes. A table export of all records is free."),
+        ("Is there a subscription?", "No. Aylin Plus is a single one-time purchase of $9.99; marking days, forecast, history, reminders and export stay free."),
+        ("What happens if my period is late?", "Aylin shows only the number of days of delay."),
+    ]
+    faq_html = "".join(f"<details><summary>{q}</summary><p>{x}</p></details>" for q, x in faq)
+    overview = f"""<link rel="stylesheet" href="/assets/woman.css">
+<div class="woman-landing">
+<div class="w-hero"><div class="petals" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="wrap">
+<div>
+<div class="app-id"><img src="{a["icon"]}" alt=""><b>{n}</b></div>
+<h1>A period calendar that stays on your iPhone.</h1>
+<p class="lede">Tap a day to mark it, see the day of your cycle and when your period is expected.</p>
+<p class="for-whom">For anyone who wants just the dates &mdash; including those whose cycle varies &mdash; without an account.</p>
+<div class="cta">{store_cta}</div>
+<p class="small">Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
+</div>
+{shot("The main screen: the cycle day, days until the period, and the month calendar")}
+</div></div>
+
+<section><div class="wrap">
+<p class="statement">Open it, see how many days are left, mark a day, close it.</p>
+<p class="measure">Aylin does not draw phases or give advice. When your cycles vary, it shows a range of dates instead of one date, and your records live only on this iPhone &mdash; with no account and no network apart from the purchase.</p>
+</div></section>
+
+<section class="band"><div class="wrap">
+<h2>One tap on the calendar</h2>
+<p class="measure">Tap a day to mark your period, hold it for the details. The month shows what you marked and what is expected.</p>
+<div class="legend" aria-label="Day colours in the calendar"><span><b style="background:#f0cac4"></b>Period</span><span><b style="background:#edc1a6"></b>Forecast</span><span><b style="background:#f5eed8;box-shadow:inset 0 0 0 1px #c9bf9c"></b>May be fertile</span><span><b style="background:#d3e1cb"></b>Ovulation</span></div>
+<div class="strip">
+{shot("The month calendar with period days and the forecast", "Tap &mdash; period. Hold &mdash; day details")}
+{shot("The day sheet with flow, symptoms and a note", "Flow, symptoms, a note")}
+{shot("The cycle history with typical values", "History of cycles")}
+</div>
+</div></section>
+
+<section id="what"><div class="wrap">
+<h2>What it does</h2>
+<div class="tiles">{tiles}</div>
+</div></section>
+
+<section class="band"><div class="wrap"><div class="measure">
+<h2>What it does not do</h2>
+<ul class="nots">
+<li>No account and no sign-in.</li>
+<li>No advertising, no analytics, no tracking.</li>
+<li>No iCloud copy and no server of ours: nothing is sent anywhere.</li>
+<li>No diagnosis, no medical advice, no birth control.</li>
+<li>No subscription and no trial.</li>
 </ul>
-<h2>Aylin Plus</h2>
-<p>One purchase, forever &mdash; not a subscription. It unlocks the report for a doctor (a PDF of one or two pages with marked periods, cycle lengths, symptoms and notes), charts, extra reminders, your own symptoms, and themes and icons. Marking days, the forecast, history, reminders and export stay free.</p>"""
+</div></div></section>
+
+<section id="privacy"><div class="wrap"><div class="measure">
+<h2>Data and privacy</h2>
+<p>Your records and settings are stored on your iPhone, in a folder shared only with the app's widget. The one thing that goes online is the purchase, through Apple. Apple Health is used only if you turn it on, and Face ID or the passcode is checked by iOS &mdash; Aylin never sees them.</p>
+<p>Delete everything at any time with &ldquo;Delete all data&rdquo; in Settings.</p>
+<ul class="links"><li><a href="/woman/privacy">Privacy Policy</a></li><li><a href="/woman/terms">Terms of Use</a></li><li><a href="/woman/support">Support</a></li></ul>
+</div></div></section>
+
+<section class="band"><div class="wrap">
+<h2>What it costs</h2>
+<div class="price-row">
+<div><p class="price">Free</p><p>Marking days, the forecast, the cycle day, history with typical values, symptoms and notes, a reminder before your period, the widget, Apple Health sync, the lock, export and import.</p></div>
+<div><p class="price">Aylin Plus &middot; $9.99</p><p>One purchase, forever &mdash; not a subscription. It unlocks the report for a doctor (PDF), charts by cycle, extra reminders, your own symptoms, and five watercolour themes with matching icons. You can look inside each section before you buy.</p></div>
+</div>
+</div></section>
+
+<section><div class="wrap"><div class="measure">
+<h2>Questions</h2>
+{faq_html}
+</div></div></section>
+
+<div class="by"><div class="wrap">Made by {DEV}, an independent developer &mdash; {contact('en')}</div></div>
+</div>"""
     page(lang, base, n, overview, a["tag"]["en"], sub=woman_nav(lang, ""))
 
     privacy = f"""<h1>Privacy Policy &mdash; {n}</h1>
@@ -956,7 +1034,7 @@ Your records are stored only on this iPhone.</p>
     support = f"""<h1>Support &mdash; {n}</h1>
 <p>Write to us: {contact('en')}</p>
 <h2>Frequently asked</h2>
-<p><b>How do I mark a period?</b> Tap the day your period started in the calendar. Tap a day to mark it, double tap to mark sex, and hold a day for flow, symptoms and a note.</p>
+<p><b>How do I mark a period?</b> Tap the day your period started in the calendar. Tap a day to mark it, and hold a day for sex, flow, symptoms and a note.</p>
 <p><b>Why is the forecast a range of dates?</b> When your cycles vary, the forecast shows a range. It sharpens after two marked periods. Before that, your usual cycle length is used if you set it.</p>
 <p><b>I forgot to mark some days.</b> Edit any past day, or use &ldquo;Add past periods&rdquo; to enter periods by their dates. Days after today cannot be marked.</p>
 <p><b>Reminders don't arrive.</b> Check that notifications are allowed for Aylin in iPhone Settings, then turn the reminder on again.</p>
