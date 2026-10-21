@@ -10,8 +10,8 @@
     "page_description": "Backgammon and long nardy with fair, verifiable dice",
     "icon": "/assets/fair-dice-icon.jpg",
     "screen": "/assets/fair-dice/hint.jpg",
-    "status": "In development",
-    "store": null,
+    "status": "Ready",
+    "store": "https://apps.apple.com/app/backgammon-fair-dice-nardy/id6816954327",
     "featured": true,
     "published": true
   },
