@@ -106,5 +106,20 @@
     "status": "In development",
     "store": null,
     "published": true
+  },
+  {
+    "slug": "nards",
+    "name": "Nardy",
+    "short": "Nardy",
+    "category": "Games",
+    "theme": "wood",
+    "tag": "Backgammon and long nardy with dice you can check",
+    "description": "Backgammon and long nardy against a strong computer that explains, on dice you can check yourself.",
+    "page_description": "Backgammon and long nardy against a strong computer that explains, with every roll sealed before the game and revealed after it",
+    "icon": "/assets/nards-icon.jpg",
+    "screen": "/assets/nards/1-hint.jpg",
+    "status": "In development",
+    "store": null,
+    "published": true
   }
 ]

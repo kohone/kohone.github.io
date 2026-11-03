@@ -17,6 +17,7 @@ FAIR_DICE_UPDATED = "2026-09-27"
 MGRS_UPDATED = "2026-09-26"
 SOLUNAR_UPDATED = "2026-09-26"
 WOMAN_UPDATED = "2026-10-21"
+NARDS_UPDATED = "2026-11-03"
 
 import studio
 
@@ -1045,6 +1046,181 @@ def woman_pages(lang):
     page(lang, base + "support", "Support — " + n, support, sub=woman_nav(lang, "support"))
 
 
+def nards_nav(lang, current):
+    items = [("", "Overview"), ("privacy", "Privacy"), ("terms", "Terms"), ("support", "Support")]
+    base = "/nards/"
+    links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
+                    for slug, name in items)
+    return f'<nav class="sub">{links}</nav>'
+
+
+def nards_pages(lang):
+    a = next(x for x in APPS if x["slug"] == "nards")
+    base = "/nards/"
+    n = a["name"]["en"]
+    store_cta = app_store_badge(a["store"]) if a["store"] else '<span class="soon">Coming to the App Store</span>'
+    def shot(name, alt, cap="", cls=""):
+        return (f'<figure class="n-shot {cls}"><img src="/assets/nards/{name}.jpg" alt="{alt}" width="540" height="1174" loading="lazy">'
+                f'{("<figcaption>" + cap + "</figcaption>") if cap else ""}</figure>')
+    tiles = "".join(f'<div><h3>{t}</h3><p>{d}</p></div>' for t, d in [
+        ("Two games, full rules", "Backgammon with the doubling cube, a single game or a match to 3, 5, 7 or 11 points, the Crawford rule. Long nardy under standard tournament rules."),
+        ("Computer or a friend", "Five levels from beginner to master, or two players on one phone. Choose your colour and the side you bear off to."),
+        ("Hint and coach", "The hint shows the best move on the board. After a mistake the coach says why, in plain words &mdash; tap &ldquo;Why?&rdquo;."),
+        ("Game review", "After the game: your error rate, the luck of both sides and your costliest moves. Play on from any move with the same dice."),
+        ("Your own dice", "Roll real dice and enter the result on the on-screen pad, or replay a finished game with your own dice."),
+        ("Dice statistics", "Doubles, entries from the bar and hits against the range of fair dice, with an experiment of 1,000 rolls or a simulation of 1,000,000."),
+        ("Lessons", "Rules lessons on a live board, five steps each, and pointers in your first three games."),
+        ("30 boards, your way", "Six boards are free. Simple mode, colour-blind highlights, light and dark, English, Russian, Turkish and German."),
+    ])
+    faq = [
+        ("Are the dice really random?", "You do not have to take our word for it: every game's rolls come from a sequence sealed before the first move, and after the game the key lets you recompute each one."),
+        ("Does the computer see my next roll?", "No. Future rolls are never shown, and a replay with your own dice makes the computer play the same moves."),
+        ("Does a higher level or a purchase give better dice?", "No. The level changes only the computer's moves, and no purchase touches the dice."),
+        ("Which rules does long nardy use?", "Standard tournament rules: one checker from the head per turn (except 6-6, 4-4 and 3-3 on the first roll), no six-point wall in front of all the opponent's checkers, and mars."),
+        ("Are there coins or a subscription?", "No: Pro is one purchase, there are no coins, and nothing is a subscription."),
+        ("Do I still see ads after buying Pro?", "No. Pro removes ads and the hint limit for good."),
+        ("Can I play against people online?", "No. You play the computer or a friend on the same phone."),
+        ("Does it work without the internet?", "Yes. The computer and the hints run on your iPhone; ads and the iCloud copy wait until you are online."),
+    ]
+    faq_html = "".join(f"<details><summary>{q}</summary><p>{x}</p></details>" for q, x in faq)
+    body = f"""<link rel="stylesheet" href="/assets/nards.css">
+<div class="nards-landing">
+<div class="n-hero"><div class="wrap">
+<div>
+<div class="app-id"><img src="{a["icon"]}" alt=""><b>{n}</b></div>
+<h1>Check every roll yourself.</h1>
+<p class="lede">Backgammon and long nardy against a strong computer that explains, with dice sealed before the game.</p>
+<p class="for-whom">For anyone who has ever suspected an app of rigging the dice, and for anyone learning to play better.</p>
+<div class="cta">{store_cta}</div>
+<p class="small">Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
+</div>
+{shot("1-hint", "A game with the best move shown on the board")}
+</div><div class="points" aria-hidden="true"></div></div>
+
+<section><div class="wrap"><div class="measure">
+<p class="statement">Sealed before the game. Opened after it.</p>
+<p>The app seals the whole sequence of rolls before the first move and shows its fingerprint. After the game it gives you the key, and you recompute every roll yourself. The computer's level never touches the dice, and neither does any purchase.</p>
+</div></div></section>
+
+<section class="band"><div class="wrap">
+<h2>Check the dice</h2>
+<p class="measure">Open &ldquo;Check the dice&rdquo; from the game. You see the fingerprint and can add your own phrase. When the game is over, tap &ldquo;Verify&rdquo; to match the fingerprint and every roll &mdash; or recompute them with the verify_dice.py script.</p>
+<div class="strip">
+{shot("3-verify", "The Check the dice sheet with the fingerprint, phrase, key and a match of all 99 rolls", "Fingerprint, key and Verify")}
+{shot("4-review", "The game review", "Your error rate and the luck of both sides")}
+{shot("2-long-nardy", "A game of long nardy", "Long nardy")}
+</div>
+</div></section>
+
+<section id="what"><div class="wrap">
+<h2>What it does</h2>
+<div class="tiles">{tiles}</div>
+</div></section>
+
+<section class="band"><div class="wrap"><div class="measure">
+<h2>What it does not do</h2>
+<ul class="nots">
+<li>It never changes the dice: not for a level, not for a purchase.</li>
+<li>No coins, no boosts, nothing that buys a better roll.</li>
+<li>No ads during a game.</li>
+<li>No account and no sign-in.</li>
+<li>No subscription.</li>
+<li>No online play against people.</li>
+</ul>
+</div></div></section>
+
+<section id="privacy"><div class="wrap"><div class="measure">
+<h2>Data and privacy</h2>
+<p>Your games, history, statistics and settings are stored on your iPhone; we have no servers and receive none of it. If you switch it on, a copy goes to your own iCloud, which we cannot see. The one third party is advertising in the free version (Google AdMob), and iOS asks your permission before any tracking.</p>
+<ul class="links"><li><a href="/nards/privacy">Privacy Policy</a></li><li><a href="/nards/terms">Terms of Use</a></li><li><a href="/nards/support">Support</a></li></ul>
+</div></div></section>
+
+<section class="band"><div class="wrap">
+<h2>What it costs</h2>
+<div class="price-row">
+<div><p class="price">Free</p><p>Both games, all levels, matches, dice verification, review, statistics and 6 boards. 3 hints a day against the computer, plus 3 more for an optional video. A short ad after every second game &mdash; none in your first three games, never during a game.</p></div>
+<div><p class="price">Pro &middot; $5.99</p><p>One-time purchase, not a subscription: no ads and unlimited hints.</p></div>
+<div><p class="price">Boards &middot; $0.99</p><p>24 more boards, each bought separately and once, with a preview before you buy.</p></div>
+</div>
+</div></section>
+
+<section><div class="wrap"><div class="measure">
+<h2>Questions</h2>
+{faq_html}
+</div></div></section>
+
+<div class="by"><div class="wrap">Made by {DEV}, an independent developer &mdash; {contact('en')}</div></div>
+</div>"""
+    page(lang, base, n, body, a["tag"]["en"], sub=nards_nav(lang, ""))
+
+    privacy = f"""<h1>Privacy Policy &mdash; {n}</h1>
+<p class="muted">Last updated: {NARDS_UPDATED}</p>
+<p>The game itself needs no account and sends your games nowhere. The only third party in the app is advertising (Google AdMob), described below.</p>
+<h2>What stays on your device</h2>
+<p>Your games, history, statistics and settings are stored on your iPhone (the current game in the Keychain, the rest in the app's own storage). We have no servers and never receive them.</p>
+<h2>iCloud (optional)</h2>
+<p>If you turn on &ldquo;Save progress to iCloud&rdquo;, your history, statistics, dice log and settings are copied to your own private iCloud storage so they appear on your other devices. This copy is handled by Apple under your Apple ID; we cannot see it. You can turn it off in Settings at any time.</p>
+<h2>Advertising</h2>
+<p>The free version shows ads between games and optional videos that give extra hints. Ads are served by Google AdMob, which may collect device identifiers, approximate location (from the IP address), and information about ad views and clicks, to show and measure ads and to prevent fraud.</p>
+<ul>
+<li>Before any personalized ads, iOS asks whether the app may track you (App Tracking Transparency). If you decline, Google shows only non-personalized ads.</li>
+<li>In the EEA, the UK and Switzerland you are asked for consent first (Google's consent form).</li>
+<li>Google's policy: <a href="https://policies.google.com/technologies/partner-sites">How Google uses information from apps that use its services</a>.</li>
+</ul>
+<p>Ads never affect the dice or the computer. Pro removes ads completely.</p>
+<h2>How long data is kept and how to delete it</h2>
+<ul>
+<li><b>On your device:</b> kept until you delete it. Deleting the app deletes your history, statistics and settings. The unfinished game is kept in the Keychain, which iOS does not clear with the app; the app deletes it on the first launch after a new install.</li>
+<li><b>In your iCloud:</b> kept until you turn off &ldquo;Save progress to iCloud&rdquo; and delete the app's data in iPhone Settings &rarr; your name &rarr; iCloud &rarr; Manage Storage.</li>
+<li><b>By Google (ads):</b> kept under Google's own retention rules, described in its privacy policy.</li>
+</ul>
+<h2>Your choices</h2>
+<ul>
+<li>Allow or deny tracking at any time: iPhone Settings &rarr; Privacy &amp; Security &rarr; Tracking.</li>
+<li>In the EEA, the UK and Switzerland you can change or withdraw your consent to ads in the app: Settings &rarr; Ad privacy choices.</li>
+<li>Turn the iCloud copy on or off in the app's Settings.</li>
+<li>Buy Pro to stop ads completely.</li>
+</ul>
+<h2>Purchases</h2>
+<p>Pro and optional boards are sold through the App Store. Payment is handled by Apple; we do not receive your payment details or personal information.</p>
+<h2>Children</h2>
+<p>The app is not directed at children under 13 and we do not knowingly collect their data.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
+    page(lang, base + "privacy", "Privacy — " + n, privacy, sub=nards_nav(lang, "privacy"))
+
+    terms = f"""<h1>Terms of Use &mdash; {n}</h1>
+<p class="muted">Last updated: {NARDS_UPDATED}</p>
+<p>The app is licensed to you under Apple's <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Standard Licensed Application End User License Agreement</a>. These terms add what is specific to this app.</p>
+<h2>The game</h2>
+<p>{n} is a board game for entertainment and learning. Points in the game have no money value; there are no bets, coins or prizes.</p>
+<h2>Dice</h2>
+<p>Before each game the app seals the sequence of rolls and shows its fingerprint; after the game you get the key to check every roll. Neither the computer's level nor any purchase changes the dice.</p>
+<h2>Purchases</h2>
+<ul>
+<li>Pro is a one-time purchase: no ads and unlimited hints, for as long as you use the app with the same Apple ID. Boards are bought separately, also once.</li>
+<li>Purchases are processed and refunded by Apple under its rules; restore them in Settings &rarr; Restore purchases.</li>
+</ul>
+<h2>Free version</h2>
+<p>The free version shows a short ad after every second game (never during a game) and gives 3 hints a day against the computer, plus 3 for an optional video. The ad schedule and the hint limit may change in future versions.</p>
+<h2>No warranty</h2>
+<p>The app is provided &ldquo;as is&rdquo;. We work to keep the rules, the computer and the statistics correct, but we do not guarantee that the app is free of errors. Hints, the coach and the game review are advice, not a promise of a result.</p>
+<h2>Changes and contact</h2>
+<p>If these terms change, the new version will be published on this page with a new date. Questions: {contact('en')}</p>"""
+    page(lang, base + "terms", "Terms — " + n, terms, sub=nards_nav(lang, "terms"))
+
+    support = f"""<h1>Support &mdash; {n}</h1>
+<p>Write to us: {contact('en')}</p>
+<h2>Frequently asked</h2>
+<p><b>Does the level change the dice?</b> No. The level only changes the computer's moves; the rolls are sealed before the game.</p>
+<p><b>How do I check the dice?</b> Open &ldquo;Check the dice&rdquo; from the game. After the game tap &ldquo;Verify&rdquo;, or use &ldquo;How to verify the dice&rdquo; for the script and other tools.</p>
+<p><b>I bought Pro or a board on another device.</b> Settings &rarr; Restore purchases.</p>
+<p><b>What does Pro include?</b> No ads and unlimited hints. Everything else in the game is free.</p>
+<p><b>How many hints are free?</b> 3 a day against the computer, plus 3 more for each video you choose to watch. Games with a friend have no hints.</p>
+<p><b>My games on a new iPhone.</b> Turn on Settings &rarr; Save progress to iCloud on both phones with the same Apple ID.</p>
+<p><b>Which rules are used in long nardy?</b> Standard tournament rules: one checker from the head per turn (except 6-6, 4-4, 3-3 on the first roll), no six-point wall in front of all opposing checkers, mars counts 2 points.</p>"""
+    page(lang, base + "support", "Support — " + n, support, sub=nards_nav(lang, "support"))
+
 
 # Старые адреса → новые: страница-переадресация (meta refresh, canonical на новый адрес, ссылка для тех, у кого
 # переадресация не сработала). GitHub Pages не умеет серверных 301. Aylin жил в /woman/ до 2026-10-21.
@@ -1076,6 +1252,7 @@ for lang in ("en",):
     mgrs_pages(lang)
     solunar_pages(lang)
     woman_pages(lang)
+    nards_pages(lang)
 for old, new in REDIRECTS:
     redirect(old, new)
 # Remove only known generated pages for products not yet published.
