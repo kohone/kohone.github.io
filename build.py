@@ -17,6 +17,7 @@ FAIR_DICE_UPDATED = "2026-09-27"
 MGRS_UPDATED = "2026-09-26"
 SOLUNAR_UPDATED = "2026-09-26"
 WOMAN_UPDATED = "2026-10-21"
+CYCLE_ALLY_UPDATED = "2026-11-08"
 
 import studio
 
@@ -1046,6 +1047,206 @@ def woman_pages(lang):
 
 
 
+def cycle_ally_nav(lang, current):
+    items = [("", "Overview"), ("privacy", "Privacy"), ("terms", "Terms"), ("support", "Support")]
+    base = "/cycle-ally/"
+    links = "".join(f'<a href="{url(lang, base + slug)}"{" class=\"on\"" if slug == current else ""}>{name}</a>'
+                    for slug, name in items)
+    return f'<nav class="sub">{links}</nav>'
+
+
+def cycle_ally_pages(lang):
+    a = next(x for x in APPS if x["slug"] == "cycle-ally")
+    base = "/cycle-ally/"
+    n = a["name"]["en"]
+    store_cta = app_store_badge(a["store"]) if a["store"] else '<span class="soon">Coming to the App Store</span>'
+
+    def shot(name, alt, cap="", w=552, h=1199):
+        c = f"<figcaption>{cap}</figcaption>" if cap else ""
+        return (f'<figure class="ca-shot"><div class="ca-frame"><img src="/assets/cycle-ally/{name}.jpg" alt="{alt}" '
+                f'width="{w}" height="{h}" loading="lazy"></div>{c}</figure>')
+
+    def tile(t, d):
+        return f"<div><h3>{t}</h3><p>{d}</p></div>"
+
+    tiles = "".join(tile(*x) for x in [
+        ("Today", "The day of your cycle, the lengths of your own cycles, and one-touch Started, Spotting and Ended. A cycle of any length counts, with no upper limit."),
+        ("A day, in one scroll", "Flow, symptoms from None to Severe, mood, sleep, tags and a note &mdash; or Nothing today. You can add trackers of your own: a scale, yes/no, a number or a choice."),
+        ("Medications", "Doses and the times you take them, dose changes, side effects and injection sites. Mark Taken or Skip from the lock screen."),
+        ("Calendar", "Month, Year and Cycles. Edit periods by range, and mark a cycle Not typical so it stays in history but out of the counts."),
+        ("Trends", "Cycle lengths and how often each symptom turned up, always shown against the days you logged, such as 14 of 63."),
+        ("Before and after", "What you logged around a medication start or a dose change, side by side, with the other changes of the same weeks listed next to it."),
+        ("Care", "Visits, questions for your doctor, what changed since the last visit, lab results, check-ups and a timeline of periods, medications and visits."),
+        ("Summary for your doctor", "A PDF of your own entries for the span and sections you choose, with a preview before you send it. Your data, backup and lock are in Settings."),
+    ])
+    faq = [
+        ("Will it call my cycle late or irregular?", "No: the app never calls your cycle late, irregular or abnormal. If your period has not come, Today only asks &ldquo;Has your period started?&rdquo; and lets you pick the day."),
+        ("What if my cycles are very long?", "A cycle of 120 or 200 days counts like any other: it appears in your lengths, charts and summary, and there is no upper limit."),
+        ("Where is my log kept?", "Only on your iPhone: there is no account and no server of ours, and the app itself uses no iCloud. If you back up your whole iPhone to iCloud, iOS includes the app's storage like any other app's."),
+        ("Is it free?", "Yes: the whole log is free, and Cycle Ally Plus is an optional subscription for longer spans and extra comparisons."),
+        ("Can I take it to my doctor?", "Yes: the app makes a PDF summary of your entries. Cycles for 12 months and symptoms and medications for 3 months are free; 6 or 12 months with lab results is Plus."),
+        ("Does it tell me whether I have PCOS or what to take?", "No: it does not diagnose or give medical advice, and it is not for contraception. It organises what you wrote, and compares it only with your own history."),
+        ("Can I bring my records or move to a new iPhone?", "Yes: you can import history from Apple Health or from another app's export file, and move everything with an encrypted backup file locked by a password you choose."),
+        ("Will a reminder give anything away on my lock screen?", "Reminders are kept neutral: the title is just &ldquo;Cycle Ally&rdquo;, and each medication has its own switch for showing its name."),
+    ]
+    faq_html = "".join(f"<details><summary>{q}</summary><p>{x}</p></details>" for q, x in faq)
+    overview = f"""<link rel="stylesheet" href="/assets/cycle-ally.css">
+<div class="cycle-ally-landing">
+<div class="ca-hero"><div class="sun" aria-hidden="true"></div><div class="wrap">
+<div class="copy">
+<div class="app-id"><img src="{a["icon"]}" alt="" width="56" height="56"><b>{n}</b></div>
+<h1>Your patterns. A clearer picture.</h1>
+<p class="lede">A calm PCOS and PMOS journal that helps you bring your history to your next appointment.</p>
+<p class="for-whom">For anyone with PCOS or PMOS, or heading to a first visit to find out, whatever the length of your cycles.</p>
+<div class="cta">{store_cta}</div>
+<p class="small">Questions: <a href="mailto:{EMAIL}">{EMAIL}</a></p>
+</div>
+{shot("today", "The Today screen: day 10 of the cycle, the Started, Spotting and Symptoms tiles, this week and the medications")}
+</div>
+<svg class="waves" viewBox="0 0 1440 170" preserveAspectRatio="none" aria-hidden="true"><path fill="#9cc3c0" d="M0 70 C240 20 420 110 720 60 S1200 20 1440 70 V170 H0Z"/><path fill="#5d9a9c" d="M0 105 C300 60 520 140 820 95 S1220 70 1440 105 V170 H0Z"/><path fill="#2d6b70" d="M0 135 C260 100 560 160 860 128 S1240 110 1440 135 V170 H0Z"/><path fill="#fbfdfd" d="M0 158 C360 138 700 168 1000 152 S1300 146 1440 158 V170 H0Z"/></svg>
+</div>
+
+<section><div class="wrap">
+<p class="statement">Bring facts to your doctor.</p>
+<p class="measure">Cycle Ally keeps what you log and counts it, and nothing else. It never calls your body right or wrong: any comparison is only with your own history, and a day you did not log is not counted as a day with nothing.</p>
+</div></section>
+
+<section class="band"><div class="wrap">
+<h2>Log what happens, in your time</h2>
+<p class="measure">Tap a tile on Today, or open the day for the whole picture. The numbers come from what you wrote, with the count of logged days beside them.</p>
+<div class="strip">
+{shot("today", "Today: Log today tiles, this week and medications", "Today &mdash; Started, Spotting, Ended")}
+{shot("day-sheet", "The day sheet: symptoms from None to Severe", "Symptoms from None to Severe")}
+{shot("before-after", "Before and after a medication change, with the days you logged", "Before and after a medication change", h=1104)}
+</div>
+</div></section>
+
+<section id="what"><div class="wrap">
+<h2>What it does</h2>
+<div class="tiles">{tiles}</div>
+</div></section>
+
+<section class="band"><div class="wrap"><div class="measure">
+<h2>What it does not do</h2>
+<ul class="nots">
+<li>No account and no sign-in.</li>
+<li>No advertising, no analytics, no code from other companies.</li>
+<li>No server of ours that holds your log, and no iCloud sync of its own.</li>
+<li>No diagnosis and no medical advice.</li>
+<li>No &ldquo;late&rdquo; or &ldquo;irregular&rdquo; verdicts on your cycle.</li>
+<li>Not for contraception, and no fertile-window predictions.</li>
+<li>No weight goals, calorie counts or diets.</li>
+</ul>
+</div></div></section>
+
+<section id="privacy"><div class="wrap"><div class="measure">
+<h2>Data and privacy</h2>
+<p>Everything you log is stored on your iPhone, and we do not receive it. The app contains no analytics and no code from other companies, and it makes no network requests of its own; only the purchase goes through Apple.</p>
+<p>Apple Health is used only if you allow it, and Face ID or your passcode can lock the app. You can export a spreadsheet, make an encrypted backup file, or erase everything with &ldquo;Delete all data&rdquo; in Settings.</p>
+<ul class="links"><li><a href="/cycle-ally/privacy">Privacy Policy</a></li><li><a href="/cycle-ally/terms">Terms of Use</a></li><li><a href="/cycle-ally/support">Support</a></li></ul>
+</div></div></section>
+
+<section class="band"><div class="wrap">
+<h2>What it costs</h2>
+<div class="price-row">
+<div><p class="price">Free</p><p>The whole log: cycles, symptoms, medications with reminders, calendar, care, backup, spreadsheet export and Apple Health. Doctor summaries for 3 months of symptoms and medications and 12 months of cycles.</p></div>
+<div><p class="price">Cycle Ally Plus &middot; $4.99 a month or $39.99 a year</p>
+<p>An optional auto-renewing subscription, billed by Apple. The yearly plan starts with 7 days free. If Plus ends, nothing you logged is deleted; only the extra views close.</p>
+<ul>
+<li>Doctor summary for 6 or 12 months, with lab results and a 12-month timeline.</li>
+<li>Before / after for any medication and any dose change.</li>
+<li>Check-ins at 4, 8 and 12 weeks side by side.</li>
+<li>Symptoms over 6 and 12 months, and lab results as charts.</li>
+<li>Photos and PDFs of lab sheets and visit notes, and a photo diary of skin and hair.</li>
+<li>What turns up together in your log, and LH, PdG and temperature readings.</li>
+</ul></div>
+</div>
+</div></section>
+
+<section><div class="wrap"><div class="measure">
+<h2>Questions</h2>
+{faq_html}
+</div></div></section>
+
+<div class="by"><div class="wrap">Made by {DEV}, an independent developer &mdash; {contact('en')}</div></div>
+</div>"""
+    page(lang, base, n, overview, a["tag"]["en"], sub=cycle_ally_nav(lang, ""))
+
+    privacy = f"""<h1>Privacy Policy &mdash; {n}</h1>
+<p class="muted">Last updated: {CYCLE_ALLY_UPDATED}</p>
+<p>Cycle Ally has no account, no advertising, no analytics and no code from other companies. What you log stays on your iPhone, and we do not receive it.</p>
+<h2>What the app stores, and where</h2>
+<p>Periods and their details, symptoms and your own trackers, mood, sleep, notes, tags, medications with dose changes and side effects, visits, questions for your doctor, lab results, check-up dates, home test readings, photos you add to the diary and your settings are stored in the app's own storage on your iPhone. They are not sent to us and the app makes no network requests of its own. The widget reads a snapshot kept in storage shared only between the app and its widget.</p>
+<h2>Reminders</h2>
+<p>Reminders are local notifications planned on your iPhone. No push server is involved. The title is &ldquo;Cycle Ally&rdquo;, and each medication has its own switch for showing its name.</p>
+<h2>Apple Health (optional)</h2>
+<p>If you allow it, Cycle Ally reads menstrual flow, spotting, symptoms and the medications you choose from Apple Health to fill in your history, and saves the period days, spotting and symptoms you enter back to Health. Dates you marked as approximate are never written. This stays within your iPhone's Health data; you can change the permission in the Health app. Health data is used only for the app's own features. We do not receive it, and it is never used for advertising or sold. &ldquo;Delete all data&rdquo; does not touch Apple Health; remove what is there in the Health app.</p>
+<h2>Face ID, camera and photos</h2>
+<p>The lock uses the system's authentication; the app never receives your face data or passcode. The camera is used only if you take a photo of a lab sheet or a visit note, and the photo stays in Cycle Ally on your iPhone, locked while the phone is locked. Photos you pick from your library are chosen through the system picker.</p>
+<h2>Files you make and send</h2>
+<p>The PDF summary for your doctor, the spreadsheet (CSV) and the encrypted backup file are created on your iPhone only when you ask. Nothing is sent anywhere until you choose to share or save the file, and then it goes where you send it. The backup is locked with a password you choose; we never see it and cannot recover it.</p>
+<h2>iPhone backups</h2>
+<p>The app uses no iCloud itself. If you back up your whole iPhone to iCloud or to a computer, iOS includes the app's storage in that backup like any other app's, under Apple's terms. Settings &rarr; Privacy lets you leave Cycle Ally out of the iPhone backup; then only your own backup file can restore the log on a new phone.</p>
+<h2>Purchases</h2>
+<p>Cycle Ally Plus is sold by Apple. Payment and billing details are handled by Apple, and the app is told only whether a subscription is active. We do not receive your name, card or Apple Account.</p>
+<h2>How long data is kept and how to delete it</h2>
+<ul>
+<li>Your log stays on your iPhone until you delete it: &ldquo;Delete all data&rdquo; in Settings erases the database, attachments and settings at once and cannot be undone. Deleting the app also removes it.</li>
+<li>Files you exported stay wherever you put them.</li>
+<li>If you write to support, we keep the correspondence only as long as needed to help you. Please do not send entries from your log.</li>
+</ul>
+<h2>Consumer health data</h2>
+<p>We do not collect your consumer health data: it stays on your iPhone, and we hold no copy, share it with nobody and sell it to nobody. To ask about this, write to {contact('en')}.</p>
+<h2>Children</h2>
+<p>The app is not directed at children under 13, and we collect nothing from anyone.</p>
+<h2>Changes and contact</h2>
+<p>If this policy changes, the new version will be published on this page with a new date. Questions: {contact('en')}</p>
+<p class="muted">Cycle Ally is a personal log. It does not diagnose, treat or prevent any condition and is not a substitute for professional medical advice.</p>"""
+    page(lang, base + "privacy", "Privacy — " + n, privacy, sub=cycle_ally_nav(lang, "privacy"))
+
+    terms = f"""<h1>Terms of Use &mdash; {n}</h1>
+<p class="muted">Last updated: {CYCLE_ALLY_UPDATED}</p>
+<p>By using Cycle Ally you accept these terms. They apply together with Apple's Licensed Application End User License Agreement.</p>
+<h2>Not medical advice, not contraception</h2>
+<p>Cycle Ally is a personal log: you write down what happens, and it shows and counts what you wrote. It does not diagnose, treat or prevent any condition and is not a substitute for professional medical advice. It is not for contraception. Talk to your clinician before making health decisions, and in an emergency call your local emergency number.</p>
+<h2>Your entries</h2>
+<p>Everything you log belongs to you and stays on your iPhone. You can export it or delete all of it at any time. Deleting is immediate and permanent, and we cannot restore it, because we never had it.</p>
+<h2>Your backup password</h2>
+<p>The backup file is encrypted with a password you choose. We never see it and there is no recovery: if you lose it, nobody can open the file.</p>
+<h2>Cycle Ally Plus</h2>
+<p>The app is free to use. Plus is an optional auto-renewing subscription: $4.99 per month or $39.99 per year, with the first 7 days free on the yearly plan. The exact price and period are shown before you buy, and may differ by region.</p>
+<ul>
+<li>Payment is taken by Apple through your Apple Account when you confirm the purchase.</li>
+<li>It renews automatically at the same price unless you cancel at least 24 hours before the period ends.</li>
+<li>You manage and cancel it in your Apple Account &rarr; Subscriptions. Deleting the app does not cancel it.</li>
+<li>Restore a purchase made earlier from Plus in Settings, or from the purchase screen.</li>
+<li>Refunds are handled by Apple under Apple's terms.</li>
+</ul>
+<p>If Plus ends, nothing you logged is deleted or hidden; the extra views close until Plus is active again.</p>
+<h2>What you agree not to do</h2>
+<p>Do not try to break, decompile or resell the app, and do not use it to store anything unlawful.</p>
+<h2>No warranty</h2>
+<p>The app is provided &ldquo;as is&rdquo;, without warranties of any kind, to the extent permitted by law. Nothing here limits rights you have as a consumer under the law of your country.</p>
+<h2>Apple</h2>
+<p>Apple is not a party to these terms and has no obligation to provide support for the app.</p>
+<h2>Contact</h2>
+<p>{contact('en')}</p>"""
+    page(lang, base + "terms", "Terms — " + n, terms, sub=cycle_ally_nav(lang, "terms"))
+
+    support = f"""<h1>Support &mdash; {n}</h1>
+<p>Write to us: {contact('en')}. One person reads that mailbox. Please do not send entries from your log; a screenshot of the problem and your iOS version help.</p>
+<h2>Frequently asked</h2>
+<p><b>How do I log a period?</b> On Today, tap Started, Spotting or Ended. Undo is in the confirmation line. Past periods can be added with &ldquo;Past period&rdquo; or edited in Calendar.</p>
+<p><b>Why is a cycle left out of my numbers?</b> You may have marked it Not typical in Calendar. It stays in history but is not counted.</p>
+<p><b>Reminders don't arrive.</b> Check that notifications are allowed for Cycle Ally in iPhone Settings, then check the reminder on the medication.</p>
+<p><b>Apple Health doesn't take my entries.</b> Allow Cycle Ally in the Health app under Data Access &amp; Devices, then switch saving on again in Settings.</p>
+<p><b>How do I move to a new iPhone?</b> Make a backup file in Settings, choose a password you will remember, and restore it from the Welcome screen on the new phone. Without the password the file cannot be opened.</p>
+<p><b>How do I get a spreadsheet?</b> Export spreadsheet (CSV) in Settings.</p>
+<p><b>How do I delete everything?</b> Settings &rarr; Delete all data. It is permanent; make a backup file first if you may want the log back. Entries already saved to Apple Health stay there; remove them in the Health app.</p>
+<p><b>I bought Plus on another iPhone.</b> Use Restore purchases in Settings, in Cycle Ally Plus.</p>"""
+    page(lang, base + "support", "Support — " + n, support, sub=cycle_ally_nav(lang, "support"))
+
+
 # Старые адреса → новые: страница-переадресация (meta refresh, canonical на новый адрес, ссылка для тех, у кого
 # переадресация не сработала). GitHub Pages не умеет серверных 301. Aylin жил в /woman/ до 2026-10-21.
 REDIRECTS = [("/woman/", "/aylin/"), ("/woman/privacy", "/aylin/privacy"), ("/woman/terms", "/aylin/terms"),
@@ -1076,6 +1277,7 @@ for lang in ("en",):
     mgrs_pages(lang)
     solunar_pages(lang)
     woman_pages(lang)
+    cycle_ally_pages(lang)
 for old, new in REDIRECTS:
     redirect(old, new)
 # Remove only known generated pages for products not yet published.
